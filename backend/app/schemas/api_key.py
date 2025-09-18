@@ -40,13 +40,33 @@ class APIKeyValidationErrorResponse(BaseModel):
     data: APIKeyValidationErrorData
 
 
-class ErrorCodes:
-    """错误代码常量"""
-    PLAN_EXPIRED = 1001
-    CREDITS_EXHAUSTED = 1002
-    INVALID_API_KEY = 1003
-    ACCOUNT_BANNED = 1004
-    RATE_LIMIT_EXCEEDED = 1005
-    VALIDATION_TIMEOUT = 1006
-    VALIDATION_SERVICE_UNAVAILABLE = 1007
-    INTERNAL_VALIDATION_ERROR = 1008
+class APIKeyCreate(BaseModel):
+    """创建API密钥请求模型"""
+    api_key: str
+    real_api_key: str
+    key_name: Optional[str] = None
+    description: Optional[str] = None
+
+
+class APIKeyUpdate(BaseModel):
+    """更新API密钥请求模型"""
+    key_name: Optional[str] = None
+    description: Optional[str] = None
+    real_api_key: Optional[str] = None
+    is_active: Optional[bool] = None
+
+
+class APIKeyResponse(BaseModel):
+    """API密钥响应模型"""
+    id: int
+    user_id: str
+    api_key: str
+    key_name: Optional[str]
+    description: Optional[str]
+    is_active: bool
+    last_used_at: Optional[datetime]
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True

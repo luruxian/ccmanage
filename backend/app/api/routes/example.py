@@ -37,12 +37,12 @@ def create_example(example: ExampleRequest):
     - **value**: 示例值
     """
     logger.info(f"创建示例: {example.name}")
-    
+
     # 实现业务逻辑
     try:
         # 模拟创建ID
         example_id = f"example_{len(_examples_db) + 1}"
-        
+
         # 构建响应数据
         response_data = ExampleResponse(
             id=example_id,
@@ -50,10 +50,10 @@ def create_example(example: ExampleRequest):
             value=example.value,
             processed=True
         )
-        
-        # 保存到模拟数据库（pydantic v1使用dict()方法）
-        _examples_db.append(response_data.dict())
-        
+
+        # 保存到模拟数据库
+        _examples_db.append(response_data.model_dump())
+
         logger.info(f"示例创建成功: {example_id}")
         return response_data
     except Exception as e:
@@ -62,7 +62,7 @@ def create_example(example: ExampleRequest):
 
 @router.get("/", response_model=list[ExampleResponse])
 def get_all_examples():
-    """\获取所有示例数据"""
+    """获取所有示例数据"""
     logger.info("获取所有示例数据")
     return _examples_db
 
@@ -73,12 +73,12 @@ def get_example(example_id: str):
     - **example_id**: 示例ID
     """
     logger.info(f"获取示例: {example_id}")
-    
+
     # 查找示例
     example = next((item for item in _examples_db if item["id"] == example_id), None)
-    
+
     if example is None:
         logger.warning(f"示例未找到: {example_id}")
         raise HTTPException(status_code=404, detail="示例未找到")
-    
+
     return example

@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, ForeignKey, DECIMAL
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, ForeignKey, DECIMAL, Index
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from database import Base
+from .database import Base
 from datetime import datetime
 
 
@@ -102,10 +102,7 @@ class RateLimit(Base):
     user = relationship("User")
 
 
-# 创建索引（可选，用于优化查询性能）
-from sqlalchemy import Index
-
-# 为常用查询创建复合索引
+# 创建复合索引优化查询性能
 Index('idx_api_key_user', APIKey.user_id, APIKey.api_key)
 Index('idx_user_plan_active', UserPlan.user_id, UserPlan.is_active, UserPlan.expire_date)
 Index('idx_usage_record_time', UsageRecord.user_id, UsageRecord.request_timestamp)

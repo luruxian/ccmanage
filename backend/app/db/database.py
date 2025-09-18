@@ -2,40 +2,21 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.pool import QueuePool
-import os
-from dotenv import load_dotenv
 import logging
 
-# 加载环境变量
-load_dotenv()
+from ..core.config import settings
 
 logger = logging.getLogger(__name__)
 
-# 数据库配置
-DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
-DB_PORT = os.getenv("DB_PORT", "3306")
-DB_USER = os.getenv("DB_USER", "root")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "12345678")
-DB_NAME = os.getenv("DB_NAME", "ccmanage")
-
-# 连接池配置
-DB_POOL_SIZE = int(os.getenv("DB_POOL_SIZE", "10"))
-DB_MAX_OVERFLOW = int(os.getenv("DB_MAX_OVERFLOW", "20"))
-DB_POOL_TIMEOUT = int(os.getenv("DB_POOL_TIMEOUT", "30"))
-DB_POOL_RECYCLE = int(os.getenv("DB_POOL_RECYCLE", "3600"))
-
-# 构建数据库URL
-DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset=utf8mb4"
-
 # 创建SQLAlchemy引擎
 engine = create_engine(
-    DATABASE_URL,
+    settings.DATABASE_URL,
     poolclass=QueuePool,
-    pool_size=DB_POOL_SIZE,
-    max_overflow=DB_MAX_OVERFLOW,
-    pool_timeout=DB_POOL_TIMEOUT,
-    pool_recycle=DB_POOL_RECYCLE,
-    echo=os.getenv("ENVIRONMENT") == "development",  # 开发环境下打印SQL语句
+    pool_size=settings.DB_POOL_SIZE,
+    max_overflow=settings.DB_MAX_OVERFLOW,
+    pool_timeout=30,
+    pool_recycle=3600,
+    echo=settings.DEBUG,  # 开发环境下打印SQL语句
     echo_pool=False,
 )
 
