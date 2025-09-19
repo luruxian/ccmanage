@@ -1,6 +1,7 @@
-from pydantic import BaseModel, EmailStr
-from typing import Optional
+from pydantic import BaseModel, EmailStr, Field
+from typing import Optional, Dict, Any
 from datetime import datetime
+from .auth import UserResponse
 
 
 class UserCreate(BaseModel):
@@ -9,6 +10,13 @@ class UserCreate(BaseModel):
     username: str
     email: Optional[EmailStr] = None
     phone: Optional[str] = None
+
+
+class UserUpdateRequest(BaseModel):
+    """更新用户个人信息请求"""
+    username: Optional[str] = Field(None, min_length=3, max_length=50, description="用户名")
+    email: Optional[EmailStr] = Field(None, description="邮箱")
+    phone: Optional[str] = Field(None, max_length=20, description="手机号")
 
 
 class UserUpdate(BaseModel):
@@ -24,20 +32,10 @@ class UserStatusUpdate(BaseModel):
     is_banned: Optional[bool] = None
 
 
-class UserResponse(BaseModel):
-    """用户响应模型"""
-    id: int
-    user_id: str
-    username: str
-    email: Optional[str]
-    phone: Optional[str]
-    is_active: bool
-    is_banned: bool
-    created_at: datetime
-    updated_at: datetime
-
-    class Config:
-        from_attributes = True
+class UserProfileResponse(BaseModel):
+    """用户个人信息响应"""
+    user: UserResponse
+    plan_info: Dict[str, Any]
 
 
 class UserListResponse(BaseModel):

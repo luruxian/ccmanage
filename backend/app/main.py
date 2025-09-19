@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from .core.config import settings
 from .core.logging import setup_logging, logger
 from .db.database import check_db_connection, create_tables
-from .api.routes import example, api_key_validation
+from .api.routes import api_key_validation, auth, user, user_keys
 
 # 设置日志
 setup_logging()
@@ -88,7 +88,9 @@ def global_exception_handler(request: Request, exc: Exception):
     )
 
 # 注册路由
-app.include_router(example.router)
+app.include_router(auth.router)
+app.include_router(user.router)
+app.include_router(user_keys.router)
 app.include_router(api_key_validation.router)
 
 if __name__ == "__main__":

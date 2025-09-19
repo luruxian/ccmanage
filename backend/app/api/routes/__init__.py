@@ -4,6 +4,6 @@ API Routes module
 包含所有API路由
 """
 
-from . import example, api_key_validation
+from . import api_key_validation, auth, user, user_keys
 
-__all__ = ["example", "api_key_validation"]
+__all__ = ["api_key_validation", "auth", "user", "user_keys"]

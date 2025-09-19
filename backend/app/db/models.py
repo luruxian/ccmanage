@@ -11,11 +11,13 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     user_id = Column(String(50), unique=True, index=True, nullable=False, comment="用户唯一标识")
-    username = Column(String(100), unique=True, index=True, nullable=False, comment="用户名")
-    email = Column(String(255), unique=True, index=True, nullable=True, comment="邮箱")
+    email = Column(String(255), unique=True, index=True, nullable=False, comment="邮箱")
+    password_hash = Column(String(255), nullable=False, comment="密码哈希值")
     phone = Column(String(20), unique=True, index=True, nullable=True, comment="手机号")
-    is_active = Column(Boolean, default=True, nullable=False, comment="账户是否激活")
+    is_active = Column(Boolean, default=False, nullable=False, comment="账户是否激活")
+    is_email_verified = Column(Boolean, default=False, nullable=False, comment="邮箱是否已验证")
     is_banned = Column(Boolean, default=False, nullable=False, comment="账户是否被封禁")
+    last_login_at = Column(DateTime(timezone=True), nullable=True, comment="最后登录时间")
     created_at = Column(DateTime(timezone=True), server_default=func.now(), comment="创建时间")
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), comment="更新时间")
 
@@ -23,6 +25,7 @@ class User(Base):
     api_keys = relationship("APIKey", back_populates="user")
     user_plans = relationship("UserPlan", back_populates="user")
     usage_records = relationship("UsageRecord", back_populates="user")
+    email_verifications = relationship("EmailVerification", back_populates="user")
 
 
 class APIKey(Base):
@@ -102,8 +105,26 @@ class RateLimit(Base):
     user = relationship("User")
 
 
+class EmailVerification(Base):
+    """邮箱验证表"""
+    __tablename__ = "email_verifications"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(String(50), ForeignKey("users.user_id"), nullable=False, comment="用户ID")
+    email = Column(String(255), nullable=False, comment="待验证邮箱")
+    verification_code = Column(String(10), nullable=False, comment="验证码")
+    verification_type = Column(String(20), nullable=False, comment="验证类型: register/reset_password")
+    is_used = Column(Boolean, default=False, nullable=False, comment="是否已使用")
+    expire_at = Column(DateTime(timezone=True), nullable=False, comment="过期时间")
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), comment="创建时间")
+
+    # 关联关系
+    user = relationship("User", back_populates="email_verifications")
+
+
 # 创建复合索引优化查询性能
 Index('idx_api_key_user', APIKey.user_id, APIKey.api_key)
 Index('idx_user_plan_active', UserPlan.user_id, UserPlan.is_active, UserPlan.expire_date)
 Index('idx_usage_record_time', UsageRecord.user_id, UsageRecord.request_timestamp)
 Index('idx_rate_limit_window', RateLimit.user_id, RateLimit.service, RateLimit.window_start, RateLimit.window_end)
+Index('idx_email_verification', EmailVerification.email, EmailVerification.verification_code, EmailVerification.is_used)

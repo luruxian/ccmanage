@@ -3,7 +3,7 @@ import type { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'a
 
 // 创建axios实例
 const service: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8001',
   timeout: 10000, // 请求超时时间
   headers: {
     'Content-Type': 'application/json'
@@ -15,7 +15,7 @@ service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // 在发送请求之前做些什么
     // 例如：添加token
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     if (token && config.headers) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }

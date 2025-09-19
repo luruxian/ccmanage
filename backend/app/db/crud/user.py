@@ -18,10 +18,6 @@ class UserCRUD:
         """根据用户ID获取用户信息"""
         return self.db.query(User).filter(User.user_id == user_id).first()
 
-    def get_user_by_username(self, username: str) -> Optional[User]:
-        """根据用户名获取用户信息"""
-        return self.db.query(User).filter(User.username == username).first()
-
     def get_user_by_email(self, email: str) -> Optional[User]:
         """根据邮箱获取用户信息"""
         return self.db.query(User).filter(User.email == email).first()
@@ -62,7 +58,7 @@ class UserCRUD:
             return None
 
         # 更新允许修改的字段
-        allowed_fields = ['username', 'email', 'phone']
+        allowed_fields = ['email', 'phone', 'password_hash']
         for field, value in update_data.items():
             if field in allowed_fields and value is not None:
                 setattr(user, field, value)
@@ -72,6 +68,29 @@ class UserCRUD:
         self.db.refresh(user)
         logger.info(f"更新用户信息: {user_id}")
         return user
+
+    def verify_email(self, user_id: str) -> bool:
+        """验证用户邮箱"""
+        user = self.get_user_by_id(user_id)
+        if not user:
+            return False
+
+        user.is_email_verified = True
+        user.is_active = True
+        user.updated_at = datetime.now()
+        self.db.commit()
+        logger.info(f"用户邮箱验证完成: {user_id}")
+        return True
+
+    def update_last_login(self, user_id: str) -> bool:
+        """更新最后登录时间"""
+        user = self.get_user_by_id(user_id)
+        if not user:
+            return False
+
+        user.last_login_at = datetime.now()
+        self.db.commit()
+        return True
 
     def delete_user(self, user_id: str) -> bool:
         """软删除用户（设置为非激活状态）"""
