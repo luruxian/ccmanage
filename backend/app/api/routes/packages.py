@@ -19,7 +19,7 @@ from ...schemas.user_key_management import (
 from ...schemas.auth import MessageResponse
 from ...db.database import get_db
 from ...db.crud.package import PackageCRUD
-from ...db.crud.user_plan import UserPlanCRUD
+# UserPlanCRUD已删除，使用APIKeyCRUD替代
 from ...db.crud.api_key import APIKeyCRUD
 from .user import get_current_user
 from .admin import get_admin_user
@@ -253,7 +253,7 @@ async def purchase_package(
     """购买订阅"""
     try:
         package_crud = PackageCRUD(db)
-        user_plan_crud = UserPlanCRUD(db)
+        api_key_crud = APIKeyCRUD(db)
 
         # 检查订阅是否存在且可用
         package = package_crud.get_package_by_id(purchase_data.package_id)
@@ -263,24 +263,35 @@ async def purchase_package(
                 detail="订阅不存在或不可用"
             )
 
-        # 创建用户订阅
+        # 创建用户订阅（直接创建API密钥记录）
         start_date = datetime.utcnow()
         expire_date = start_date + timedelta(days=package.duration_days)
 
-        plan_data = {
+        # 生成定义的真实API密钥（生产环境中应从配置文件读取）
+        default_real_api_key = "sk-real-api-key-for-production"
+
+        # 创建API密钥记录
+        api_key_data = {
             "user_id": current_user.user_id,
-            "package_id": package.id,
-            "plan_type": package.package_code,
-            "credits": package.credits,
-            "total_credits": package.credits,
-            "start_date": start_date,
-            "expire_date": expire_date,
+            "api_key": api_key_crud.generate_api_key(),
+            "real_api_key": default_real_api_key,
+            "key_name": f"购买套餐-{package.package_name}",
+            "description": f"用户购买的{package.package_name}套餐",
             "is_active": True,
-            "auto_renew": purchase_data.auto_renew
+
+            # 订阅管理字段
+            "package_id": package.id,
+            "activation_date": start_date,
+            "expire_date": expire_date,
+            "remaining_days": package.duration_days,
+            "remaining_credits": package.credits,
+            "total_credits": package.credits,
+            "status": "active",
+            "notes": f"购买套餐: {package.package_code}, 自动续费: {purchase_data.auto_renew}"
         }
 
-        user_plan = user_plan_crud.create_user_plan(plan_data)
-        if not user_plan:
+        api_key = api_key_crud.create_api_key(api_key_data)
+        if not api_key:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="购买订阅失败"
@@ -289,7 +300,7 @@ async def purchase_package(
         logger.info(f"用户 {current_user.user_id} 购买订阅: {package.package_code}")
         return PackagePurchaseResponse(
             message="订阅购买成功",
-            user_plan_id=user_plan.id,
+            user_plan_id=api_key.id,  # 使用api_key_id作为订阅ID
             package_code=package.package_code,
             credits_added=package.credits,
             expire_date=expire_date

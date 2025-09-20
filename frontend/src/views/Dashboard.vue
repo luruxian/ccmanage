@@ -447,7 +447,7 @@ const recentActivities = ref([
 const loadUserKeys = async () => {
   try {
     loadingKeys.value = true
-    const response: any = await request.get('/api/v1/user-keys/')
+    const response: any = await request.get('/api/v1/keys/')
     apiKeys.value = response.keys || []
 
     // 更新统计数据
@@ -475,7 +475,7 @@ const loadPlanStatus = async () => {
   try {
     const response = await request.get('/api/v1/keys/plan-status')
     Object.assign(planInfo, response)
-    stats.creditsRemaining = response.data.credits_remaining
+    stats.creditsRemaining = response.credits_remaining
   } catch (error) {
     console.error('获取套餐状态失败:', error)
   }

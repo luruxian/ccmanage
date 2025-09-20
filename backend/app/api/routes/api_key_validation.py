@@ -13,7 +13,7 @@ from ...schemas.common import ErrorCodes
 from ...db.database import get_db
 from ...db.crud.api_key import APIKeyCRUD
 from ...db.crud.user import UserCRUD
-from ...db.crud.user_plan import UserPlanCRUD
+# UserPlanCRUD已删除，使用APIKeyCRUD替代
 import logging
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ class APIKeyValidationService:
         self.db = db
         self.api_key_crud = APIKeyCRUD(db)
         self.user_crud = UserCRUD(db)
-        self.user_plan_crud = UserPlanCRUD(db)
+        # user_plan_crud功能已合并到api_key_crud
 
     def validate_api_key(self, api_key: str, service: str = "llm_proxy"):
         """验证API密钥"""
@@ -58,7 +58,7 @@ class APIKeyValidationService:
                 )
 
             # 3. 检查用户套餐
-            plan_stats = self.user_plan_crud.get_plan_usage_stats(user.user_id)
+            plan_stats = self.api_key_crud.get_plan_usage_stats(user.user_id)
             if not plan_stats["has_active_plan"]:
                 return self._create_error_response(
                     ErrorCodes.PLAN_EXPIRED,

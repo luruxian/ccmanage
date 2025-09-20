@@ -6,6 +6,6 @@ CRUD operations module
 
 from .user import UserCRUD
 from .api_key import APIKeyCRUD
-from .user_plan import UserPlanCRUD
+# UserPlanCRUD已删除，功能合并到APIKeyCRUD
 
-__all__ = ["UserCRUD", "APIKeyCRUD", "UserPlanCRUD"]
+__all__ = ["UserCRUD", "APIKeyCRUD"]

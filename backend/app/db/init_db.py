@@ -12,7 +12,7 @@ from sqlalchemy.exc import SQLAlchemyError
 import logging
 
 from .database import engine, SessionLocal, create_tables, check_db_connection
-from .models import User, APIKey, UserPlan, UsageRecord
+from .models import User, APIKey, UsageRecord
 from .crud.user import UserCRUD
 from .crud.api_key import APIKeyCRUD
 from .crud.user_plan import UserPlanCRUD

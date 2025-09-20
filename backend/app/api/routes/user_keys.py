@@ -14,7 +14,7 @@ from ...core.auth_service import auth_service
 from ...db.database import get_db
 from ...db.crud.user import UserCRUD
 from ...db.crud.api_key import APIKeyCRUD
-from ...db.crud.user_plan import UserPlanCRUD
+# UserPlanCRUD已删除，使用APIKeyCRUD替代
 # UserKeyCRUD已合并到APIKeyCRUD
 from .user import get_current_user
 import logging
@@ -73,8 +73,7 @@ async def activate_custom_key(
         api_key_crud = APIKeyCRUD(db)
 
         # 检查用户是否有激活的套餐
-        user_plan_crud = UserPlanCRUD(db)
-        plan_stats = user_plan_crud.get_plan_usage_stats(current_user.user_id)
+        plan_stats = api_key_crud.get_plan_usage_stats(current_user.user_id)
 
         if not plan_stats.get("has_active_plan", False):
             raise HTTPException(
@@ -163,8 +162,8 @@ async def get_user_plan_status(
 ):
     """获取用户套餐状态"""
     try:
-        user_plan_crud = UserPlanCRUD(db)
-        plan_stats = user_plan_crud.get_plan_usage_stats(current_user.user_id)
+        api_key_crud = APIKeyCRUD(db)
+        plan_stats = api_key_crud.get_plan_usage_stats(current_user.user_id)
 
         return UserPlanStatusResponse(
             has_active_plan=plan_stats.get("has_active_plan", False),

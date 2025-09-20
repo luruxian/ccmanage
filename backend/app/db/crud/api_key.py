@@ -383,3 +383,60 @@ class APIKeyCRUD:
                 "inactive_keys": 0,
                 "expired_keys": 0
             }
+
+    def get_plan_usage_stats(self, user_id: str) -> Dict[str, Any]:
+        """获取用户套餐使用统计（替代UserPlanCRUD的功能）"""
+        try:
+            # 查找用户的激活套餐
+            active_key = self.db.query(APIKey).filter(
+                APIKey.user_id == user_id,
+                APIKey.status == "active",
+                APIKey.expire_date > datetime.now()
+            ).first()
+
+            if not active_key:
+                return {
+                    "has_active_plan": False,
+                    "plan_type": None,
+                    "credits_remaining": 0,
+                    "total_credits": 0,
+                    "expire_date": None,
+                    "days_remaining": 0,
+                    "usage_percentage": 0
+                }
+
+            # 计算剩余天数
+            days_remaining = (active_key.expire_date - datetime.now()).days if active_key.expire_date else 0
+
+            # 计算使用百分比
+            usage_percentage = 0
+            if active_key.total_credits and active_key.total_credits > 0:
+                used_credits = active_key.total_credits - (active_key.remaining_credits or 0)
+                usage_percentage = (used_credits / active_key.total_credits) * 100
+
+            # 获取套餐信息
+            package = self.db.query(Package).filter(Package.id == active_key.package_id).first()
+            plan_type = package.package_code if package else "unknown"
+
+            return {
+                "has_active_plan": True,
+                "plan_type": plan_type,
+                "credits_remaining": active_key.remaining_credits or 0,
+                "total_credits": active_key.total_credits or 0,
+                "credits_used": (active_key.total_credits or 0) - (active_key.remaining_credits or 0),
+                "usage_percentage": round(usage_percentage, 2),
+                "expire_date": active_key.expire_date,
+                "days_remaining": max(0, days_remaining)
+            }
+
+        except Exception as e:
+            logger.error(f"获取套餐使用统计失败: {str(e)}")
+            return {
+                "has_active_plan": False,
+                "plan_type": None,
+                "credits_remaining": 0,
+                "total_credits": 0,
+                "expire_date": None,
+                "days_remaining": 0,
+                "usage_percentage": 0
+            }

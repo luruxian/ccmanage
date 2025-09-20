@@ -8,7 +8,7 @@ from ...core.auth_service import auth_service
 from ...db.database import get_db
 from ...db.crud.user import UserCRUD
 from ...db.crud.admin import AdminCRUD
-from ...db.crud.user_plan import UserPlanCRUD
+# UserPlanCRUD已删除，使用APIKeyCRUD替代
 import logging
 
 logger = logging.getLogger(__name__)
@@ -118,12 +118,14 @@ async def get_current_user(
 
 
 @router.get("/profile", response_model=UserProfileResponse)
-async def get_user_profile(current_user = Depends(get_current_user)):
+async def get_user_profile(
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """获取用户个人信息"""
     try:
-        db = current_user._sa_instance_state.session
-        user_plan_crud = UserPlanCRUD(db)
-        plan_stats = user_plan_crud.get_plan_usage_stats(current_user.user_id)
+        api_key_crud = APIKeyCRUD(db)
+        plan_stats = api_key_crud.get_plan_usage_stats(current_user.user_id)
 
         return UserProfileResponse(
             user=UserResponse.from_orm(current_user),

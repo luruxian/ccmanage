@@ -58,24 +58,7 @@ class APIKey(Base):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), comment="更新时间")
 
 
-class UserPlan(Base):
-    """用户套餐表"""
-    __tablename__ = "user_plans"
-
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id = Column(String(50), nullable=False, comment="用户ID")
-    package_id = Column(Integer, nullable=True, comment="套餐ID")
-    plan_type = Column(String(50), nullable=False, comment="套餐类型: basic/premium/enterprise")
-    credits = Column(Integer, default=0, nullable=False, comment="剩余积分")
-    total_credits = Column(Integer, default=0, nullable=False, comment="总积分")
-    start_date = Column(DateTime(timezone=True), nullable=False, comment="开始时间")
-    expire_date = Column(DateTime(timezone=True), nullable=False, comment="过期时间")
-    is_active = Column(Boolean, default=True, nullable=False, comment="套餐是否激活")
-    auto_renew = Column(Boolean, default=False, nullable=False, comment="是否自动续费")
-    created_at = Column(DateTime(timezone=True), server_default=func.now(), comment="创建时间")
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), comment="更新时间")
-
-    # 删除关联关系以简化架构
+# UserPlan表已删除，功能合并到api_keys表中
 
 
 class UsageRecord(Base):
@@ -209,7 +192,7 @@ class AdminOperation(Base):
 
 # 创建复合索引优化查询性能
 Index('idx_api_key_user', APIKey.user_id, APIKey.api_key)
-Index('idx_user_plan_active', UserPlan.user_id, UserPlan.is_active, UserPlan.expire_date)
+# Index('idx_user_plan_active', UserPlan.user_id, UserPlan.is_active, UserPlan.expire_date)  # UserPlan表已删除
 Index('idx_usage_record_time', UsageRecord.user_id, UsageRecord.request_timestamp)
 Index('idx_rate_limit_window', RateLimit.user_id, RateLimit.service, RateLimit.window_start, RateLimit.window_end)
 Index('idx_email_verification', EmailVerification.email, EmailVerification.verification_code, EmailVerification.is_used)
