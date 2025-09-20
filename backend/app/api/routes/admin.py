@@ -32,6 +32,7 @@ from ...db.crud.login_history import LoginHistoryCRUD
 from ...db.crud.admin_operation import AdminOperationCRUD
 from ...db.crud.package import PackageCRUD
 from ...db.crud.api_key import APIKeyCRUD
+from ...db.crud.user_plan import UserPlanCRUD
 from ...db.models import UserRole, Admin
 from .user import get_current_user
 from datetime import datetime
@@ -324,9 +325,13 @@ async def get_all_users(
         # 添加额外信息
         user_management_list = []
         for user in users:
-            # 统计用户的API密钥和套餐信息
+            # 统计用户的API密钥信息
             api_key_crud = APIKeyCRUD(db)
             user_keys = api_key_crud.get_user_api_keys(user.user_id)
+
+            # 统计用户套餐信息（使用UserPlanCRUD）
+            user_plan_crud = UserPlanCRUD(db)
+            user_plans = user_plan_crud.get_user_plans(user.user_id)
 
             user_management_list.append({
                 "id": user.id,
@@ -340,8 +345,8 @@ async def get_all_users(
                 "last_login_at": user.last_login_at,
                 "total_api_keys": len(user_keys),
                 "active_api_keys": len([k for k in user_keys if k.is_active]),
-                "total_plans": len(user.user_plans),
-                "active_plans": len([p for p in user.user_plans if p.is_active]),
+                "total_plans": len(user_plans),
+                "active_plans": len([p for p in user_plans if p.is_active]),
                 "created_at": user.created_at,
                 "updated_at": user.updated_at
             })

@@ -152,25 +152,28 @@
               </ElTableColumn>
               <ElTableColumn prop="activation_date" label="激活时间" width="180">
                 <template #default="scope">
-                  {{ formatDate(scope.row.activation_date) }}
+                  {{ scope.row.activation_date ? formatDate(scope.row.activation_date) : '未激活' }}
                 </template>
               </ElTableColumn>
               <ElTableColumn prop="expire_date" label="过期时间" width="180">
                 <template #default="scope">
-                  {{ formatDate(scope.row.expire_date) }}
+                  {{ scope.row.expire_date ? formatDate(scope.row.expire_date) : '-' }}
                 </template>
               </ElTableColumn>
               <ElTableColumn prop="remaining_days" label="剩余天数" width="120">
                 <template #default="scope">
-                  <span :class="getRemainingDaysClass(scope.row.remaining_days)">
+                  <span v-if="scope.row.activation_date" :class="getRemainingDaysClass(scope.row.remaining_days)">
                     {{ scope.row.remaining_days }} 天
+                  </span>
+                  <span v-else class="inactive">
+                    {{ scope.row.remaining_days }} 天 (初始)
                   </span>
                 </template>
               </ElTableColumn>
               <ElTableColumn prop="remaining_credits" label="剩余积分" width="120">
                 <template #default="scope">
                   <span class="credits">
-                    {{ scope.row.remaining_credits }} / {{ scope.row.total_credits }}
+                    {{ scope.row.remaining_credits || 0 }} / {{ scope.row.total_credits || 0 }}
                   </span>
                 </template>
               </ElTableColumn>
@@ -633,6 +636,11 @@ onMounted(() => {
 
 .normal {
   color: #67c23a;
+}
+
+.inactive {
+  color: #909399;
+  font-style: italic;
 }
 
 .pagination-container {

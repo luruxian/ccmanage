@@ -15,12 +15,51 @@ from ...db.database import get_db
 from ...db.crud.user import UserCRUD
 from ...db.crud.api_key import APIKeyCRUD
 from ...db.crud.user_plan import UserPlanCRUD
+# UserKeyCRUD已合并到APIKeyCRUD
 from .user import get_current_user
 import logging
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/keys", tags=["User Keys Management"])
 security = HTTPBearer()
+
+
+@router.post("/activate-user-key", response_model=MessageResponse)
+async def activate_user_key(
+    request: dict,
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """激活用户Key"""
+    try:
+        api_key_crud = APIKeyCRUD(db)
+        user_key = request.get("user_key")
+
+        if not user_key:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="请提供用户Key"
+            )
+
+        # 激活用户Key
+        result = api_key_crud.activate_user_key(user_key, current_user.email)
+
+        if result["success"]:
+            return MessageResponse(message=result["message"])
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=result["message"]
+            )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"激活用户Key失败: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="激活失败，请稍后重试"
+        )
 
 
 @router.post("/activate", response_model=KeyActivationResponse)

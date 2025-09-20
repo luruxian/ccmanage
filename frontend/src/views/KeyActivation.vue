@@ -5,71 +5,28 @@
         <div class="col-md-8 col-lg-6">
           <div class="activation-card">
             <div class="text-center mb-4">
-              <h2 class="fw-bold">API密钥激活</h2>
-              <p class="text-muted">激活您的自定义API密钥</p>
+              <h2 class="fw-bold">用户Key激活</h2>
+              <p class="text-muted">激活您的用户Key以使用服务</p>
             </div>
-
-            <!-- 套餐状态检查 -->
-            <ElAlert
-              v-if="!planInfo.has_active_plan"
-              title="需要激活套餐"
-              type="warning"
-              description="您需要先购买套餐才能激活API密钥"
-              show-icon
-              :closable="false"
-              class="mb-4"
-            />
 
             <ElForm
               :model="activationForm"
               :rules="activationRules"
               ref="activationFormRef"
               label-width="120px"
-              v-if="planInfo.has_active_plan"
             >
-              <ElFormItem label="密钥名称" prop="keyName">
+              <ElFormItem label="用户Key" prop="userKey">
                 <ElInput
-                  v-model="activationForm.keyName"
-                  placeholder="为您的密钥起个名字"
-                  size="large"
-                />
-              </ElFormItem>
-
-              <ElFormItem label="自定义密钥" prop="customApiKey">
-                <ElInput
-                  v-model="activationForm.customApiKey"
-                  placeholder="输入您的自定义API密钥"
+                  v-model="activationForm.userKey"
+                  placeholder="请输入要激活的用户Key"
                   size="large"
                   show-password
                 />
                 <div class="form-help">
                   <small class="text-muted">
-                    这将是您在应用中使用的密钥，请妥善保管
+                    输入您获得的用户Key，格式如：sk-xxxxxxxx...
                   </small>
                 </div>
-              </ElFormItem>
-
-              <ElFormItem label="真实密钥" prop="realApiKey">
-                <ElInput
-                  v-model="activationForm.realApiKey"
-                  placeholder="输入真实的API密钥"
-                  size="large"
-                  show-password
-                />
-                <div class="form-help">
-                  <small class="text-muted">
-                    这是您从API提供商处获得的真实密钥
-                  </small>
-                </div>
-              </ElFormItem>
-
-              <ElFormItem label="描述" prop="description">
-                <ElInput
-                  v-model="activationForm.description"
-                  type="textarea"
-                  :rows="3"
-                  placeholder="密钥用途描述（可选）"
-                />
               </ElFormItem>
 
               <ElFormItem>
@@ -80,41 +37,10 @@
                   :loading="loading"
                   @click="handleActivation"
                 >
-                  激活密钥
+                  激活用户Key
                 </ElButton>
               </ElFormItem>
             </ElForm>
-
-            <!-- 套餐信息 -->
-            <ElCard class="plan-info-card mt-4">
-              <template #header>
-                <h5>当前套餐状态</h5>
-              </template>
-              <div class="plan-details">
-                <div class="detail-item">
-                  <span>套餐类型:</span>
-                  <ElTag :type="planInfo.has_active_plan ? 'success' : 'warning'">
-                    {{ planInfo.plan_type }}
-                  </ElTag>
-                </div>
-                <div class="detail-item">
-                  <span>剩余积分:</span>
-                  <strong>{{ planInfo.credits_remaining }}</strong>
-                </div>
-                <div class="detail-item">
-                  <span>总积分:</span>
-                  <strong>{{ planInfo.total_credits }}</strong>
-                </div>
-                <div class="detail-item">
-                  <span>使用率:</span>
-                  <ElProgress
-                    :percentage="planInfo.usage_percentage"
-                    :color="getProgressColor(planInfo.usage_percentage)"
-                    style="width: 200px;"
-                  />
-                </div>
-              </div>
-            </ElCard>
 
             <div class="text-center mt-4">
               <router-link to="/dashboard" class="btn btn-outline-primary">
@@ -134,18 +60,18 @@
                 <ElIcon size="60" color="#67c23a" class="mb-3">
                   <ElIconCircleCheck />
                 </ElIcon>
-                <h4 class="mb-3">API密钥激活成功！</h4>
+                <h4 class="mb-3">用户Key激活成功！</h4>
 
                 <div class="key-info">
-                  <p><strong>密钥名称:</strong> {{ activatedKeyInfo.keyName }}</p>
-                  <p><strong>自定义密钥:</strong></p>
+                  <p><strong>激活时间:</strong> {{ activatedKeyInfo.activationDate }}</p>
+                  <p><strong>用户Key:</strong></p>
                   <ElInput
-                    :value="activatedKeyInfo.customApiKey"
+                    :value="activatedKeyInfo.userKey"
                     readonly
                     class="mb-3"
                   >
                     <template #append>
-                      <ElButton @click="copyToClipboard(activatedKeyInfo.customApiKey)">
+                      <ElButton @click="copyToClipboard(activatedKeyInfo.userKey)">
                         复制
                       </ElButton>
                     </template>
@@ -153,9 +79,9 @@
                 </div>
 
                 <ElAlert
-                  title="请妥善保管您的密钥"
-                  type="warning"
-                  description="密钥一旦丢失将无法找回，请务必保存在安全的地方"
+                  title="激活成功"
+                  type="success"
+                  description="您的用户Key已成功激活，现在可以使用服务了"
                   show-icon
                   :closable="false"
                 />
@@ -175,16 +101,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   ElForm,
   ElFormItem,
   ElInput,
   ElButton,
-  ElCard,
-  ElTag,
-  ElProgress,
   ElAlert,
   ElDialog,
   ElIcon,
@@ -202,49 +125,24 @@ const showSuccessDialog = ref(false)
 const activationFormRef = ref()
 
 const activationForm = reactive({
-  keyName: '',
-  customApiKey: '',
-  realApiKey: '',
-  description: ''
+  userKey: ''
 })
 
 const activatedKeyInfo = reactive({
-  keyName: '',
-  customApiKey: ''
-})
-
-const planInfo = reactive({
-  has_active_plan: false,
-  plan_type: '免费套餐',
-  credits_remaining: 0,
-  total_credits: 0,
-  usage_percentage: 0
+  userKey: '',
+  activationDate: '',
+  expireDate: '',
+  credits: 0
 })
 
 const activationRules = {
-  keyName: [
-    { required: true, message: '请输入密钥名称', trigger: 'blur' },
-    { min: 2, max: 50, message: '密钥名称长度为2-50字符', trigger: 'blur' }
-  ],
-  customApiKey: [
-    { required: true, message: '请输入自定义API密钥', trigger: 'blur' },
-    { min: 10, message: '自定义密钥长度不能少于10位', trigger: 'blur' }
-  ],
-  realApiKey: [
-    { required: true, message: '请输入真实API密钥', trigger: 'blur' },
-    { min: 10, message: '真实密钥长度不能少于10位', trigger: 'blur' }
+  userKey: [
+    { required: true, message: '请输入用户Key', trigger: 'blur' },
+    { min: 10, message: '用户Key长度不能少于10位', trigger: 'blur' }
   ]
 }
 
-const loadPlanStatus = async () => {
-  try {
-    const response = await request.get('/api/v1/keys/plan-status')
-    Object.assign(planInfo, response)
-  } catch (error) {
-    console.error('获取套餐状态失败:', error)
-    ElMessage.error('获取套餐状态失败')
-  }
-}
+// 移除套餐状态检查相关代码
 
 const handleActivation = async () => {
   if (!activationFormRef.value) return
@@ -252,24 +150,17 @@ const handleActivation = async () => {
   try {
     await activationFormRef.value.validate()
 
-    if (!planInfo.has_active_plan) {
-      ElMessage.warning('请先购买套餐')
-      return
-    }
-
     loading.value = true
 
-    const response = await request.post('/api/v1/keys/activate', {
-      custom_api_key: activationForm.customApiKey,
-      real_api_key: activationForm.realApiKey,
-      key_name: activationForm.keyName,
-      description: activationForm.description
+    await request.post('/api/v1/keys/activate-user-key', {
+      user_key: activationForm.userKey
     })
 
-    activatedKeyInfo.keyName = response.data.key_name
-    activatedKeyInfo.customApiKey = response.data.custom_api_key
+    activatedKeyInfo.userKey = activationForm.userKey
+    activatedKeyInfo.activationDate = new Date().toLocaleString('zh-CN')
 
     showSuccessDialog.value = true
+    ElMessage.success('用户Key激活成功！')
 
     // 重置表单
     activationFormRef.value.resetFields()
@@ -296,20 +187,12 @@ const copyToClipboard = async (text: string) => {
   }
 }
 
-const getProgressColor = (percentage: number) => {
-  if (percentage < 50) return '#67c23a'
-  if (percentage < 80) return '#e6a23c'
-  return '#f56c6c'
-}
-
 const goToDashboard = () => {
   showSuccessDialog.value = false
   router.push('/dashboard')
 }
 
-onMounted(() => {
-  loadPlanStatus()
-})
+// 移除页面加载时的套餐状态检查
 </script>
 
 <style scoped>

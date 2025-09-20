@@ -20,7 +20,7 @@ from ...schemas.auth import MessageResponse
 from ...db.database import get_db
 from ...db.crud.package import PackageCRUD
 from ...db.crud.user_plan import UserPlanCRUD
-from ...db.crud.user_key import UserKeyCRUD
+from ...db.crud.api_key import APIKeyCRUD
 from .user import get_current_user
 from .admin import get_admin_user
 from datetime import datetime, timedelta
@@ -337,7 +337,7 @@ async def get_subscription_userkeys(
     """获取订阅关联的用户密钥列表（管理员）"""
     try:
         package_crud = PackageCRUD(db)
-        user_key_crud = UserKeyCRUD(db)
+        api_key_crud = APIKeyCRUD(db)
 
         # 检查订阅是否存在
         package = package_crud.get_package_by_id(package_id)
@@ -348,14 +348,14 @@ async def get_subscription_userkeys(
             )
 
         # 获取用户密钥列表（支持分页和状态过滤）
-        user_keys = user_key_crud.get_package_user_keys(
+        user_keys = api_key_crud.get_package_user_keys(
             package_id=package_id,
             page=page,
             page_size=page_size,
             status_filter=status_filter
         )
 
-        total_count = user_key_crud.count_package_user_keys(
+        total_count = api_key_crud.get_package_user_keys_count(
             package_id=package_id,
             status_filter=status_filter
         )
@@ -386,7 +386,7 @@ async def batch_generate_userkeys(
     """批量生成用户密钥（管理员）"""
     try:
         package_crud = PackageCRUD(db)
-        user_key_crud = UserKeyCRUD(db)
+        api_key_crud = APIKeyCRUD(db)
 
         # 检查订阅是否存在
         package = package_crud.get_package_by_id(package_id)
@@ -397,17 +397,20 @@ async def batch_generate_userkeys(
             )
 
         count = generate_data.get('count', 10)
-        key_status = generate_data.get('status', 'inactive')
+        real_api_key = generate_data.get('real_api_key', 'default-real-key')
+        notes = generate_data.get('notes')
 
         # 批量生成用户密钥
-        success_count = user_key_crud.bulk_generate_standalone_user_keys(
+        generated_keys = api_key_crud.bulk_generate_standalone_user_keys(
             package_id=package_id,
             count=count,
-            status=key_status
+            real_api_key=real_api_key,
+            notes=notes
         )
 
+        success_count = len(generated_keys)
         message = f"成功生成 {success_count} 个用户密钥"
-        logger.info(f"管理员 {current_admin.user_id} 批量生成用户密钥: {package.package_code}, 数量: {success_count}")
+        logger.info(f"管理员 {current_admin.username if hasattr(current_admin, 'username') else 'admin'} 批量生成用户密钥: {package.package_code}, 数量: {success_count}")
         return MessageResponse(message=message)
 
     except HTTPException:
@@ -430,7 +433,7 @@ async def batch_userkey_operations(
     """批量用户密钥操作（管理员）"""
     try:
         package_crud = PackageCRUD(db)
-        user_key_crud = UserKeyCRUD(db)
+        api_key_crud = APIKeyCRUD(db)
 
         # 检查订阅是否存在
         package = package_crud.get_package_by_id(package_id)
@@ -443,40 +446,38 @@ async def batch_userkey_operations(
         # 执行批量操作
         if operation_data.operation == "generate":
             # 批量生成用户密钥
-            success_count = user_key_crud.bulk_generate_user_keys(
+            generated_keys = api_key_crud.bulk_generate_standalone_user_keys(
                 package_id=package_id,
-                user_ids=operation_data.user_ids,
-                notes=operation_data.notes
+                count=len(operation_data.user_ids) if hasattr(operation_data, 'user_ids') else 10,
+                real_api_key="default-real-key",
+                notes=operation_data.notes if hasattr(operation_data, 'notes') else None
             )
-            message = f"成功为 {success_count} 个用户生成密钥关联"
-
-        elif operation_data.operation == "activate":
-            # 批量激活用户密钥
-            success_count = user_key_crud.bulk_update_user_key_status(
-                package_id=package_id,
-                user_ids=operation_data.user_ids,
-                status="active",
-                notes=operation_data.notes
-            )
-            message = f"成功激活 {success_count} 个用户密钥"
+            success_count = len(generated_keys)
+            message = f"成功生成 {success_count} 个用户密钥"
 
         elif operation_data.operation == "deactivate":
             # 批量禁用用户密钥
-            success_count = user_key_crud.bulk_update_user_key_status(
-                package_id=package_id,
-                user_ids=operation_data.user_ids,
-                status="inactive",
-                notes=operation_data.notes
-            )
-            message = f"成功禁用 {success_count} 个用户密钥"
+            if hasattr(operation_data, 'api_key_ids'):
+                result = api_key_crud.disable_user_keys_by_ids(operation_data.api_key_ids)
+                success_count = result.get('disabled_count', 0) if result.get('success') else 0
+                message = f"成功禁用 {success_count} 个用户密钥"
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="缺少api_key_ids参数"
+                )
 
         elif operation_data.operation == "delete":
-            # 批量删除用户密钥关联
-            success_count = user_key_crud.bulk_delete_user_keys(
-                package_id=package_id,
-                user_ids=operation_data.user_ids
-            )
-            message = f"成功删除 {success_count} 个用户密钥关联"
+            # 批量删除用户密钥
+            if hasattr(operation_data, 'api_key_ids'):
+                result = api_key_crud.delete_user_keys_by_ids(operation_data.api_key_ids)
+                success_count = result.get('deleted_count', 0) if result.get('success') else 0
+                message = f"成功删除 {success_count} 个用户密钥"
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="缺少api_key_ids参数"
+                )
 
         else:
             raise HTTPException(
@@ -484,7 +485,7 @@ async def batch_userkey_operations(
                 detail="不支持的操作类型"
             )
 
-        logger.info(f"管理员 {current_admin.user_id} 批量操作订阅用户密钥: {package.package_code}, 操作: {operation_data.operation}")
+        logger.info(f"管理员 {current_admin.username if hasattr(current_admin, 'username') else 'admin'} 批量操作订阅用户密钥: {package.package_code}, 操作: {operation_data.operation}")
         return MessageResponse(message=message)
 
     except HTTPException:
@@ -494,4 +495,116 @@ async def batch_userkey_operations(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="批量操作失败"
+        )
+
+
+@router.get("/data-integrity/check", response_model=dict)
+async def check_data_integrity(
+    current_admin = Depends(get_admin_user),
+    db: Session = Depends(get_db)
+):
+    """检查数据完整性（管理员）"""
+    try:
+        from ...db.models import APIKey
+
+        # 统计各类数据
+        total_api_keys = db.query(APIKey).count()
+        api_keys_with_user = db.query(APIKey).filter(APIKey.user_id.isnot(None)).count()
+        api_keys_without_user = total_api_keys - api_keys_with_user
+
+        api_key_crud = APIKeyCRUD(db)
+        total_user_keys = db.query(UserKey).count()
+
+        # 查找没有UserKey记录的APIKey
+        api_keys_without_user_key = db.query(APIKey).filter(
+            ~APIKey.id.in_(db.query(UserKey.api_key_id))
+        ).count()
+
+        # 查找有UserKey但没有package_id的记录
+        user_keys_without_package = db.query(UserKey).filter(
+            UserKey.package_id.is_(None)
+        ).count()
+
+        logger.info(f"管理员 {current_admin.user_id} 检查数据完整性")
+
+        return {
+            "total_api_keys": total_api_keys,
+            "api_keys_with_user": api_keys_with_user,
+            "api_keys_without_user": api_keys_without_user,
+            "total_user_keys": total_user_keys,
+            "api_keys_without_user_key": api_keys_without_user_key,
+            "user_keys_without_package": user_keys_without_package,
+            "data_consistent": api_keys_without_user_key == 0 and user_keys_without_package == 0
+        }
+
+    except Exception as e:
+        logger.error(f"检查数据完整性失败: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="检查失败"
+        )
+
+
+@router.post("/data-integrity/fix", response_model=MessageResponse)
+async def fix_data_integrity(
+    fix_data: dict,
+    current_admin = Depends(get_admin_user),
+    db: Session = Depends(get_db)
+):
+    """修复数据完整性问题（管理员）"""
+    try:
+        from ...db.models import APIKey, Package
+        from datetime import datetime
+
+        default_package_id = fix_data.get("default_package_id")
+        if not default_package_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="请指定默认订阅ID"
+            )
+
+        # 验证默认套餐是否存在
+        default_package = db.query(Package).filter(Package.id == default_package_id).first()
+        if not default_package:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="指定的订阅不存在"
+            )
+
+        # 查找需要修复的API密钥
+        api_keys_to_fix = db.query(APIKey).filter(
+            ~APIKey.id.in_(db.query(UserKey.api_key_id))
+        ).all()
+
+        fixed_count = 0
+        for api_key in api_keys_to_fix:
+            # 创建UserKey记录
+            user_key = UserKey(
+                user_id=api_key.user_id,
+                api_key_id=api_key.id,
+                package_id=default_package_id,
+                activation_date=api_key.created_at if api_key.user_id else None,
+                expire_date=None,
+                remaining_days=default_package.duration_days,
+                remaining_credits=default_package.credits,
+                total_credits=default_package.credits,
+                status="active" if api_key.user_id and api_key.is_active else "inactive",
+                notes=f"Auto-fixed by admin {current_admin.user_id} on {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}"
+            )
+            db.add(user_key)
+            fixed_count += 1
+
+        db.commit()
+
+        logger.info(f"管理员 {current_admin.user_id} 修复数据完整性，修复了 {fixed_count} 条记录")
+        return MessageResponse(message=f"成功修复 {fixed_count} 条数据记录")
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        logger.error(f"修复数据完整性失败: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="修复失败"
         )

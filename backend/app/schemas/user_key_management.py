@@ -19,13 +19,17 @@ class UserKeyRelationUpdate(BaseModel):
 class UserKeyRelationResponse(BaseModel):
     """用户密钥关联响应"""
     id: int
-    user_id: str
+    user_id: Optional[str]  # 可能为空（未激活）
     api_key_id: int
     api_key: str
     key_name: Optional[str]
     description: Optional[str]
-    activation_date: datetime
+    user_email: str  # 添加用户邮箱字段
+    activation_date: Optional[datetime]  # 可能为空（未激活）
     status: str
+    remaining_days: Optional[int]  # 添加剩余天数
+    remaining_credits: Optional[int]  # 添加剩余积分
+    total_credits: Optional[int]  # 添加总积分
     notes: Optional[str]
     last_used_at: Optional[datetime]
     created_at: datetime

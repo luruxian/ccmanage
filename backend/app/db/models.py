@@ -1,5 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, ForeignKey, DECIMAL, Index, Enum
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, DECIMAL, Index, Enum
 from sqlalchemy.sql import func
 from .database import Base
 from datetime import datetime
@@ -29,34 +28,34 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), comment="创建时间")
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), comment="更新时间")
 
-    # 关联关系
-    api_keys = relationship("APIKey", back_populates="user")
-    user_plans = relationship("UserPlan", back_populates="user")
-    usage_records = relationship("UsageRecord", back_populates="user")
-    email_verifications = relationship("EmailVerification", back_populates="user")
-    login_history = relationship("LoginHistory", back_populates="user")
-    user_keys = relationship("UserKey", back_populates="user")
+    # 删除所有关联关系以简化架构
 
 
 class APIKey(Base):
-    """API密钥表"""
+    """用户密钥表（合并后的完整版本）"""
     __tablename__ = "api_keys"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id = Column(String(50), ForeignKey("users.user_id"), nullable=False, comment="用户ID")
-    api_key = Column(String(255), unique=True, index=True, nullable=False, comment="自定义API密钥")
+    user_id = Column(String(50), nullable=True, comment="用户ID（激活前可为空）")
+    api_key = Column(String(255), unique=True, index=True, nullable=False, comment="用户密钥")
     real_api_key = Column(String(255), nullable=False, comment="真实API密钥")
     key_name = Column(String(100), nullable=True, comment="密钥名称")
     description = Column(Text, nullable=True, comment="密钥描述")
     is_active = Column(Boolean, default=True, nullable=False, comment="密钥是否激活")
     last_used_at = Column(DateTime(timezone=True), nullable=True, comment="最后使用时间")
+
+    # 订阅管理字段（从user_keys合并过来）
+    package_id = Column(Integer, nullable=True, comment="关联的订阅ID")
+    activation_date = Column(DateTime(timezone=True), nullable=True, comment="激活时间")
+    expire_date = Column(DateTime(timezone=True), nullable=True, comment="过期时间")
+    remaining_days = Column(Integer, nullable=True, comment="剩余天数")
+    remaining_credits = Column(Integer, nullable=True, comment="剩余积分")
+    total_credits = Column(Integer, nullable=True, comment="总积分")
+    status = Column(String(20), default="inactive", nullable=False, comment="状态: active/inactive/expired")
+    notes = Column(Text, nullable=True, comment="备注信息")
+
     created_at = Column(DateTime(timezone=True), server_default=func.now(), comment="创建时间")
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), comment="更新时间")
-
-    # 关联关系
-    user = relationship("User", back_populates="api_keys")
-    usage_records = relationship("UsageRecord", back_populates="api_key")
-    user_keys = relationship("UserKey", back_populates="api_key")
 
 
 class UserPlan(Base):
@@ -64,8 +63,8 @@ class UserPlan(Base):
     __tablename__ = "user_plans"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id = Column(String(50), ForeignKey("users.user_id"), nullable=False, comment="用户ID")
-    package_id = Column(Integer, ForeignKey("packages.id"), nullable=True, comment="套餐ID")
+    user_id = Column(String(50), nullable=False, comment="用户ID")
+    package_id = Column(Integer, nullable=True, comment="套餐ID")
     plan_type = Column(String(50), nullable=False, comment="套餐类型: basic/premium/enterprise")
     credits = Column(Integer, default=0, nullable=False, comment="剩余积分")
     total_credits = Column(Integer, default=0, nullable=False, comment="总积分")
@@ -76,9 +75,7 @@ class UserPlan(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), comment="创建时间")
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), comment="更新时间")
 
-    # 关联关系
-    user = relationship("User", back_populates="user_plans")
-    package = relationship("Package", back_populates="user_plans")
+    # 删除关联关系以简化架构
 
 
 class UsageRecord(Base):
@@ -86,8 +83,8 @@ class UsageRecord(Base):
     __tablename__ = "usage_records"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id = Column(String(50), ForeignKey("users.user_id"), nullable=False, comment="用户ID")
-    api_key_id = Column(Integer, ForeignKey("api_keys.id"), nullable=False, comment="API密钥ID")
+    user_id = Column(String(50), nullable=False, comment="用户ID")
+    api_key_id = Column(Integer, nullable=False, comment="API密钥ID")
     service = Column(String(50), nullable=False, comment="服务类型")
     request_count = Column(Integer, default=1, nullable=False, comment="请求次数")
     credits_used = Column(Integer, default=0, nullable=False, comment="消耗积分")
@@ -95,9 +92,7 @@ class UsageRecord(Base):
     response_status = Column(String(20), nullable=True, comment="响应状态")
     error_message = Column(Text, nullable=True, comment="错误信息")
 
-    # 关联关系
-    user = relationship("User", back_populates="usage_records")
-    api_key = relationship("APIKey", back_populates="usage_records")
+    # 删除关联关系以简化架构
 
 
 class RateLimit(Base):
@@ -105,7 +100,7 @@ class RateLimit(Base):
     __tablename__ = "rate_limits"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id = Column(String(50), ForeignKey("users.user_id"), nullable=False, comment="用户ID")
+    user_id = Column(String(50), nullable=False, comment="用户ID")
     service = Column(String(50), nullable=False, comment="服务类型")
     requests_count = Column(Integer, default=0, nullable=False, comment="请求次数")
     window_start = Column(DateTime(timezone=True), nullable=False, comment="时间窗口开始")
@@ -114,8 +109,7 @@ class RateLimit(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), comment="创建时间")
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), comment="更新时间")
 
-    # 关联关系
-    user = relationship("User")
+    # 删除关联关系以简化架构
 
 
 class EmailVerification(Base):
@@ -123,7 +117,7 @@ class EmailVerification(Base):
     __tablename__ = "email_verifications"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id = Column(String(50), ForeignKey("users.user_id"), nullable=False, comment="用户ID")
+    user_id = Column(String(50), nullable=False, comment="用户ID")
     email = Column(String(255), nullable=False, comment="待验证邮箱")
     verification_code = Column(String(10), nullable=False, comment="验证码")
     verification_type = Column(String(20), nullable=False, comment="验证类型: register/reset_password")
@@ -131,8 +125,7 @@ class EmailVerification(Base):
     expire_at = Column(DateTime(timezone=True), nullable=False, comment="过期时间")
     created_at = Column(DateTime(timezone=True), server_default=func.now(), comment="创建时间")
 
-    # 关联关系
-    user = relationship("User", back_populates="email_verifications")
+    # 删除关联关系以简化架构
 
 
 class Package(Base):
@@ -152,26 +145,10 @@ class Package(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), comment="创建时间")
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), comment="更新时间")
 
-    # 关联关系
-    user_plans = relationship("UserPlan", back_populates="package")
+    # 删除关联关系以简化架构
 
 
-class UserKey(Base):
-    """用户密钥关联表"""
-    __tablename__ = "user_keys"
-
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id = Column(String(50), ForeignKey("users.user_id"), nullable=False, comment="用户ID")
-    api_key_id = Column(Integer, ForeignKey("api_keys.id"), nullable=False, comment="API密钥ID")
-    activation_date = Column(DateTime(timezone=True), server_default=func.now(), comment="激活时间")
-    status = Column(String(20), default="active", nullable=False, comment="状态: active/inactive/expired")
-    notes = Column(Text, nullable=True, comment="备注信息")
-    created_at = Column(DateTime(timezone=True), server_default=func.now(), comment="创建时间")
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), comment="更新时间")
-
-    # 关联关系
-    user = relationship("User", back_populates="user_keys")
-    api_key = relationship("APIKey", back_populates="user_keys")
+# UserKey表已删除，功能合并到APIKey表中
 
 
 class LoginHistory(Base):
@@ -179,7 +156,7 @@ class LoginHistory(Base):
     __tablename__ = "login_history"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id = Column(String(50), ForeignKey("users.user_id"), nullable=False, comment="用户ID")
+    user_id = Column(String(50), nullable=False, comment="用户ID")
     login_time = Column(DateTime(timezone=True), server_default=func.now(), comment="登录时间")
     logout_time = Column(DateTime(timezone=True), nullable=True, comment="退出时间")
     ip_address = Column(String(45), nullable=True, comment="IP地址")
@@ -189,8 +166,7 @@ class LoginHistory(Base):
     session_id = Column(String(100), nullable=True, comment="会话ID")
     created_at = Column(DateTime(timezone=True), server_default=func.now(), comment="创建时间")
 
-    # 关联关系
-    user = relationship("User", back_populates="login_history")
+    # 删除关联关系以简化架构
 
 
 class Admin(Base):
@@ -208,8 +184,7 @@ class Admin(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), comment="创建时间")
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), comment="更新时间")
 
-    # 关联关系
-    admin_operations = relationship("AdminOperation", back_populates="admin")
+    # 删除关联关系以简化架构
 
 
 class AdminOperation(Base):
@@ -217,8 +192,8 @@ class AdminOperation(Base):
     __tablename__ = "admin_operations"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    admin_id = Column(Integer, ForeignKey("admins.id"), nullable=False, comment="管理员ID")
-    admin_user_id = Column(String(50), ForeignKey("users.user_id"), nullable=True, comment="旧的管理员用户ID（兼容性）")
+    admin_id = Column(Integer, nullable=False, comment="管理员ID")
+    admin_user_id = Column(String(50), nullable=True, comment="旧的管理员用户ID（兼容性）")
     operation_type = Column(String(50), nullable=False, comment="操作类型")
     target_resource = Column(String(100), nullable=True, comment="目标资源")
     target_id = Column(String(50), nullable=True, comment="目标ID")
@@ -227,9 +202,7 @@ class AdminOperation(Base):
     ip_address = Column(String(45), nullable=True, comment="IP地址")
     created_at = Column(DateTime(timezone=True), server_default=func.now(), comment="操作时间")
 
-    # 关联关系
-    admin = relationship("Admin", back_populates="admin_operations")
-    admin_user = relationship("User")
+    # 删除关联关系以简化架构
 
 
 
@@ -240,7 +213,7 @@ Index('idx_user_plan_active', UserPlan.user_id, UserPlan.is_active, UserPlan.exp
 Index('idx_usage_record_time', UsageRecord.user_id, UsageRecord.request_timestamp)
 Index('idx_rate_limit_window', RateLimit.user_id, RateLimit.service, RateLimit.window_start, RateLimit.window_end)
 Index('idx_email_verification', EmailVerification.email, EmailVerification.verification_code, EmailVerification.is_used)
-Index('idx_user_key_relation', UserKey.user_id, UserKey.api_key_id, UserKey.status)
+# Index('idx_user_key_relation', UserKey.user_id, UserKey.api_key_id, UserKey.status)  # UserKey表已删除
 Index('idx_login_history', LoginHistory.user_id, LoginHistory.login_time)
 Index('idx_admin_operations', AdminOperation.admin_user_id, AdminOperation.operation_type, AdminOperation.created_at)
 Index('idx_package_active', Package.is_active, Package.sort_order)

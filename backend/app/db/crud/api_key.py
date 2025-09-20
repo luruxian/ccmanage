@@ -1,19 +1,28 @@
+from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_
-from ..models import APIKey
-from datetime import datetime
-from typing import Optional, Dict, Any, List
+from sqlalchemy import desc, asc, and_, or_
+from ..models import APIKey, User, Package
+from datetime import datetime, timedelta
 import logging
+import secrets
+import string
 
 logger = logging.getLogger(__name__)
 
 
 class APIKeyCRUD:
-    """API密钥相关的数据库操作"""
+    """用户密钥CRUD操作（合并后的完整版本）"""
 
     def __init__(self, db: Session):
         self.db = db
 
+    def generate_api_key(self, prefix: str = "sk-", length: int = 32) -> str:
+        """生成API密钥"""
+        alphabet = string.ascii_letters + string.digits
+        random_part = ''.join(secrets.choice(alphabet) for _ in range(length))
+        return f"{prefix}{random_part}"
+
+    # 原有API密钥管理功能
     def get_api_key_by_key(self, api_key: str) -> Optional[APIKey]:
         """根据API密钥获取记录"""
         return self.db.query(APIKey).filter(APIKey.api_key == api_key).first()
@@ -113,3 +122,264 @@ class APIKeyCRUD:
             query = query.filter(APIKey.is_active == True)
 
         return query.offset(skip).limit(limit).all()
+
+    # 新增：用户密钥管理功能（从user_key.py合并过来）
+    def bulk_generate_standalone_user_keys(self, package_id: int, count: int, real_api_key: str, notes: Optional[str] = None) -> List[Dict[str, Any]]:
+        """批量生成独立的用户密钥（不自动创建用户）"""
+        try:
+            # 获取套餐信息
+            package = self.db.query(Package).filter(Package.id == package_id).first()
+            if not package:
+                logger.error(f"套餐不存在: {package_id}")
+                return []
+
+            generated_keys = []
+            for i in range(count):
+                # 生成唯一的API密钥
+                api_key = self.generate_api_key()
+
+                # 确保API密钥唯一
+                while self.db.query(APIKey).filter(APIKey.api_key == api_key).first():
+                    api_key = self.generate_api_key()
+
+                # 创建APIKey记录
+                user_key = APIKey(
+                    user_id=None,  # 激活前为空
+                    api_key=api_key,
+                    real_api_key=real_api_key,
+                    key_name=f"批量生成-{i+1}",
+                    description=f"批量生成的用户密钥 - 套餐: {package.package_name}",
+                    is_active=True,
+
+                    # 订阅管理字段
+                    package_id=package_id,
+                    activation_date=None,  # 激活前为空
+                    expire_date=None,  # 激活时计算
+                    remaining_days=package.duration_days,
+                    remaining_credits=package.credits,
+                    total_credits=package.credits,
+                    status="inactive",  # 默认未激活
+                    notes=notes or f"批量生成 - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+                )
+
+                self.db.add(user_key)
+                generated_keys.append({
+                    "api_key": api_key,
+                    "real_api_key": real_api_key,
+                    "package_name": package.package_name,
+                    "credits": package.credits,
+                    "duration_days": package.duration_days
+                })
+
+            self.db.commit()
+            logger.info(f"批量生成用户密钥成功: {count}个")
+            return generated_keys
+
+        except Exception as e:
+            self.db.rollback()
+            logger.error(f"批量生成用户密钥失败: {str(e)}")
+            return []
+
+    def activate_user_key(self, api_key: str, user_email: str) -> Dict[str, Any]:
+        """激活用户密钥"""
+        try:
+            # 查找用户密钥
+            user_key_record = self.db.query(APIKey).filter(APIKey.api_key == api_key).first()
+            if not user_key_record:
+                return {"success": False, "message": "用户密钥不存在"}
+
+            if user_key_record.status == "active":
+                return {"success": False, "message": "用户密钥已被激活"}
+
+            # 查找或创建用户
+            user = self.db.query(User).filter(User.email == user_email).first()
+            if not user:
+                return {"success": False, "message": "用户不存在，请先注册"}
+
+            # 计算过期时间
+            activation_date = datetime.utcnow()
+            expire_date = activation_date + timedelta(days=user_key_record.remaining_days) if user_key_record.remaining_days else None
+
+            # 更新用户密钥信息
+            user_key_record.user_id = user.user_id
+            user_key_record.activation_date = activation_date
+            user_key_record.expire_date = expire_date
+            user_key_record.status = "active"
+
+            self.db.commit()
+
+            logger.info(f"用户密钥激活成功: {api_key} -> {user_email}")
+            return {
+                "success": True,
+                "message": "激活成功",
+                "activation_date": activation_date.isoformat(),
+                "expire_date": expire_date.isoformat() if expire_date else None
+            }
+
+        except Exception as e:
+            self.db.rollback()
+            logger.error(f"激活用户密钥失败: {str(e)}")
+            return {"success": False, "message": f"激活失败: {str(e)}"}
+
+    def get_package_user_keys(self, package_id: int, page: int = 1, page_size: int = 50, status_filter: Optional[str] = None) -> List[Dict[str, Any]]:
+        """获取订阅关联的用户密钥列表（支持分页）"""
+        try:
+            # 直接查询APIKey表
+            query = self.db.query(APIKey).filter(APIKey.package_id == package_id)
+
+            if status_filter:
+                query = query.filter(APIKey.status == status_filter)
+
+            # 分页
+            offset = (page - 1) * page_size
+            query = query.order_by(desc(APIKey.created_at)).offset(offset).limit(page_size)
+            results = query.all()
+
+            user_keys = []
+            for api_key in results:
+                # 获取用户邮箱（如果已激活）
+                user_email = "未激活"
+                if api_key.user_id:
+                    user = self.db.query(User).filter(User.user_id == api_key.user_id).first()
+                    if user:
+                        user_email = user.email
+
+                user_keys.append({
+                    "id": api_key.id,
+                    "user_id": api_key.user_id,
+                    "api_key_id": api_key.id,  # 为了兼容性，添加api_key_id
+                    "api_key": api_key.api_key,
+                    "key_name": api_key.key_name,
+                    "description": api_key.description,
+                    "user_email": user_email,
+                    "status": api_key.status,
+                    "activation_date": api_key.activation_date,  # 保持datetime类型
+                    "expire_date": api_key.expire_date,
+                    "remaining_days": api_key.remaining_days,
+                    "remaining_credits": api_key.remaining_credits,
+                    "total_credits": api_key.total_credits,
+                    "last_used_at": api_key.last_used_at,
+                    "created_at": api_key.created_at,
+                    "notes": api_key.notes
+                })
+
+            return user_keys
+
+        except Exception as e:
+            logger.error(f"获取订阅用户密钥列表失败: {str(e)}")
+            return []
+
+    def get_package_user_keys_count(self, package_id: int, status_filter: Optional[str] = None) -> int:
+        """获取订阅用户密钥总数"""
+        try:
+            query = self.db.query(APIKey).filter(APIKey.package_id == package_id)
+
+            if status_filter:
+                query = query.filter(APIKey.status == status_filter)
+
+            return query.count()
+        except Exception as e:
+            logger.error(f"获取订阅用户密钥总数失败: {str(e)}")
+            return 0
+
+    def delete_user_keys_by_ids(self, api_key_ids: List[int]) -> Dict[str, Any]:
+        """根据ID列表删除用户密钥"""
+        try:
+            # 查询要删除的密钥
+            keys_to_delete = self.db.query(APIKey).filter(APIKey.id.in_(api_key_ids)).all()
+
+            if not keys_to_delete:
+                return {"success": False, "message": "没有找到要删除的密钥"}
+
+            deleted_count = len(keys_to_delete)
+
+            # 删除密钥
+            for key in keys_to_delete:
+                self.db.delete(key)
+
+            self.db.commit()
+
+            logger.info(f"删除用户密钥成功: {deleted_count}个")
+            return {"success": True, "deleted_count": deleted_count}
+
+        except Exception as e:
+            self.db.rollback()
+            logger.error(f"删除用户密钥失败: {str(e)}")
+            return {"success": False, "message": f"删除失败: {str(e)}"}
+
+    def disable_user_keys_by_ids(self, api_key_ids: List[int]) -> Dict[str, Any]:
+        """根据ID列表禁用用户密钥"""
+        try:
+            # 更新密钥状态
+            result = self.db.query(APIKey).filter(APIKey.id.in_(api_key_ids)).update(
+                {"status": "inactive", "is_active": False},
+                synchronize_session=False
+            )
+
+            self.db.commit()
+
+            logger.info(f"禁用用户密钥成功: {result}个")
+            return {"success": True, "disabled_count": result}
+
+        except Exception as e:
+            self.db.rollback()
+            logger.error(f"禁用用户密钥失败: {str(e)}")
+            return {"success": False, "message": f"禁用失败: {str(e)}"}
+
+    def get_user_keys_by_user_id(self, user_id: str) -> List[Dict[str, Any]]:
+        """获取用户的所有密钥"""
+        try:
+            api_keys = self.db.query(APIKey).filter(APIKey.user_id == user_id).all()
+
+            result = []
+            for api_key in api_keys:
+                # 获取套餐信息
+                package = None
+                if api_key.package_id:
+                    package = self.db.query(Package).filter(Package.id == api_key.package_id).first()
+
+                result.append({
+                    "id": api_key.id,
+                    "api_key": api_key.api_key,
+                    "status": api_key.status,
+                    "activation_date": api_key.activation_date.isoformat() if api_key.activation_date else None,
+                    "expire_date": api_key.expire_date.isoformat() if api_key.expire_date else None,
+                    "remaining_days": api_key.remaining_days,
+                    "remaining_credits": api_key.remaining_credits,
+                    "total_credits": api_key.total_credits,
+                    "package_name": package.package_name if package else "未知套餐",
+                    "created_at": api_key.created_at.isoformat(),
+                    "notes": api_key.notes
+                })
+
+            return result
+
+        except Exception as e:
+            logger.error(f"获取用户密钥列表失败: {str(e)}")
+            return []
+
+    def get_user_key_statistics(self, user_id: Optional[str] = None) -> Dict[str, Any]:
+        """获取用户密钥统计"""
+        try:
+            query = self.db.query(APIKey)
+            if user_id:
+                query = query.filter(APIKey.user_id == user_id)
+
+            total_keys = query.count()
+            active_keys = query.filter(APIKey.status == "active").count()
+            inactive_keys = query.filter(APIKey.status == "inactive").count()
+
+            return {
+                "total_keys": total_keys,
+                "active_keys": active_keys,
+                "inactive_keys": inactive_keys,
+                "expired_keys": total_keys - active_keys - inactive_keys
+            }
+        except Exception as e:
+            logger.error(f"获取用户密钥统计失败: {str(e)}")
+            return {
+                "total_keys": 0,
+                "active_keys": 0,
+                "inactive_keys": 0,
+                "expired_keys": 0
+            }
