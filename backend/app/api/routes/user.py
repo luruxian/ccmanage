@@ -7,6 +7,7 @@ from ...schemas.user import UserUpdateRequest, UserProfileResponse
 from ...core.auth_service import auth_service
 from ...db.database import get_db
 from ...db.crud.user import UserCRUD
+from ...db.crud.admin import AdminCRUD
 from ...db.crud.user_plan import UserPlanCRUD
 import logging
 
@@ -19,7 +20,7 @@ async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    """获取当前登录用户"""
+    """获取当前登录用户（支持普通用户和管理员）"""
     token = credentials.credentials
     payload = auth_service.verify_token(token)
 
@@ -36,22 +37,84 @@ async def get_current_user(
             detail="令牌格式错误"
         )
 
-    user_crud = UserCRUD(db)
-    user = user_crud.get_user_by_id(user_id)
+    # 检查是否是管理员token
+    if user_id.startswith("admin_"):
+        # 管理员认证
+        admin_crud = AdminCRUD(db)
+        username = payload.get("username")
+        if not username:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="管理员令牌格式错误"
+            )
 
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="用户不存在"
-        )
+        admin = admin_crud.get_admin_by_username(username)
+        if not admin:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="管理员不存在"
+            )
 
-    if not user.is_active or user.is_banned:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="账户已被禁用"
-        )
+        if not admin.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="管理员账户已被禁用"
+            )
 
-    return user
+        # 创建管理员适配器（与普通用户完全分离）
+        class AdminUserAdapter:
+            def __init__(self, admin):
+                # 管理员基本信息
+                self.id = admin.id
+                self.user_id = f"admin_{admin.username}"
+                self.username = admin.username
+                self.email = admin.username  # 管理员使用用户名作为标识
+                self.phone = None  # 管理员不使用phone字段
+
+                # 管理员角色和权限
+                self.role = admin.role.value if hasattr(admin.role, 'value') else admin.role
+                self.admin_role = admin.role  # 保留原始管理员角色对象
+
+                # 管理员状态（与普通用户分离）
+                self.is_active = admin.is_active
+                self.is_email_verified = True  # 管理员不需要邮箱验证
+                self.is_banned = False  # 管理员使用is_deleted而非is_banned
+                self.is_deleted = admin.is_deleted
+
+                # 时间戳
+                self.last_login_at = admin.last_login_at
+                self.created_at = admin.created_at
+                self.updated_at = admin.updated_at
+
+                # 标识这是管理员账户
+                self.is_admin = True
+                self.user_type = "admin"
+                self._sa_instance_state = type('MockState', (), {'session': db})()
+
+        return AdminUserAdapter(admin)
+    else:
+        # 普通用户认证
+        user_crud = UserCRUD(db)
+        user = user_crud.get_user_by_id(user_id)
+
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="用户不存在"
+            )
+
+        if not user.is_active or user.is_banned:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="账户已被禁用"
+            )
+
+        # 为普通用户添加标识（与管理员区分）
+        user.is_admin = False
+        user.user_type = "user"
+        user.role = "user"  # 普通用户统一角色
+
+        return user
 
 
 @router.get("/profile", response_model=UserProfileResponse)

@@ -8,6 +8,9 @@ import pinia from './store'
 // 导入路由
 import router from './router'
 
+// 导入用户store
+import { useUserStore } from './store/user'
+
 // 导入Element Plus
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
@@ -33,6 +36,10 @@ app.use(ElementPlus)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
+
+// 初始化用户信息
+const userStore = useUserStore()
+userStore.loadUserInfo()
 
 // 挂载应用
 app.mount('#app')

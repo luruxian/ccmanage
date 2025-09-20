@@ -5,6 +5,7 @@ interface UserState {
   id: string | null;
   name: string | null;
   email: string | null;
+  role: string | null;
   avatar: string | null;
   token: string | null;
   refreshToken: string | null;
@@ -18,6 +19,7 @@ export const useUserStore = defineStore('user', {
     id: null,
     name: null,
     email: null,
+    role: null,
     avatar: null,
     token: null,
     refreshToken: null,
@@ -34,11 +36,24 @@ export const useUserStore = defineStore('user', {
       id: state.id,
       name: state.name,
       email: state.email,
+      role: state.role,
       avatar: state.avatar
     }),
 
     // 获取访问令牌
-    accessToken: (state) => state.token
+    accessToken: (state) => state.token,
+
+    // 检查是否是管理员
+    isAdmin: (state) => ['admin', 'super_admin'].includes(state.role || ''),
+
+    // 获取用户对象（包含完整信息）
+    user: (state) => state.isLoggedIn ? {
+      id: state.id,
+      name: state.name,
+      email: state.email,
+      role: state.role,
+      avatar: state.avatar
+    } : null
   },
 
   // 方法
@@ -48,6 +63,7 @@ export const useUserStore = defineStore('user', {
       id: string;
       name: string;
       email?: string;
+      role?: string;
       avatar?: string;
       token?: string;
       refreshToken?: string;
@@ -55,6 +71,7 @@ export const useUserStore = defineStore('user', {
       this.id = userData.id;
       this.name = userData.name;
       this.email = userData.email || null;
+      this.role = userData.role || null;
       this.avatar = userData.avatar || null;
       this.token = userData.token || null;
       this.refreshToken = userData.refreshToken || null;
@@ -65,6 +82,7 @@ export const useUserStore = defineStore('user', {
         id: this.id,
         name: this.name,
         email: this.email,
+        role: this.role,
         avatar: this.avatar
       }));
 
@@ -82,6 +100,7 @@ export const useUserStore = defineStore('user', {
       this.id = null;
       this.name = null;
       this.email = null;
+      this.role = null;
       this.avatar = null;
       this.token = null;
       this.refreshToken = null;
@@ -105,6 +124,7 @@ export const useUserStore = defineStore('user', {
           this.id = parsedUserInfo.id;
           this.name = parsedUserInfo.name;
           this.email = parsedUserInfo.email;
+          this.role = parsedUserInfo.role;
           this.avatar = parsedUserInfo.avatar;
           this.token = accessToken;
           this.refreshToken = refreshToken;

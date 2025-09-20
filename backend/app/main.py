@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from .core.config import settings
 from .core.logging import setup_logging, logger
 from .db.database import check_db_connection, create_tables
-from .api.routes import api_key_validation, auth, user, user_keys
+from .api.routes import api_key_validation, auth, user, user_keys, packages, admin, user_key_management
 
 # 设置日志
 setup_logging()
@@ -92,6 +92,9 @@ app.include_router(auth.router)
 app.include_router(user.router)
 app.include_router(user_keys.router)
 app.include_router(api_key_validation.router)
+app.include_router(packages.router)
+app.include_router(admin.router)
+app.include_router(user_key_management.router)
 
 if __name__ == "__main__":
     import uvicorn

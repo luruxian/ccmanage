@@ -24,6 +24,10 @@
                 <ElIcon><ElIconKey /></ElIcon>
                 API密钥
               </a>
+              <router-link to="/packages" class="nav-item">
+                <ElIcon><ElIconBox /></ElIcon>
+                软件包
+              </router-link>
               <a href="#" class="nav-item" @click="activeTab = 'plan'">
                 <ElIcon><ElIconCreditCard /></ElIcon>
                 套餐状态
@@ -125,43 +129,190 @@
           <div v-if="activeTab === 'keys'" class="tab-content">
             <div class="d-flex justify-content-between align-items-center mb-4">
               <h2>API密钥管理</h2>
-              <router-link to="/key-activation" class="btn btn-primary">
-                <ElIcon><ElIconPlus /></ElIcon>
-                激活新密钥
-              </router-link>
+              <div class="key-actions">
+                <router-link to="/key-activation" class="btn btn-primary me-2">
+                  <ElIcon><ElIconPlus /></ElIcon>
+                  激活新密钥
+                </router-link>
+                <ElButton @click="refreshKeys" :loading="loadingKeys">
+                  <ElIcon><ElIconRefresh /></ElIcon>
+                  刷新
+                </ElButton>
+              </div>
             </div>
 
+            <!-- 密钥统计卡片 -->
+            <div class="row mb-4">
+              <div class="col-md-3">
+                <div class="key-stat-card">
+                  <div class="stat-number">{{ keyStats.total }}</div>
+                  <div class="stat-label">总密钥数</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="key-stat-card">
+                  <div class="stat-number">{{ keyStats.active }}</div>
+                  <div class="stat-label">激活密钥</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="key-stat-card">
+                  <div class="stat-number">{{ keyStats.used_today }}</div>
+                  <div class="stat-label">今日使用</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="key-stat-card">
+                  <div class="stat-number">{{ keyStats.requests_total }}</div>
+                  <div class="stat-label">总请求数</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 密钥搜索和筛选 -->
+            <ElCard class="mb-4">
+              <ElRow :gutter="16" class="filter-row">
+                <ElCol :span="8">
+                  <ElInput
+                    v-model="keyFilters.search"
+                    placeholder="搜索密钥名称..."
+                    :prefix-icon="ElIconSearch"
+                    clearable
+                    @input="filterKeys"
+                  />
+                </ElCol>
+                <ElCol :span="6">
+                  <ElSelect
+                    v-model="keyFilters.status"
+                    placeholder="筛选状态"
+                    clearable
+                    @change="filterKeys"
+                  >
+                    <ElOption label="全部" value="" />
+                    <ElOption label="激活" value="active" />
+                    <ElOption label="禁用" value="inactive" />
+                  </ElSelect>
+                </ElCol>
+                <ElCol :span="6">
+                  <ElSelect
+                    v-model="keyFilters.usage"
+                    placeholder="使用情况"
+                    clearable
+                    @change="filterKeys"
+                  >
+                    <ElOption label="全部" value="" />
+                    <ElOption label="近期使用" value="recent" />
+                    <ElOption label="未使用" value="unused" />
+                  </ElSelect>
+                </ElCol>
+                <ElCol :span="4">
+                  <ElButton type="primary" @click="filterKeys" style="width: 100%">
+                    筛选
+                  </ElButton>
+                </ElCol>
+              </ElRow>
+            </ElCard>
+
+            <!-- 密钥列表 -->
             <ElCard>
-              <ElTable :data="apiKeys" stripe>
-                <ElTableColumn prop="key_name" label="密钥名称" />
-                <ElTableColumn prop="api_key" label="自定义密钥" show-overflow-tooltip />
-                <ElTableColumn prop="is_active" label="状态">
-                  <template #default="scope">
-                    <ElTag :type="scope.row.is_active ? 'success' : 'danger'">
-                      {{ scope.row.is_active ? '激活' : '禁用' }}
-                    </ElTag>
-                  </template>
-                </ElTableColumn>
-                <ElTableColumn prop="last_used_at" label="最后使用时间" />
-                <ElTableColumn label="操作" width="200">
-                  <template #default="scope">
-                    <ElButton
-                      :type="scope.row.is_active ? 'warning' : 'success'"
-                      size="small"
-                      @click="toggleKeyStatus(scope.row)"
-                    >
-                      {{ scope.row.is_active ? '禁用' : '启用' }}
-                    </ElButton>
-                    <ElButton
-                      type="danger"
-                      size="small"
-                      @click="deleteKey(scope.row)"
-                    >
-                      删除
-                    </ElButton>
-                  </template>
-                </ElTableColumn>
-              </ElTable>
+              <div v-if="loadingKeys" class="text-center py-4">
+                <ElSkeleton :rows="5" animated />
+              </div>
+              <div v-else-if="filteredKeys.length === 0" class="empty-keys">
+                <i class="fas fa-key empty-icon"></i>
+                <h4>暂无密钥</h4>
+                <p>您还没有创建任何API密钥</p>
+                <router-link to="/key-activation" class="btn btn-primary">
+                  立即激活密钥
+                </router-link>
+              </div>
+              <div v-else>
+                <ElTable :data="filteredKeys" stripe>
+                  <ElTableColumn prop="key_name" label="密钥名称" min-width="150">
+                    <template #default="scope">
+                      <div class="key-name-cell">
+                        <strong>{{ scope.row.key_name }}</strong>
+                        <div class="key-id text-muted small">ID: {{ scope.row.user_key_id }}</div>
+                      </div>
+                    </template>
+                  </ElTableColumn>
+                  <ElTableColumn prop="api_key" label="自定义密钥" show-overflow-tooltip min-width="200">
+                    <template #default="scope">
+                      <div class="api-key-cell">
+                        <code class="api-key-text">{{ maskApiKey(scope.row.api_key) }}</code>
+                        <ElButton size="small" text @click="copyApiKey(scope.row.api_key)">
+                          <ElIcon><ElIconCopyDocument /></ElIcon>
+                        </ElButton>
+                      </div>
+                    </template>
+                  </ElTableColumn>
+                  <ElTableColumn prop="is_active" label="状态" width="100">
+                    <template #default="scope">
+                      <ElTag :type="scope.row.is_active ? 'success' : 'danger'">
+                        {{ scope.row.is_active ? '激活' : '禁用' }}
+                      </ElTag>
+                    </template>
+                  </ElTableColumn>
+                  <ElTableColumn prop="usage_count" label="使用次数" width="100">
+                    <template #default="scope">
+                      <span class="usage-count">{{ scope.row.usage_count || 0 }}</span>
+                    </template>
+                  </ElTableColumn>
+                  <ElTableColumn prop="last_used_at" label="最后使用" min-width="150">
+                    <template #default="scope">
+                      <span v-if="scope.row.last_used_at" class="last-used">
+                        {{ formatRelativeTime(scope.row.last_used_at) }}
+                      </span>
+                      <span v-else class="text-muted">从未使用</span>
+                    </template>
+                  </ElTableColumn>
+                  <ElTableColumn prop="created_at" label="创建时间" min-width="150">
+                    <template #default="scope">
+                      {{ formatDate(scope.row.created_at) }}
+                    </template>
+                  </ElTableColumn>
+                  <ElTableColumn label="操作" width="200">
+                    <template #default="scope">
+                      <div class="action-buttons">
+                        <ElButton
+                          :type="scope.row.is_active ? 'warning' : 'success'"
+                          size="small"
+                          @click="toggleKeyStatus(scope.row)"
+                        >
+                          {{ scope.row.is_active ? '禁用' : '启用' }}
+                        </ElButton>
+                        <ElButton
+                          type="info"
+                          size="small"
+                          @click="viewKeyDetails(scope.row)"
+                        >
+                          详情
+                        </ElButton>
+                        <ElButton
+                          type="danger"
+                          size="small"
+                          @click="deleteKey(scope.row)"
+                        >
+                          删除
+                        </ElButton>
+                      </div>
+                    </template>
+                  </ElTableColumn>
+                </ElTable>
+
+                <!-- 分页 -->
+                <div v-if="filteredKeys.length > 0" class="pagination-wrapper">
+                  <ElPagination
+                    v-model:current-page="keyPagination.current"
+                    v-model:page-size="keyPagination.size"
+                    :page-sizes="[10, 20, 50]"
+                    :total="filteredKeys.length"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    @size-change="handleKeySizeChange"
+                    @current-change="handleKeyPageChange"
+                  />
+                </div>
+              </div>
             </ElCard>
           </div>
 
@@ -210,7 +361,14 @@ import {
   ElIcon,
   ElProgress,
   ElMessage,
-  ElMessageBox
+  ElMessageBox,
+  ElInput,
+  ElSelect,
+  ElOption,
+  ElRow,
+  ElCol,
+  ElSkeleton,
+  ElPagination
 } from 'element-plus'
 import {
   DataAnalysis as ElIconDataAnalysis,
@@ -221,7 +379,11 @@ import {
   CircleCheck as ElIconCircleCheck,
   Plus as ElIconPlus,
   Coin as ElIconCoin,
-  Timer as ElIconTimer
+  Timer as ElIconTimer,
+  Box as ElIconBox,
+  Refresh as ElIconRefresh,
+  Search as ElIconSearch,
+  CopyDocument as ElIconCopyDocument
 } from '@element-plus/icons-vue'
 import { useUserStore } from '../store/user'
 import request from '../utils/request'
@@ -229,13 +391,43 @@ import request from '../utils/request'
 const router = useRouter()
 const userStore = useUserStore()
 
+interface ApiKey {
+  user_key_id: string
+  key_name: string
+  api_key: string
+  is_active: boolean
+  usage_count?: number
+  last_used_at?: string
+  created_at: string
+}
+
 const activeTab = ref('overview')
-const apiKeys = ref([])
+const apiKeys = ref<ApiKey[]>([])
+const filteredKeys = ref<ApiKey[]>([])
+const loadingKeys = ref(false)
 const stats = reactive({
   totalKeys: 0,
   totalRequests: 0,
   creditsRemaining: 0,
   planDaysLeft: 0
+})
+
+const keyStats = reactive({
+  total: 0,
+  active: 0,
+  used_today: 0,
+  requests_total: 0
+})
+
+const keyFilters = reactive({
+  search: '',
+  status: '',
+  usage: ''
+})
+
+const keyPagination = reactive({
+  current: 1,
+  size: 10
 })
 
 const planInfo = reactive({
@@ -254,11 +446,28 @@ const recentActivities = ref([
 
 const loadUserKeys = async () => {
   try {
-    const response = await request.get('/api/v1/keys/')
-    apiKeys.value = response.data.keys
-    stats.totalKeys = response.data.total
+    loadingKeys.value = true
+    const response: any = await request.get('/api/v1/user-keys/')
+    apiKeys.value = response.keys || []
+
+    // 更新统计数据
+    keyStats.total = apiKeys.value.length
+    keyStats.active = apiKeys.value.filter(k => k.is_active).length
+    keyStats.used_today = apiKeys.value.filter(k => {
+      if (!k.last_used_at) return false
+      const today = new Date().toDateString()
+      const lastUsed = new Date(k.last_used_at).toDateString()
+      return today === lastUsed
+    }).length
+    keyStats.requests_total = apiKeys.value.reduce((sum, k) => sum + (k.usage_count || 0), 0)
+
+    stats.totalKeys = keyStats.total
+    filterKeys()
   } catch (error) {
     console.error('获取密钥列表失败:', error)
+    ElMessage.error('获取密钥列表失败')
+  } finally {
+    loadingKeys.value = false
   }
 }
 
@@ -307,6 +516,110 @@ const getProgressColor = (percentage: number) => {
 const handleLogout = () => {
   userStore.logout()
   router.push('/login')
+}
+
+// 新增的密钥管理方法
+const refreshKeys = () => {
+  loadUserKeys()
+}
+
+const filterKeys = () => {
+  let filtered = [...apiKeys.value]
+
+  if (keyFilters.search) {
+    filtered = filtered.filter(key =>
+      key.key_name.toLowerCase().includes(keyFilters.search.toLowerCase())
+    )
+  }
+
+  if (keyFilters.status) {
+    filtered = filtered.filter(key => {
+      if (keyFilters.status === 'active') return key.is_active
+      if (keyFilters.status === 'inactive') return !key.is_active
+      return true
+    })
+  }
+
+  if (keyFilters.usage) {
+    filtered = filtered.filter(key => {
+      if (keyFilters.usage === 'recent') {
+        if (!key.last_used_at) return false
+        const daysDiff = (Date.now() - new Date(key.last_used_at).getTime()) / (1000 * 60 * 60 * 24)
+        return daysDiff <= 7 // 7天内使用过
+      }
+      if (keyFilters.usage === 'unused') return !key.last_used_at
+      return true
+    })
+  }
+
+  filteredKeys.value = filtered
+}
+
+const maskApiKey = (apiKey: string) => {
+  if (!apiKey) return '-'
+  if (apiKey.length <= 8) return apiKey
+  return apiKey.substring(0, 4) + '****' + apiKey.substring(apiKey.length - 4)
+}
+
+const copyApiKey = async (apiKey: string) => {
+  try {
+    await navigator.clipboard.writeText(apiKey)
+    ElMessage.success('API密钥已复制到剪贴板')
+  } catch (error) {
+    ElMessage.error('复制失败，请手动复制')
+  }
+}
+
+const viewKeyDetails = (key: any) => {
+  ElMessageBox.alert(
+    `
+    <div>
+      <p><strong>密钥名称:</strong> ${key.key_name}</p>
+      <p><strong>密钥ID:</strong> ${key.user_key_id}</p>
+      <p><strong>API密钥:</strong> ${key.api_key}</p>
+      <p><strong>状态:</strong> ${key.is_active ? '激活' : '禁用'}</p>
+      <p><strong>使用次数:</strong> ${key.usage_count || 0}</p>
+      <p><strong>创建时间:</strong> ${formatDate(key.created_at)}</p>
+      <p><strong>最后使用:</strong> ${key.last_used_at ? formatDate(key.last_used_at) : '从未使用'}</p>
+    </div>
+    `,
+    '密钥详情',
+    {
+      dangerouslyUseHTMLString: true,
+      confirmButtonText: '关闭'
+    }
+  )
+}
+
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return '-'
+  return new Date(dateStr).toLocaleString('zh-CN')
+}
+
+const formatRelativeTime = (dateStr: string) => {
+  if (!dateStr) return '-'
+  const now = Date.now()
+  const past = new Date(dateStr).getTime()
+  const diff = now - past
+
+  const seconds = Math.floor(diff / 1000)
+  const minutes = Math.floor(seconds / 60)
+  const hours = Math.floor(minutes / 60)
+  const days = Math.floor(hours / 24)
+
+  if (days > 0) return `${days}天前`
+  if (hours > 0) return `${hours}小时前`
+  if (minutes > 0) return `${minutes}分钟前`
+  return `${seconds}秒前`
+}
+
+const handleKeyPageChange = (page: number) => {
+  keyPagination.current = page
+}
+
+const handleKeySizeChange = (size: number) => {
+  keyPagination.size = size
+  keyPagination.current = 1
 }
 
 onMounted(() => {
@@ -454,5 +767,117 @@ onMounted(() => {
   justify-content: space-between;
   font-size: 14px;
   color: #666;
+}
+
+/* 新增样式 */
+.key-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.key-stat-card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.key-stat-card .stat-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #409eff;
+  margin-bottom: 8px;
+}
+
+.key-stat-card .stat-label {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.filter-row {
+  align-items: center;
+}
+
+.empty-keys {
+  text-align: center;
+  padding: 60px 20px;
+  color: #7f8c8d;
+}
+
+.empty-keys .empty-icon {
+  font-size: 64px;
+  color: #ddd;
+  margin-bottom: 16px;
+}
+
+.key-name-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.key-id {
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+.api-key-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.api-key-text {
+  background: #f5f7fa;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+}
+
+.usage-count {
+  font-weight: 600;
+  color: #409eff;
+}
+
+.last-used {
+  color: #67c23a;
+  font-size: 0.9rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.action-buttons .el-button {
+  font-size: 0.8rem;
+  padding: 4px 8px;
+}
+
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f2f5;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .key-actions {
+    flex-direction: column;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .api-key-cell {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 </style>

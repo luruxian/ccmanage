@@ -118,3 +118,62 @@ class UserCRUD:
             query = query.filter(User.is_active == True, User.is_banned == False)
 
         return query.count()
+
+    def get_all_users(self, include_inactive: bool = True) -> list:
+        """获取所有用户（无分页限制）"""
+        query = self.db.query(User)
+
+        if not include_inactive:
+            query = query.filter(User.is_active == True, User.is_banned == False)
+
+        return query.all()
+
+    def search_users(
+        self,
+        search: str = None,
+        is_active: bool = None,
+        page: int = 1,
+        page_size: int = 20
+    ) -> list:
+        """搜索用户（带分页）"""
+        query = self.db.query(User)
+
+        # 关键字搜索
+        if search:
+            search_filter = or_(
+                User.user_id.contains(search),
+                User.email.contains(search),
+                User.phone.contains(search) if User.phone else False
+            )
+            query = query.filter(search_filter)
+
+        # 状态过滤
+        if is_active is not None:
+            query = query.filter(User.is_active == is_active)
+
+        # 分页
+        offset = (page - 1) * page_size
+        return query.offset(offset).limit(page_size).all()
+
+    def count_search_users(
+        self,
+        search: str = None,
+        is_active: bool = None
+    ) -> int:
+        """统计搜索结果数量"""
+        query = self.db.query(User)
+
+        # 关键字搜索
+        if search:
+            search_filter = or_(
+                User.user_id.contains(search),
+                User.email.contains(search),
+                User.phone.contains(search) if User.phone else False
+            )
+            query = query.filter(search_filter)
+
+        # 状态过滤
+        if is_active is not None:
+            query = query.filter(User.is_active == is_active)
+
+        return query.count()
