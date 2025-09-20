@@ -47,7 +47,7 @@
         </div>
         <div class="stat-content">
           <h3>{{ statistics.total_packages }}</h3>
-          <p>总套餐数</p>
+          <p>总订阅数</p>
         </div>
       </div>
 
@@ -57,7 +57,7 @@
         </div>
         <div class="stat-content">
           <h3>{{ statistics.total_api_keys }}</h3>
-          <p>API密钥</p>
+          <p>用户Key</p>
         </div>
       </div>
     </div>
@@ -77,7 +77,7 @@
           </ElMenuItem>
           <ElMenuItem index="packages">
             <i class="fas fa-box"></i>
-            <span>套餐管理</span>
+            <span>订阅管理</span>
           </ElMenuItem>
           <ElMenuItem index="userkeys">
             <i class="fas fa-link"></i>
@@ -126,7 +126,7 @@
                 </ElTag>
               </template>
             </ElTableColumn>
-            <ElTableColumn prop="total_api_keys" label="API密钥" width="100" />
+            <ElTableColumn prop="total_api_keys" label="用户Key" width="100" />
             <ElTableColumn prop="created_at" label="注册时间" width="180">
               <template #default="scope">
                 {{ formatDateTime(scope.row.created_at) }}
@@ -160,14 +160,14 @@
           </div>
         </div>
 
-        <!-- 套餐管理 -->
+        <!-- 订阅管理 -->
         <div v-if="activeMenu === 'packages'" class="content-section">
           <div class="section-header">
-            <h2>套餐管理</h2>
+            <h2>订阅管理</h2>
             <div class="header-actions">
               <ElButton type="primary" @click="showCreatePackageDialog">
                 <i class="fas fa-plus"></i>
-                新增套餐
+                新增订阅
               </ElButton>
               <ElButton @click="refreshPackages">
                 <i class="fas fa-refresh"></i>
@@ -177,14 +177,21 @@
           </div>
 
           <ElTable :data="packages" style="width: 100%" v-loading="loading.packages">
-            <ElTableColumn prop="package_name" label="套餐名称" />
-            <ElTableColumn prop="package_code" label="套餐代码" width="120" />
+            <ElTableColumn prop="package_name" label="订阅名称">
+              <template #default="scope">
+                <ElButton type="text" @click="viewSubscriptionDetail(scope.row)">
+                  {{ scope.row.package_name }}
+                </ElButton>
+              </template>
+            </ElTableColumn>
+            <ElTableColumn prop="package_code" label="订阅代码" width="120" />
             <ElTableColumn prop="price" label="价格" width="100">
               <template #default="scope">
                 ¥{{ scope.row.price }}
               </template>
             </ElTableColumn>
             <ElTableColumn prop="credits" label="积分" width="100" />
+            <ElTableColumn prop="endpoint" label="端点" width="200" />
             <ElTableColumn prop="duration_days" label="时长(天)" width="100" />
             <ElTableColumn prop="is_active" label="状态" width="100">
               <template #default="scope">
@@ -259,18 +266,21 @@
     <!-- 创建套餐对话框 -->
     <ElDialog
       v-model="packageDialog.visible"
-      :title="packageDialog.isEdit ? '编辑套餐' : '新增套餐'"
+      :title="packageDialog.isEdit ? '编辑订阅' : '新增订阅'"
       width="500px"
     >
       <ElForm :model="packageForm" :rules="packageRules" ref="packageFormRef">
-        <ElFormItem label="套餐代码" prop="package_code">
-          <ElInput v-model="packageForm.package_code" placeholder="输入套餐代码" />
+        <ElFormItem label="订阅代码" prop="package_code">
+          <ElInput v-model="packageForm.package_code" placeholder="输入订阅代码" />
         </ElFormItem>
-        <ElFormItem label="套餐名称" prop="package_name">
-          <ElInput v-model="packageForm.package_name" placeholder="输入套餐名称" />
+        <ElFormItem label="订阅名称" prop="package_name">
+          <ElInput v-model="packageForm.package_name" placeholder="输入订阅名称" />
         </ElFormItem>
-        <ElFormItem label="套餐描述" prop="description">
-          <ElInput v-model="packageForm.description" type="textarea" placeholder="输入套餐描述" />
+        <ElFormItem label="订阅描述" prop="description">
+          <ElInput v-model="packageForm.description" type="textarea" placeholder="输入订阅描述" />
+        </ElFormItem>
+        <ElFormItem label="端点" prop="endpoint">
+          <ElInput v-model="packageForm.endpoint" placeholder="输入服务端点" />
         </ElFormItem>
         <ElFormItem label="价格" prop="price">
           <ElInputNumber v-model="packageForm.price" :min="0" :precision="2" />
@@ -347,6 +357,7 @@ const packageForm = reactive({
   package_code: '',
   package_name: '',
   description: '',
+  endpoint: '',
   price: 0,
   credits: 0,
   duration_days: 30,
@@ -480,6 +491,7 @@ const resetPackageForm = () => {
     package_code: '',
     package_name: '',
     description: '',
+    endpoint: '',
     price: 0,
     credits: 0,
     duration_days: 30,
@@ -541,6 +553,10 @@ const deletePackage = async (pkg: any) => {
 
 const formatDateTime = (dateStr: string) => {
   return new Date(dateStr).toLocaleString('zh-CN')
+}
+
+const viewSubscriptionDetail = (pkg: any) => {
+  router.push(`/admin/subscription/${pkg.id}`)
 }
 
 // 生命周期

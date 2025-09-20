@@ -65,6 +65,7 @@ class UserPlan(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     user_id = Column(String(50), ForeignKey("users.user_id"), nullable=False, comment="用户ID")
+    package_id = Column(Integer, ForeignKey("packages.id"), nullable=True, comment="套餐ID")
     plan_type = Column(String(50), nullable=False, comment="套餐类型: basic/premium/enterprise")
     credits = Column(Integer, default=0, nullable=False, comment="剩余积分")
     total_credits = Column(Integer, default=0, nullable=False, comment="总积分")
@@ -77,6 +78,7 @@ class UserPlan(Base):
 
     # 关联关系
     user = relationship("User", back_populates="user_plans")
+    package = relationship("Package", back_populates="user_plans")
 
 
 class UsageRecord(Base):
@@ -134,23 +136,24 @@ class EmailVerification(Base):
 
 
 class Package(Base):
-    """套餐模板表"""
+    """订阅模板表"""
     __tablename__ = "packages"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    package_code = Column(String(50), unique=True, index=True, nullable=False, comment="套餐代码")
-    package_name = Column(String(100), nullable=False, comment="套餐名称")
-    description = Column(Text, nullable=True, comment="套餐描述")
-    price = Column(DECIMAL(10, 2), nullable=False, comment="套餐价格")
-    credits = Column(Integer, nullable=False, comment="套餐积分")
-    duration_days = Column(Integer, nullable=False, comment="套餐时长（天）")
-    is_active = Column(Boolean, default=True, nullable=False, comment="套餐是否可用")
+    package_code = Column(String(50), unique=True, index=True, nullable=False, comment="订阅代码")
+    package_name = Column(String(100), nullable=False, comment="订阅名称")
+    description = Column(Text, nullable=True, comment="订阅描述")
+    endpoint = Column(String(256), nullable=True, comment="订阅服务端点")
+    price = Column(DECIMAL(10, 2), nullable=False, comment="订阅价格")
+    credits = Column(Integer, nullable=False, comment="订阅积分")
+    duration_days = Column(Integer, nullable=False, comment="订阅时长（天）")
+    is_active = Column(Boolean, default=True, nullable=False, comment="订阅是否可用")
     sort_order = Column(Integer, default=0, nullable=False, comment="排序顺序")
     created_at = Column(DateTime(timezone=True), server_default=func.now(), comment="创建时间")
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), comment="更新时间")
 
     # 关联关系
-    # user_plans = relationship("UserPlan", back_populates="package")  # 暂时移除，待package_id字段添加后恢复
+    user_plans = relationship("UserPlan", back_populates="package")
 
 
 class UserKey(Base):

@@ -15,6 +15,7 @@ const KeyActivation = () => import('../views/KeyActivation.vue')
 const Packages = () => import('../views/Packages.vue')
 const AdminLogin = () => import('../views/admin/AdminLogin.vue')
 const AdminDashboard = () => import('../views/admin/AdminDashboard.vue')
+const SubscriptionDetail = () => import('../views/admin/SubscriptionDetail.vue')
 
 const routes = [
   {
@@ -78,6 +79,12 @@ const routes = [
     path: '/admin/dashboard',
     name: 'AdminDashboard',
     component: AdminDashboard,
+    meta: { requiresAuth: true, requiresAdmin: true }
+  },
+  {
+    path: '/admin/subscription/:id',
+    name: 'SubscriptionDetail',
+    component: SubscriptionDetail,
     meta: { requiresAuth: true, requiresAdmin: true }
   }
 ]

@@ -7,9 +7,9 @@
           <div class="col">
             <h1 class="page-title">
               <i class="fas fa-cube"></i>
-              包管理
+              订阅管理
             </h1>
-            <p class="page-subtitle">管理和浏览可用的软件包</p>
+            <p class="page-subtitle">管理和浏览可用的订阅服务</p>
           </div>
           <div class="col-auto">
             <ElButton type="primary" @click="refreshPackages" :loading="loading.list">
@@ -27,7 +27,7 @@
             <ElCol :span="8">
               <ElInput
                 v-model="searchParams.keyword"
-                placeholder="搜索包名称或描述"
+                placeholder="搜索订阅名称或描述"
                 :prefix-icon="ElIconSearch"
                 @keyup.enter="handleSearch"
                 clearable
@@ -78,25 +78,25 @@
           </div>
           <div v-else-if="packages.length === 0" class="empty-state">
             <i class="fas fa-cube empty-icon"></i>
-            <h3>暂无包数据</h3>
-            <p>当前没有找到匹配的软件包</p>
+            <h3>暂无订阅数据</h3>
+            <p>当前没有找到匹配的订阅服务</p>
           </div>
           <div v-else class="packages-grid">
             <div
               v-for="pkg in packages"
-              :key="pkg.package_id"
+              :key="pkg.id"
               class="package-card"
             >
               <div class="package-header">
                 <div class="package-info">
-                  <h4 class="package-name">{{ pkg.name }}</h4>
-                  <span class="package-version">v{{ pkg.version }}</span>
+                  <h4 class="package-name clickable" @click="goToSubscriptionDetail(pkg.id)">{{ pkg.package_name }}</h4>
+                  <span class="package-version">¥{{ pkg.price }}</span>
                   <ElTag
-                    :type="pkg.status === 'available' ? 'success' : 'danger'"
+                    :type="pkg.is_active ? 'success' : 'danger'"
                     size="small"
                     class="package-status"
                   >
-                    {{ pkg.status === 'available' ? '可用' : '不可用' }}
+                    {{ pkg.is_active ? '可用' : '不可用' }}
                   </ElTag>
                 </div>
                 <div class="package-actions">
@@ -104,7 +104,7 @@
                     type="primary"
                     size="small"
                     @click="handlePackageAction(pkg)"
-                    :disabled="pkg.status !== 'available'"
+                    :disabled="!pkg.is_active"
                   >
                     {{ getUserAction(pkg) }}
                   </ElButton>
@@ -114,16 +114,16 @@
                 <p class="package-description">{{ pkg.description || '暂无描述' }}</p>
                 <div class="package-meta">
                   <span class="meta-item">
-                    <i class="fas fa-tag"></i>
-                    {{ pkg.category || '未分类' }}
+                    <i class="fas fa-coins"></i>
+                    {{ pkg.credits }} 积分
                   </span>
                   <span class="meta-item">
                     <i class="fas fa-calendar"></i>
-                    {{ formatDate(pkg.created_at) }}
+                    {{ pkg.duration_days }} 天
                   </span>
                   <span class="meta-item">
-                    <i class="fas fa-download"></i>
-                    {{ pkg.download_count || 0 }} 次下载
+                    <i class="fas fa-clock"></i>
+                    {{ formatDate(pkg.created_at) }}
                   </span>
                 </div>
               </div>
@@ -155,19 +155,19 @@
     >
       <div v-if="selectedPackage" class="package-detail">
         <ElDescriptions :column="2" border>
-          <ElDescriptionsItem label="包名称">
-            {{ selectedPackage.name }}
+          <ElDescriptionsItem label="订阅名称">
+            {{ selectedPackage.package_name }}
           </ElDescriptionsItem>
-          <ElDescriptionsItem label="版本">
-            {{ selectedPackage.version }}
+          <ElDescriptionsItem label="订阅代码">
+            {{ selectedPackage.package_code }}
           </ElDescriptionsItem>
           <ElDescriptionsItem label="状态">
-            <ElTag :type="selectedPackage.status === 'available' ? 'success' : 'danger'">
-              {{ selectedPackage.status === 'available' ? '可用' : '不可用' }}
+            <ElTag :type="selectedPackage.is_active ? 'success' : 'danger'">
+              {{ selectedPackage.is_active ? '可用' : '不可用' }}
             </ElTag>
           </ElDescriptionsItem>
-          <ElDescriptionsItem label="分类">
-            {{ selectedPackage.category || '未分类' }}
+          <ElDescriptionsItem label="价格">
+            ¥{{ selectedPackage.price }}
           </ElDescriptionsItem>
           <ElDescriptionsItem label="描述" :span="2">
             {{ selectedPackage.description || '暂无描述' }}
@@ -178,11 +178,11 @@
           <ElDescriptionsItem label="更新时间">
             {{ formatDate(selectedPackage.updated_at) }}
           </ElDescriptionsItem>
-          <ElDescriptionsItem label="下载次数">
-            {{ selectedPackage.download_count || 0 }}
+          <ElDescriptionsItem label="积分">
+            {{ selectedPackage.credits }}
           </ElDescriptionsItem>
-          <ElDescriptionsItem label="大小">
-            {{ formatFileSize(selectedPackage.size) }}
+          <ElDescriptionsItem label="时长">
+            {{ selectedPackage.duration_days }} 天
           </ElDescriptionsItem>
         </ElDescriptions>
       </div>
@@ -190,7 +190,7 @@
         <span class="dialog-footer">
           <ElButton @click="packageDetailVisible = false">关闭</ElButton>
           <ElButton
-            v-if="selectedPackage && selectedPackage.status === 'available'"
+            v-if="selectedPackage && selectedPackage.is_active"
             type="primary"
             @click="handlePackageAction(selectedPackage)"
           >
@@ -204,6 +204,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import {
   ElCard, ElButton, ElInput, ElSelect, ElOption, ElRow, ElCol,
@@ -213,18 +214,21 @@ import { Search as ElIconSearch } from '@element-plus/icons-vue'
 import request from '../utils/request'
 
 interface Package {
-  package_id: string
-  name: string
-  version: string
+  id: number
+  package_code: string
+  package_name: string
   description?: string
-  category?: string
-  status: 'available' | 'unavailable'
-  download_count?: number
-  size?: number
+  endpoint?: string
+  price: number
+  credits: number
+  duration_days: number
+  is_active: boolean
+  sort_order: number
   created_at: string
   updated_at: string
 }
 
+const router = useRouter()
 const packages = ref<Package[]>([])
 const selectedPackage = ref<Package | null>(null)
 const packageDetailVisible = ref(false)
@@ -324,12 +328,9 @@ const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleString('zh-CN')
 }
 
-// 格式化文件大小
-const formatFileSize = (bytes?: number) => {
-  if (!bytes) return '-'
-  const sizes = ['B', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(1024))
-  return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i]
+// 导航到订阅详情页面
+const goToSubscriptionDetail = (packageId: number) => {
+  router.push(`/admin/subscriptions/${packageId}`)
 }
 
 onMounted(() => {
@@ -440,6 +441,16 @@ onMounted(() => {
   font-weight: 600;
   color: #2c3e50;
   margin: 0 0 8px 0;
+}
+
+.package-name.clickable {
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.package-name.clickable:hover {
+  color: #409eff;
+  text-decoration: underline;
 }
 
 .package-version {
