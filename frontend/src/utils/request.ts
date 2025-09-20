@@ -8,7 +8,7 @@ let requestQueue: Array<(token: string) => void> = [];
 
 // 创建axios实例
 const service: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8001',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001',
   timeout: 15000, // 增加超时时间
   headers: {
     'Content-Type': 'application/json',
@@ -25,7 +25,7 @@ const refreshToken = async (): Promise<string | null> => {
     }
 
     const response = await axios.post(
-      `${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8001'}/api/v1/auth/refresh`,
+      `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001'}/api/v1/auth/refresh`,
       { refresh_token: refreshToken },
       {
         headers: {

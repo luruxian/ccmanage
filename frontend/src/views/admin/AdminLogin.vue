@@ -2,14 +2,6 @@
   <div class="admin-login-page">
     <div class="admin-container">
       <div class="admin-card">
-        <!-- 头部标识 -->
-        <div class="admin-header">
-          <div class="admin-logo">
-            <i class="fas fa-shield-alt"></i>
-          </div>
-          <h1 class="admin-title">管理员登录</h1>
-          <p class="admin-subtitle">CCManage 系统管理中心</p>
-        </div>
 
         <!-- 登录表单 -->
         <ElForm
@@ -187,43 +179,10 @@ const handleLogin = async () => {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.admin-header {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-.admin-logo {
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 20px;
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-}
-
-.admin-logo i {
-  font-size: 32px;
-  color: white;
-}
-
-.admin-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #2c3e50;
-  margin: 0 0 10px 0;
-}
-
-.admin-subtitle {
-  color: #7f8c8d;
-  font-size: 1rem;
-  margin: 0;
-}
 
 .admin-form {
   margin-bottom: 30px;
+  margin-top: 20px;
 }
 
 .admin-form .el-form-item {
@@ -323,13 +282,6 @@ const handleLogin = async () => {
   border: 1px solid rgba(48, 54, 61, 0.3);
 }
 
-:global(.dark-theme) .admin-title {
-  color: #f0f6fc;
-}
-
-:global(.dark-theme) .admin-subtitle {
-  color: #8b949e;
-}
 
 :global(.dark-theme) .admin-footer {
   border-top-color: #30363d;

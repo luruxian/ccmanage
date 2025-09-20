@@ -474,8 +474,8 @@ const loadUserKeys = async () => {
 const loadPlanStatus = async () => {
   try {
     const response = await request.get('/api/v1/keys/plan-status')
-    Object.assign(planInfo, response)
-    stats.creditsRemaining = response.credits_remaining
+    Object.assign(planInfo, response.data)
+    stats.creditsRemaining = response.data.credits_remaining
   } catch (error) {
     console.error('获取套餐状态失败:', error)
   }
