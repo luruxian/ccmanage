@@ -6,9 +6,19 @@ import { ElMessage } from 'element-plus';
 let isRefreshing = false;
 let requestQueue: Array<(token: string) => void> = [];
 
+// 获取API基础URL
+const getBaseURL = () => {
+  const envURL = import.meta.env.VITE_API_BASE_URL;
+  // 如果环境变量为空字符串，在生产环境使用相对路径，开发环境使用localhost
+  if (envURL === '') {
+    return import.meta.env.PROD ? '' : 'http://localhost:8001';
+  }
+  return envURL || 'http://localhost:8001';
+};
+
 // 创建axios实例
 const service: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001',
+  baseURL: getBaseURL(),
   timeout: 15000, // 增加超时时间
   headers: {
     'Content-Type': 'application/json',
@@ -25,7 +35,7 @@ const refreshToken = async (): Promise<string | null> => {
     }
 
     const response = await axios.post(
-      `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001'}/api/v1/auth/refresh`,
+      `${getBaseURL()}/api/v1/auth/refresh`,
       { refresh_token: refreshToken },
       {
         headers: {
