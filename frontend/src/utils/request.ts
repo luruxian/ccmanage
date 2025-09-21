@@ -9,11 +9,16 @@ let requestQueue: Array<(token: string) => void> = [];
 // 获取API基础URL
 const getBaseURL = () => {
   const envURL = import.meta.env.VITE_API_BASE_URL;
-  // 如果环境变量为空字符串，在生产环境使用相对路径，开发环境使用localhost
-  if (envURL === '') {
-    return import.meta.env.PROD ? '' : 'http://localhost:8001';
+  // 始终使用完整的baseURL，不使用相对路径
+  const baseURL = envURL || 'http://localhost:8001';
+
+  // 在开发环境打印配置信息
+  if (import.meta.env.DEV) {
+    console.log('🔗 API BaseURL:', baseURL);
+    console.log('🌍 Environment:', import.meta.env.MODE);
   }
-  return envURL || 'http://localhost:8001';
+
+  return baseURL;
 };
 
 // 创建axios实例
