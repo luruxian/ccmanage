@@ -12,14 +12,23 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
+        manualChunks: (id) => {
           // Vendor libraries
-          'element-plus': ['element-plus'],
-          'vue-vendor': ['vue', 'vue-router', 'pinia'],
-          // Icon libraries
-          'icons': ['@element-plus/icons-vue'],
-          // Utils
-          'utils': ['axios']
+          if (id.includes('element-plus')) {
+            return 'element-plus'
+          }
+          if (id.includes('node_modules/vue') || id.includes('node_modules/vue-router') || id.includes('node_modules/pinia')) {
+            return 'vue-vendor'
+          }
+          if (id.includes('@element-plus/icons-vue')) {
+            return 'icons'
+          }
+          if (id.includes('node_modules/axios')) {
+            return 'utils'
+          }
+          if (id.includes('node_modules')) {
+            return 'vendor'
+          }
         }
       }
     },

@@ -20,6 +20,9 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
+// 导入FontAwesome样式
+import '@fortawesome/fontawesome-free/css/all.min.css'
+
 // 创建应用实例
 const app = createApp(App)
 
