@@ -249,6 +249,7 @@ class APIKeyCRUD:
                     "user_id": api_key.user_id,
                     "api_key_id": api_key.id,  # 为了兼容性，添加api_key_id
                     "api_key": api_key.api_key,
+                    "real_api_key": api_key.real_api_key,  # 添加real_api_key字段
                     "key_name": api_key.key_name,
                     "description": api_key.description,
                     "user_email": user_email,
@@ -440,3 +441,23 @@ class APIKeyCRUD:
                 "days_remaining": 0,
                 "usage_percentage": 0
             }
+
+    def update_real_api_key(self, api_key_id: int, new_real_api_key: str) -> Dict[str, Any]:
+        """更新API密钥的real_api_key字段"""
+        try:
+            # 查找API密钥
+            api_key = self.db.query(APIKey).filter(APIKey.id == api_key_id).first()
+            if not api_key:
+                return {"success": False, "message": "API密钥不存在"}
+
+            # 更新real_api_key字段
+            api_key.real_api_key = new_real_api_key
+            self.db.commit()
+
+            logger.info(f"更新real_api_key成功: API密钥ID {api_key_id}")
+            return {"success": True, "message": "更新成功"}
+
+        except Exception as e:
+            self.db.rollback()
+            logger.error(f"更新real_api_key失败: {str(e)}")
+            return {"success": False, "message": f"更新失败: {str(e)}"}

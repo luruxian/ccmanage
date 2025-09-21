@@ -18,6 +18,7 @@ from ...schemas.user_key_management import (
 )
 from ...schemas.auth import MessageResponse
 from ...db.database import get_db
+from ...db.models import APIKey
 from ...db.crud.package import PackageCRUD
 # UserPlanCRUD已删除，使用APIKeyCRUD替代
 from ...db.crud.api_key import APIKeyCRUD
@@ -618,4 +619,62 @@ async def fix_data_integrity(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="修复失败"
+        )
+
+
+@router.put("/{package_id}/userkeys/{api_key_id}/real-api-key", response_model=MessageResponse)
+async def update_user_key_real_api_key(
+    package_id: int,
+    api_key_id: int,
+    real_api_key_data: dict,
+    current_admin = Depends(get_admin_user),
+    db: Session = Depends(get_db)
+):
+    """更新用户密钥的real_api_key字段（管理员）"""
+    try:
+        package_crud = PackageCRUD(db)
+        api_key_crud = APIKeyCRUD(db)
+
+        # 检查订阅是否存在
+        package = package_crud.get_package_by_id(package_id)
+        if not package:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="订阅不存在"
+            )
+
+        # 检查API密钥是否存在且属于该订阅
+        api_key = db.query(APIKey).filter(
+            APIKey.id == api_key_id,
+            APIKey.package_id == package_id
+        ).first()
+
+        if not api_key:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="API密钥不存在或不属于该订阅"
+            )
+
+        # 获取新的real_api_key值
+        new_real_api_key = real_api_key_data.get('real_api_key', '')
+
+        # 更新real_api_key
+        result = api_key_crud.update_real_api_key(api_key_id, new_real_api_key)
+
+        if not result.get('success'):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=result.get('message', '更新失败')
+            )
+
+        logger.info(f"管理员 {current_admin.user_id} 更新API密钥real_api_key: {api_key_id}")
+        return MessageResponse(message="更新成功")
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"更新real_api_key失败: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="更新失败"
         )

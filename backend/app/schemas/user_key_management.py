@@ -22,6 +22,7 @@ class UserKeyRelationResponse(BaseModel):
     user_id: Optional[str]  # 可能为空（未激活）
     api_key_id: int
     api_key: str
+    real_api_key: Optional[str]  # 添加real_api_key字段
     key_name: Optional[str]
     description: Optional[str]
     user_email: str  # 添加用户邮箱字段

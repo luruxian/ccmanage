@@ -142,7 +142,39 @@
                   </div>
                 </template>
               </ElTableColumn>
-              <ElTableColumn prop="key_name" label="密钥名称" width="150" />
+              <ElTableColumn prop="real_api_key" label="有效API Key" width="300">
+                <template #default="scope">
+                  <div class="real-api-key-container">
+                    <ElInput
+                      v-if="editingRealApiKey[scope.row.id]"
+                      v-model="editRealApiKeyValue"
+                      size="small"
+                      placeholder="输入有效API Key"
+                      @blur="saveRealApiKey(scope.row)"
+                      @keyup.enter="saveRealApiKey(scope.row)"
+                      @keyup.esc="cancelEditRealApiKey(scope.row.id)"
+                      style="flex: 1;"
+                    />
+                    <span
+                      v-else
+                      class="real-api-key-text"
+                      @dblclick="startEditRealApiKey(scope.row)"
+                      :title="scope.row.real_api_key || '双击编辑'"
+                    >
+                      {{ scope.row.real_api_key || '未设置' }}
+                    </span>
+                    <ElButton
+                      v-if="!editingRealApiKey[scope.row.id]"
+                      type="text"
+                      size="small"
+                      @click="startEditRealApiKey(scope.row)"
+                      class="edit-btn"
+                    >
+                      <i class="fas fa-edit"></i>
+                    </ElButton>
+                  </div>
+                </template>
+              </ElTableColumn>
               <ElTableColumn prop="status" label="状态" width="100">
                 <template #default="scope">
                   <ElTag :type="getStatusType(scope.row.status)">
@@ -250,7 +282,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import {
@@ -280,6 +312,7 @@ interface UserKey {
   user_id: string
   api_key_id: number
   api_key: string
+  real_api_key?: string  // 添加real_api_key字段
   key_name?: string
   description?: string
   user_email: string
@@ -302,6 +335,10 @@ const subscription = ref<Subscription | null>(null)
 const userKeys = ref<UserKey[]>([])
 const selectedUserKeys = ref<UserKey[]>([])
 const bulkOperationVisible = ref(false)
+
+// 编辑real_api_key相关状态
+const editingRealApiKey = ref<Record<number, boolean>>({})
+const editRealApiKeyValue = ref('')
 
 const loading = reactive({
   detail: false,
@@ -500,6 +537,48 @@ const truncateKey = (key: string) => {
   return key.length > 10 ? `${key.substring(0, 10)}...` : key
 }
 
+// 编辑real_api_key相关方法
+const startEditRealApiKey = (userKey: UserKey) => {
+  editingRealApiKey.value[userKey.id] = true
+  editRealApiKeyValue.value = userKey.real_api_key || ''
+  // 等待下一个tick，确保输入框渲染完成后聚焦
+  nextTick(() => {
+    const container = document.querySelector('.real-api-key-container')
+    const input = container?.querySelector('input') as HTMLInputElement
+    if (input) {
+      input.focus()
+      input.select()
+    }
+  })
+}
+
+const cancelEditRealApiKey = (userKeyId: number) => {
+  editingRealApiKey.value[userKeyId] = false
+  editRealApiKeyValue.value = ''
+}
+
+const saveRealApiKey = async (userKey: UserKey) => {
+  try {
+    const packageId = route.params.id
+
+    await request.put(`/api/v1/packages/${packageId}/userkeys/${userKey.id}/real-api-key`, {
+      real_api_key: editRealApiKeyValue.value
+    })
+
+    // 更新本地数据
+    userKey.real_api_key = editRealApiKeyValue.value
+
+    // 退出编辑模式
+    editingRealApiKey.value[userKey.id] = false
+    editRealApiKeyValue.value = ''
+
+    ElMessage.success('更新成功')
+  } catch (error) {
+    console.error('更新real_api_key失败:', error)
+    ElMessage.error('更新失败')
+  }
+}
+
 // 拷贝到剪贴板
 const copyToClipboard = async (text: string) => {
   try {
@@ -612,6 +691,34 @@ onMounted(() => {
 }
 
 .copy-btn {
+  flex-shrink: 0;
+  padding: 4px 8px;
+}
+
+.real-api-key-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.real-api-key-text {
+  flex: 1;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  color: #606266;
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 12px;
+}
+
+.real-api-key-text:hover {
+  background-color: #f5f7fa;
+}
+
+.edit-btn {
   flex-shrink: 0;
   padding: 4px 8px;
 }
