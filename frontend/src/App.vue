@@ -32,17 +32,27 @@ const logout = () => {
   router.push('/login');
 };
 
-// 检查是否在认证页面
+// 检查是否在认证页面或管理员页面
 const isAuthPage = () => {
   const authRoutes = ['/login', '/register', '/verify-email'];
   return authRoutes.includes(route.path);
+};
+
+// 检查是否在管理员页面
+const isAdminPage = () => {
+  return route.path.startsWith('/admin') || route.path === '/meme';
+};
+
+// 检查是否应该显示导航栏
+const shouldShowNavbar = () => {
+  return !isAuthPage() && !isAdminPage();
 };
 </script>
 
 <template>
   <div class="app">
-    <!-- 导航栏 (仅在非认证页面显示) -->
-    <nav v-if="!isAuthPage()" class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <!-- 导航栏 (仅在普通用户页面显示，排除认证页面和管理员页面) -->
+    <nav v-if="shouldShowNavbar()" class="navbar navbar-expand-lg navbar-dark bg-primary">
       <div class="container-fluid">
         <a class="navbar-brand" href="#" @click="goHome">{{ appName }}</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">

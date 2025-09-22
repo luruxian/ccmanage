@@ -66,11 +66,13 @@ class UsageRecord(Base):
     __tablename__ = "usage_records"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id = Column(String(50), nullable=False, comment="用户ID")
     api_key_id = Column(Integer, nullable=False, comment="API密钥ID")
     service = Column(String(50), nullable=False, comment="服务类型")
     request_count = Column(Integer, default=1, nullable=False, comment="请求次数")
     credits_used = Column(Integer, default=0, nullable=False, comment="消耗积分")
+    input_tokens = Column(Integer, nullable=True, comment="输入token数量")
+    output_tokens = Column(Integer, nullable=True, comment="输出token数量")
+    total_tokens = Column(Integer, nullable=True, comment="总token数量")
     request_timestamp = Column(DateTime(timezone=True), server_default=func.now(), comment="请求时间")
     response_status = Column(String(20), nullable=True, comment="响应状态")
     error_message = Column(Text, nullable=True, comment="错误信息")
@@ -193,7 +195,7 @@ class AdminOperation(Base):
 # 创建复合索引优化查询性能
 Index('idx_api_key_user', APIKey.user_id, APIKey.api_key)
 # Index('idx_user_plan_active', UserPlan.user_id, UserPlan.is_active, UserPlan.expire_date)  # UserPlan表已删除
-Index('idx_usage_record_time', UsageRecord.user_id, UsageRecord.request_timestamp)
+Index('idx_usage_record_time_new', UsageRecord.api_key_id, UsageRecord.request_timestamp)
 Index('idx_rate_limit_window', RateLimit.user_id, RateLimit.service, RateLimit.window_start, RateLimit.window_end)
 Index('idx_email_verification', EmailVerification.email, EmailVerification.verification_code, EmailVerification.is_used)
 # Index('idx_user_key_relation', UserKey.user_id, UserKey.api_key_id, UserKey.status)  # UserKey表已删除

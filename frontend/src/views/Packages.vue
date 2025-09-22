@@ -89,7 +89,7 @@
             >
               <div class="package-header">
                 <div class="package-info">
-                  <h4 class="package-name clickable" @click="goToSubscriptionDetail(pkg.id)">{{ pkg.package_name }}</h4>
+                  <h4 class="package-name">{{ pkg.package_name }}</h4>
                   <span class="package-version">¥{{ pkg.price }}</span>
                   <ElTag
                     :type="pkg.is_active ? 'success' : 'danger'"
@@ -328,10 +328,6 @@ const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleString('zh-CN')
 }
 
-// 导航到订阅详情页面
-const goToSubscriptionDetail = (packageId: number) => {
-  router.push(`/admin/subscriptions/${packageId}`)
-}
 
 onMounted(() => {
   loadPackages()
@@ -443,15 +439,6 @@ onMounted(() => {
   margin: 0 0 8px 0;
 }
 
-.package-name.clickable {
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
-
-.package-name.clickable:hover {
-  color: #409eff;
-  text-decoration: underline;
-}
 
 .package-version {
   display: inline-block;
