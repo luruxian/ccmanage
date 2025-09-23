@@ -63,5 +63,8 @@ class Settings:
     # 前端配置
     FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:5173")
 
+    # 后端配置
+    BACKEND_URL: str = os.getenv("BACKEND_URL", "http://localhost:8001")
+
 # 创建设置实例
 settings = Settings()

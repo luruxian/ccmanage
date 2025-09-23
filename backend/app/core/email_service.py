@@ -66,7 +66,7 @@ class EmailService:
             "username": username,
             "verification_token": verification_token,
             "app_name": "agnets.app|agnet club",
-            "verification_url": f"http://localhost:8001/api/v1/auth/verify-email-token?token={verification_token}"
+            "verification_url": f"{settings.BACKEND_URL}/api/v1/auth/verify-email-token?token={verification_token}"
         }
 
         # 使用更热情的HTML邮件模板
@@ -123,12 +123,18 @@ class EmailService:
                                 点击下面的按钮立即完成验证，开始您的智能代理之旅：
                             </p>
 
-                            <!-- 主要验证按钮 -->
+                            <!-- 主要验证按钮 (兼容所有邮件客户端) -->
                             <div style="margin-bottom: 20px;">
-                                <a href="{context['verification_url']}"
-                                   style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; text-decoration: none; padding: 20px 50px; border-radius: 12px; font-weight: 700; font-size: 18px; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4); transition: all 0.3s ease; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
-                                    ✅ 立即验证邮箱
-                                </a>
+                                <table cellspacing="0" cellpadding="0" style="margin: 0 auto;">
+                                    <tr>
+                                        <td style="background: #10b981; border-radius: 8px; padding: 0;">
+                                            <a href="{context['verification_url']}"
+                                               style="display: block; color: white; text-decoration: none; padding: 18px 40px; border-radius: 8px; font-weight: bold; font-size: 16px; text-align: center; font-family: Arial, sans-serif;">
+                                                ✅ 立即验证邮箱
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
                             </div>
 
                             <p style="color: #10b981; font-size: 14px; margin: 10px 0; font-weight: 600;">
@@ -193,7 +199,7 @@ class EmailService:
             "username": username,
             "reset_token": reset_token,
             "app_name": "agnets.app|agnet club",
-            "reset_url": f"http://localhost:5173/reset-password?email={email}"
+            "reset_url": f"{settings.FRONTEND_URL}/reset-password?email={email}"
         }
 
         html_content = f"""
@@ -217,12 +223,18 @@ class EmailService:
 
                 <p><strong>验证码将在15分钟后失效，请手动输入验证码。</strong></p>
                 <p>点击以下按钮跳转到密码重置页面，然后手动输入上面的6位验证码：</p>
-                <p style="text-align: center;">
-                    <a href="{context['reset_url']}"
-                       style="background-color: #dc3545; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block; margin-bottom: 20px;">
-                       🔐 跳转到重置页面
-                    </a>
-                </p>
+                <div style="text-align: center; margin: 20px 0;">
+                    <table cellspacing="0" cellpadding="0" style="margin: 0 auto;">
+                        <tr>
+                            <td style="background: #dc3545; border-radius: 8px; padding: 0;">
+                                <a href="{context['reset_url']}"
+                                   style="display: block; color: white; text-decoration: none; padding: 15px 30px; border-radius: 8px; font-weight: bold; font-size: 16px; text-align: center; font-family: Arial, sans-serif;">
+                                   🔐 跳转到重置页面
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
 
                 <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #6c757d; margin: 20px 0;">
                     <p style="color: #6c757d; font-size: 14px; margin: 0 0 10px 0;">
@@ -258,7 +270,7 @@ class EmailService:
         context = {
             "username": username,
             "app_name": "agnets.app|agnet club",
-            "dashboard_url": "http://localhost:5173/dashboard"
+            "dashboard_url": f"{settings.FRONTEND_URL}/dashboard"
         }
 
         html_content = f"""
@@ -281,12 +293,18 @@ class EmailService:
                     <li>享受我们的专业服务</li>
                 </ul>
 
-                <p style="text-align: center;">
-                    <a href="{context['dashboard_url']}"
-                       style="background-color: #28a745; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
-                       进入控制台
-                    </a>
-                </p>
+                <div style="text-align: center; margin: 20px 0;">
+                    <table cellspacing="0" cellpadding="0" style="margin: 0 auto;">
+                        <tr>
+                            <td style="background: #28a745; border-radius: 8px; padding: 0;">
+                                <a href="{context['dashboard_url']}"
+                                   style="display: block; color: white; text-decoration: none; padding: 15px 30px; border-radius: 8px; font-weight: bold; font-size: 16px; text-align: center; font-family: Arial, sans-serif;">
+                                   进入控制台
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
 
                 <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
                 <p style="color: #666; font-size: 12px;">
