@@ -13,7 +13,9 @@
       "Bash(curl:*)",
       "Bash(npm --version)",
       "WebFetch(domain:gaccode.com)",
-      "WebFetch(domain:docs.claude.com)"
+      "WebFetch(domain:docs.claude.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ],
     "deny": [],
     "ask": []

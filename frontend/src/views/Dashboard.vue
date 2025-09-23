@@ -595,6 +595,100 @@ sudo yum install -y nodejs</code></pre>
               </div>
             </ElCard>
 
+            <!-- Claude Code Router 安装 -->
+            <ElCard class="mb-4">
+              <template #header>
+                <h4>🔀 Claude Code Router 增强工具</h4>
+              </template>
+              <div class="router-install-content">
+                <div class="router-intro mb-4">
+                  <h5>🌟 什么是 Claude Code Router？</h5>
+                  <p class="text-muted mb-3">Claude Code Router 是一个强大的路由工具，可以让您：</p>
+                  <ul class="features-list">
+                    <li>🔄 在不同的 AI 模型之间动态切换</li>
+                    <li>🌐 支持多个 AI 提供商（OpenRouter、DeepSeek、Ollama 等）</li>
+                    <li>⚡ 自定义请求/响应处理</li>
+                    <li>🎯 根据场景自动路由到最适合的模型</li>
+                    <li>🔧 插件系统支持扩展功能</li>
+                  </ul>
+                </div>
+
+                <!-- Router 安装步骤 -->
+                <div class="router-installation mb-4">
+                  <h5>📦 安装 Claude Code Router</h5>
+                  <p class="text-muted mb-3">在成功安装 Claude Code 后，您可以安装 Router 来获得更强大的功能：</p>
+
+                  <div class="install-step">
+                    <h6>1️⃣ 安装 Claude Code Router</h6>
+                    <div class="code-block">
+                      <div class="code-header">
+                        <span>终端/命令提示符</span>
+                        <ElButton size="small" @click="copyToClipboard('npm install -g @musistudio/claude-code-router')">复制</ElButton>
+                      </div>
+                      <pre><code>npm install -g @musistudio/claude-code-router</code></pre>
+                    </div>
+                  </div>
+
+                  <div class="install-step">
+                    <h6>2️⃣ 验证安装</h6>
+                    <div class="code-block">
+                      <div class="code-header">
+                        <span>终端/命令提示符</span>
+                        <ElButton size="small" @click="copyToClipboard('ccr --version')">复制</ElButton>
+                      </div>
+                      <pre><code>ccr --version</code></pre>
+                    </div>
+                    <div class="expected-output">
+                      <p><strong>期望输出：</strong> Claude Code Router 版本信息</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 基本配置 -->
+                <div class="router-config mb-4">
+                  <h5>⚙️ 基本配置</h5>
+                  <p class="text-muted mb-3">创建配置文件来启用 Router 功能：</p>
+
+                  <div class="config-step">
+                    <h6>3️⃣ 创建配置文件</h6>
+                    <p class="text-muted small mb-2">在用户目录下创建 <code>~/.claude-code-router/config.json</code> 文件：</p>
+                    <div class="code-block">
+                      <div class="code-header">
+                        <span>配置文件示例</span>
+                        <ElButton size="small" @click="copyToClipboard(routerConfigExample)">复制</ElButton>
+                      </div>
+                      <pre><code>{{ routerConfigExample }}</code></pre>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 使用方法 -->
+                <div class="router-usage">
+                  <h5>🚀 开始使用</h5>
+                  <div class="usage-commands">
+                    <div class="command-item">
+                      <code>ccr code</code>
+                      <span>启动带路由功能的 Claude Code</span>
+                    </div>
+                    <div class="command-item">
+                      <code>ccr ui</code>
+                      <span>打开 Web 配置界面</span>
+                    </div>
+                    <div class="command-item">
+                      <code>/model provider,model</code>
+                      <span>动态切换模型（在对话中使用）</span>
+                    </div>
+                  </div>
+
+                  <div class="router-notice mt-3">
+                    <div class="notice-content">
+                      <p><strong>💡 提示：</strong> 在使用Claude Code Router 过程中遇到任何问题，可与我们联系。</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ElCard>
+
             <!-- 使用指南 -->
             <ElCard class="mb-4">
               <template #header>
@@ -1015,6 +1109,27 @@ const planInfo = reactive({
 
 const installMethod = ref('npm')
 const nodeInstallMethod = ref('windows-node')
+
+// Claude Code Router 配置示例
+const routerConfigExample = ref(`{
+  "providers": {
+    "anthropic": {
+      "type": "anthropic",
+      "apiKey": "$ANTHROPIC_API_KEY"
+    },
+    "openrouter": {
+      "type": "openrouter",
+      "apiKey": "$OPENROUTER_API_KEY"
+    }
+  },
+  "routes": [
+    {
+      "name": "default",
+      "provider": "anthropic",
+      "model": "claude-3-5-sonnet-20241022"
+    }
+  ]
+}`)
 
 // 计算唯一的订阅列表
 const uniquePackages = computed(() => {
@@ -2041,6 +2156,66 @@ onMounted(() => {
   font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
   font-size: 12px;
   color: #b45309;
+}
+
+/* Claude Code Router 样式 */
+.router-install-content {
+  padding: 16px 0;
+}
+
+.features-list {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 20px;
+}
+
+.features-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f2f5;
+  color: #555;
+  line-height: 1.6;
+}
+
+.features-list li:last-child {
+  border-bottom: none;
+}
+
+.install-step {
+  margin-bottom: 24px;
+}
+
+.install-step h6 {
+  margin-bottom: 12px;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.config-step {
+  margin-bottom: 24px;
+}
+
+.config-step h6 {
+  margin-bottom: 12px;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.usage-commands {
+  margin: 16px 0;
+}
+
+.router-notice {
+  padding: 15px;
+  background: #e6f7ff;
+  border: 1px solid #91d5ff;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.router-notice .notice-content p {
+  margin: 0;
+  color: #0c4a6e;
+  line-height: 1.6;
 }
 
 /* 移动端适配 */
