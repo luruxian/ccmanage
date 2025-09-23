@@ -7,19 +7,31 @@
           <div class="sidebar-content">
 
             <nav class="sidebar-nav">
-              <a href="#" class="nav-item active" @click="activeTab = 'keys'">
+              <a href="#" :class="['nav-item', { active: activeTab === 'getting-started' }]" @click="activeTab = 'getting-started'">
+                <ElIcon><ElIconVideoPlay /></ElIcon>
+                安装Claude Code
+              </a>
+              <a href="#" :class="['nav-item', { active: activeTab === 'keys' }]" @click="activeTab = 'keys'">
                 <ElIcon><ElIconKey /></ElIcon>
                 API密钥
               </a>
-              <router-link to="/packages" class="nav-item">
-                <ElIcon><ElIconBox /></ElIcon>
-                软件包
-              </router-link>
-              <a href="#" class="nav-item" @click="activeTab = 'plan'">
-                <ElIcon><ElIconCreditCard /></ElIcon>
-                套餐状态
+              <a href="#" :class="['nav-item', { active: activeTab === 'packages' }]" @click="activeTab = 'packages'">
+                <ElIcon><ElIconList /></ElIcon>
+                订阅一览
               </a>
-              <a href="#" class="nav-item" @click="activeTab = 'settings'">
+              <a href="#" :class="['nav-item', { active: activeTab === 'plan' }]" @click="activeTab = 'plan'">
+                <ElIcon><ElIconCreditCard /></ElIcon>
+                订阅状态
+              </a>
+              <a href="#" :class="['nav-item', { active: activeTab === 'promotion' }]" @click="activeTab = 'promotion'">
+                <ElIcon><ElIconTrendCharts /></ElIcon>
+                推广计划
+              </a>
+              <a href="#" :class="['nav-item', { active: activeTab === 'resources' }]" @click="activeTab = 'resources'">
+                <ElIcon><ElIconReading /></ElIcon>
+                资料中心
+              </a>
+              <a href="#" :class="['nav-item', { active: activeTab === 'settings' }]" @click="activeTab = 'settings'">
                 <ElIcon><ElIconSetting /></ElIcon>
                 设置
               </a>
@@ -235,9 +247,155 @@
             </ElCard>
           </div>
 
-          <!-- 套餐状态 -->
+          <!-- 安装Claude Code -->
+          <div v-if="activeTab === 'getting-started'" class="tab-content">
+            <h2 class="mb-4">安装Claude Code</h2>
+            <ElCard>
+              <div class="getting-started-content">
+                <div class="welcome-section">
+                  <h3>欢迎使用Claude Code</h3>
+                  <p class="text-muted">快速安装和配置您的AI编程工具</p>
+                </div>
+
+                <div class="quick-start-steps mt-4">
+                  <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                      <h4>下载安装Claude Code</h4>
+                      <p>从官方渠道下载并安装Claude Code扩展或客户端</p>
+                    </div>
+                  </div>
+
+                  <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                      <h4>激活API密钥</h4>
+                      <p>前往"API密钥"页面激活您的专属密钥</p>
+                    </div>
+                  </div>
+
+                  <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                      <h4>选择订阅计划</h4>
+                      <p>在"订阅一览"中选择适合的计划</p>
+                    </div>
+                  </div>
+
+                  <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                      <h4>开始编程</h4>
+                      <p>配置完成，开始使用Claude Code提升开发效率</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ElCard>
+          </div>
+
+          <!-- 订阅一览 -->
+          <div v-if="activeTab === 'packages'" class="tab-content">
+            <h2 class="mb-4">订阅一览</h2>
+            <div class="packages-content">
+              <div class="packages-header mb-4">
+                <p class="text-muted">浏览可用的订阅计划，选择最适合您的服务</p>
+              </div>
+
+              <div class="row">
+                <div class="col-md-4">
+                  <ElCard class="package-card">
+                    <template #header>
+                      <div class="package-header">
+                        <h4>基础版</h4>
+                        <div class="package-price">
+                          <span class="price">¥99</span>
+                          <span class="period">/月</span>
+                        </div>
+                      </div>
+                    </template>
+                    <div class="package-content">
+                      <ul class="package-features">
+                        <li>✓ 10,000 API调用/月</li>
+                        <li>✓ 基础AI模型访问</li>
+                        <li>✓ 邮件技术支持</li>
+                        <li>✓ 基础文档访问</li>
+                      </ul>
+                      <ElButton type="primary" class="package-btn">选择计划</ElButton>
+                    </div>
+                  </ElCard>
+                </div>
+
+                <div class="col-md-4">
+                  <ElCard class="package-card featured">
+                    <template #header>
+                      <div class="package-header">
+                        <h4>专业版</h4>
+                        <div class="package-badge">推荐</div>
+                        <div class="package-price">
+                          <span class="price">¥299</span>
+                          <span class="period">/月</span>
+                        </div>
+                      </div>
+                    </template>
+                    <div class="package-content">
+                      <ul class="package-features">
+                        <li>✓ 50,000 API调用/月</li>
+                        <li>✓ 高级AI模型访问</li>
+                        <li>✓ 优先技术支持</li>
+                        <li>✓ 完整文档和教程</li>
+                        <li>✓ 自定义集成支持</li>
+                      </ul>
+                      <ElButton type="primary" class="package-btn">选择计划</ElButton>
+                    </div>
+                  </ElCard>
+                </div>
+
+                <div class="col-md-4">
+                  <ElCard class="package-card">
+                    <template #header>
+                      <div class="package-header">
+                        <h4>企业版</h4>
+                        <div class="package-price">
+                          <span class="price">¥999</span>
+                          <span class="period">/月</span>
+                        </div>
+                      </div>
+                    </template>
+                    <div class="package-content">
+                      <ul class="package-features">
+                        <li>✓ 无限 API调用</li>
+                        <li>✓ 所有AI模型访问</li>
+                        <li>✓ 24/7专属支持</li>
+                        <li>✓ 定制化解决方案</li>
+                        <li>✓ 专属客户经理</li>
+                        <li>✓ SLA保证</li>
+                      </ul>
+                      <ElButton type="primary" class="package-btn">联系销售</ElButton>
+                    </div>
+                  </ElCard>
+                </div>
+              </div>
+
+              <div class="packages-notice mt-4">
+                <ElCard>
+                  <div class="notice-content">
+                    <h5>💡 选择提示</h5>
+                    <p class="text-muted">
+                      • 基础版适合个人开发者和小型项目<br>
+                      • 专业版适合中小企业和团队开发<br>
+                      • 企业版适合大型企业和高频使用场景<br>
+                      • 所有计划都支持随时升级或降级
+                    </p>
+                  </div>
+                </ElCard>
+              </div>
+            </div>
+          </div>
+
+          <!-- 订阅状态 -->
           <div v-if="activeTab === 'plan'" class="tab-content">
-            <h2 class="mb-4">套餐状态</h2>
+            <h2 class="mb-4">订阅状态</h2>
             <ElCard>
               <div class="plan-status">
                 <div class="plan-header">
@@ -260,6 +418,128 @@
                 </div>
               </div>
             </ElCard>
+          </div>
+
+          <!-- 推广计划 -->
+          <div v-if="activeTab === 'promotion'" class="tab-content">
+            <h2 class="mb-4">推广计划</h2>
+            <ElCard>
+              <div class="promotion-content">
+                <div class="promotion-header">
+                  <h3>邀请好友，共享收益</h3>
+                  <p class="text-muted">通过推广计划获得更多收益和优惠</p>
+                </div>
+
+                <div class="promotion-stats mt-4">
+                  <div class="row">
+                    <div class="col-md-4">
+                      <div class="promotion-stat-card">
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">邀请人数</div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="promotion-stat-card">
+                        <div class="stat-number">¥0</div>
+                        <div class="stat-label">累计收益</div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="promotion-stat-card">
+                        <div class="stat-number">¥0</div>
+                        <div class="stat-label">本月收益</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="promotion-actions mt-4">
+                  <ElButton type="primary">获取推广链接</ElButton>
+                  <ElButton type="default">查看推广规则</ElButton>
+                </div>
+
+                <div class="promotion-notice mt-4">
+                  <p class="text-muted">
+                    <small>
+                      ⚠️ 推广计划功能即将上线，敬请期待！
+                    </small>
+                  </p>
+                </div>
+              </div>
+            </ElCard>
+          </div>
+
+          <!-- 资料中心 -->
+          <div v-if="activeTab === 'resources'" class="tab-content">
+            <h2 class="mb-4">资料中心</h2>
+            <div class="row">
+              <div class="col-md-6">
+                <ElCard class="resource-card">
+                  <template #header>
+                    <div class="resource-header">
+                      <h4>📖 使用文档</h4>
+                    </div>
+                  </template>
+                  <div class="resource-content">
+                    <p>详细的API文档和使用指南</p>
+                    <ElButton type="text">查看文档</ElButton>
+                  </div>
+                </ElCard>
+              </div>
+
+              <div class="col-md-6">
+                <ElCard class="resource-card">
+                  <template #header>
+                    <div class="resource-header">
+                      <h4>🎥 视频教程</h4>
+                    </div>
+                  </template>
+                  <div class="resource-content">
+                    <p>快速上手Claude Code的视频教程</p>
+                    <ElButton type="text">观看视频</ElButton>
+                  </div>
+                </ElCard>
+              </div>
+
+              <div class="col-md-6">
+                <ElCard class="resource-card">
+                  <template #header>
+                    <div class="resource-header">
+                      <h4>💬 社区论坛</h4>
+                    </div>
+                  </template>
+                  <div class="resource-content">
+                    <p>与其他开发者交流经验</p>
+                    <ElButton type="text">访问论坛</ElButton>
+                  </div>
+                </ElCard>
+              </div>
+
+              <div class="col-md-6">
+                <ElCard class="resource-card">
+                  <template #header>
+                    <div class="resource-header">
+                      <h4>🤝 技术支持</h4>
+                    </div>
+                  </template>
+                  <div class="resource-content">
+                    <p>获得专业的技术支持服务</p>
+                    <ElButton type="text">联系支持</ElButton>
+                  </div>
+                </ElCard>
+              </div>
+            </div>
+
+            <div class="resource-notice mt-4">
+              <ElCard>
+                <div class="notice-content">
+                  <h5>📢 最新公告</h5>
+                  <p class="text-muted">
+                    欢迎使用Claude Code！我们正在不断完善产品功能，如有任何问题或建议，请随时联系我们。
+                  </p>
+                </div>
+              </ElCard>
+            </div>
           </div>
         </div>
       </div>
@@ -298,7 +578,11 @@ import {
   Box as ElIconBox,
   Refresh as ElIconRefresh,
   Search as ElIconSearch,
-  CopyDocument as ElIconCopyDocument
+  CopyDocument as ElIconCopyDocument,
+  VideoPlay as ElIconVideoPlay,
+  List as ElIconList,
+  TrendCharts as ElIconTrendCharts,
+  Reading as ElIconReading
 } from '@element-plus/icons-vue'
 import { useUserStore } from '../store/user'
 import request from '../utils/request'
@@ -697,6 +981,262 @@ onMounted(() => {
   margin-top: 20px;
   padding-top: 20px;
   border-top: 1px solid #f0f2f5;
+}
+
+/* 新增页面样式 */
+.getting-started-content {
+  padding: 20px 0;
+}
+
+.welcome-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.welcome-section h3 {
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+.quick-start-steps {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 25px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #409eff;
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  background: #409eff;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-right: 20px;
+  flex-shrink: 0;
+}
+
+.step-content h4 {
+  margin-bottom: 8px;
+  color: #2c3e50;
+}
+
+.step-content p {
+  margin: 0;
+  color: #666;
+}
+
+.promotion-content {
+  padding: 20px 0;
+}
+
+.promotion-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.promotion-header h3 {
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+.promotion-stat-card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  text-align: center;
+  margin-bottom: 16px;
+  border-left: 4px solid #27ae60;
+}
+
+.promotion-stat-card .stat-number {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #27ae60;
+  margin-bottom: 8px;
+}
+
+.promotion-stat-card .stat-label {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.promotion-actions {
+  text-align: center;
+}
+
+.promotion-actions .el-button {
+  margin: 0 10px;
+}
+
+.promotion-notice {
+  text-align: center;
+  padding: 15px;
+  background: #fff3cd;
+  border-radius: 8px;
+}
+
+.resource-card {
+  margin-bottom: 20px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.resource-header h4 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.resource-content {
+  padding: 10px 0;
+}
+
+.resource-content p {
+  margin-bottom: 15px;
+  color: #666;
+}
+
+.resource-notice {
+  margin-top: 30px;
+}
+
+.notice-content {
+  padding: 20px;
+  text-align: center;
+}
+
+.notice-content h5 {
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+.notice-content p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* 订阅一览页面样式 */
+.packages-content {
+  padding: 20px 0;
+}
+
+.packages-header {
+  text-align: center;
+}
+
+.package-card {
+  margin-bottom: 30px;
+  border: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.package-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.package-card.featured {
+  border: 2px solid #409eff;
+  position: relative;
+}
+
+.package-header {
+  text-align: center;
+  padding: 10px 0;
+  position: relative;
+}
+
+.package-header h4 {
+  margin-bottom: 10px;
+  color: #2c3e50;
+  font-size: 1.5rem;
+}
+
+.package-badge {
+  position: absolute;
+  top: -15px;
+  right: 20px;
+  background: #409eff;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.package-price {
+  margin-top: 15px;
+}
+
+.package-price .price {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #409eff;
+}
+
+.package-price .period {
+  font-size: 1rem;
+  color: #666;
+  margin-left: 5px;
+}
+
+.package-content {
+  padding: 20px;
+}
+
+.package-features {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 30px;
+}
+
+.package-features li {
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f2f5;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.package-features li:last-child {
+  border-bottom: none;
+}
+
+.package-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.packages-notice {
+  margin-top: 40px;
+}
+
+.packages-notice .notice-content {
+  text-align: left;
+}
+
+.packages-notice .notice-content h5 {
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+.packages-notice .notice-content p {
+  line-height: 1.8;
 }
 
 /* 移动端适配 */
