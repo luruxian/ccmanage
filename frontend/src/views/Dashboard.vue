@@ -156,7 +156,6 @@
                     <template #default="scope">
                       <div class="key-name-cell">
                         <strong>{{ scope.row.package_name || '未知套餐' }}</strong>
-                        <div class="key-id text-muted small">ID: {{ scope.row.user_key_id }}</div>
                       </div>
                     </template>
                   </ElTableColumn>
@@ -1163,7 +1162,6 @@ const viewKeyDetails = (key: any) => {
     `
     <div>
       <p><strong>套餐名称:</strong> ${key.package_name || '未知套餐'}</p>
-      <p><strong>密钥ID:</strong> ${key.user_key_id}</p>
       <p><strong>API密钥:</strong> ${key.api_key}</p>
       <p><strong>状态:</strong> ${key.is_active ? '激活' : '禁用'}</p>
       <p><strong>使用次数:</strong> ${key.usage_count || 0}</p>

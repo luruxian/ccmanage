@@ -193,7 +193,7 @@ class EmailService:
             "username": username,
             "reset_token": reset_token,
             "app_name": "agnets.app|agnet club",
-            "reset_url": f"http://localhost:5173/reset-password?email={email}&code={reset_token}"
+            "reset_url": f"http://localhost:5173/reset-password?email={email}"
         }
 
         html_content = f"""
@@ -215,12 +215,12 @@ class EmailService:
                     <p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.9;">6位验证码</p>
                 </div>
 
-                <p>验证码将在15分钟后失效。</p>
-                <p>您也可以点击以下按钮直接跳转到密码重置页面：</p>
+                <p><strong>验证码将在15分钟后失效，请手动输入验证码。</strong></p>
+                <p>点击以下按钮跳转到密码重置页面，然后手动输入上面的6位验证码：</p>
                 <p style="text-align: center;">
                     <a href="{context['reset_url']}"
                        style="background-color: #dc3545; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block; margin-bottom: 20px;">
-                       🔐 重置密码
+                       🔐 跳转到重置页面
                     </a>
                 </p>
 
@@ -229,7 +229,7 @@ class EmailService:
                         <strong>📱 按钮无法点击？</strong>
                     </p>
                     <p style="color: #6c757d; font-size: 13px; margin: 0; line-height: 1.5;">
-                        请复制以下链接到您的浏览器地址栏中打开：<br>
+                        请复制以下链接到您的浏览器地址栏中打开，然后手动输入验证码：<br>
                         <span style="word-break: break-all; font-family: 'Courier New', monospace; background: #e9ecef; padding: 2px 4px; border-radius: 3px; font-size: 12px;">
                             {context['reset_url']}
                         </span>
@@ -250,7 +250,7 @@ class EmailService:
             recipients=[email],
             subject="agnets.app|agnet club - 🔐 密码重置请求",
             html_content=html_content,
-            text_content=f"密码重置链接：{context['reset_url']}"
+            text_content=f"您的密码重置验证码是：{context['reset_token']}。请访问以下链接并手动输入验证码：{context['reset_url']}"
         )
 
     async def send_welcome_email(self, email: str, username: str) -> bool:

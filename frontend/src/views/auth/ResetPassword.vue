@@ -189,18 +189,18 @@ const resetRules = {
     { type: 'email' as const, message: '请输入正确的邮箱格式', trigger: 'blur' }
   ],
   verification_code: [
-    { required: true, message: '请输入验证码', trigger: 'blur' },
-    { len: 6, message: '验证码必须是6位', trigger: 'blur' },
-    { pattern: /^\d{6}$/, message: '验证码必须是6位数字', trigger: 'blur' }
+    { required: true, message: '请输入验证码', trigger: ['blur', 'change'] },
+    { len: 6, message: '验证码必须是6位', trigger: ['blur', 'change'] },
+    { pattern: /^\d{6}$/, message: '验证码必须是6位数字', trigger: ['blur', 'change'] }
   ],
   new_password: [
-    { required: true, message: '请输入新密码', trigger: 'blur' },
-    { min: 6, message: '密码长度不能少于6位', trigger: 'blur' },
-    { max: 128, message: '密码长度不能超过128位', trigger: 'blur' }
+    { required: true, message: '请输入新密码', trigger: ['blur', 'change'] },
+    { min: 6, message: '密码长度不能少于6位', trigger: ['blur', 'change'] },
+    { max: 128, message: '密码长度不能超过128位', trigger: ['blur', 'change'] }
   ],
   confirm_password: [
-    { required: true, message: '请确认密码', trigger: 'blur' },
-    { validator: validateConfirmPassword, trigger: 'blur' }
+    { required: true, message: '请确认密码', trigger: ['blur', 'change'] },
+    { validator: validateConfirmPassword, trigger: ['blur', 'change'] }
   ]
 }
 
@@ -248,10 +248,23 @@ const checkPasswordStrength = () => {
 const handleResetPassword = async () => {
   if (!resetFormRef.value) return
 
+  // 先进行表单验证
   try {
-    await resetFormRef.value.validate()
-    loading.value = true
+    const isValid = await resetFormRef.value.validate()
+    if (!isValid) {
+      // 表单验证失败，直接返回，不发送请求
+      return
+    }
+  } catch (validationError) {
+    // 表单验证失败，显示验证错误信息（Element Plus会自动显示）
+    console.warn('表单验证失败:', validationError)
+    return
+  }
 
+  // 表单验证通过，开始发送请求
+  loading.value = true
+
+  try {
     await request.post('/api/v1/auth/password-reset-confirm', {
       email: resetForm.email,
       verification_code: resetForm.verification_code,
@@ -264,10 +277,24 @@ const handleResetPassword = async () => {
   } catch (error: any) {
     console.error('密码重置失败:', error)
 
+    // 详细的错误处理
     if (error.response?.status === 400) {
-      ElMessage.error('验证码无效或已过期')
+      const detail = error.response.data?.detail
+      if (detail && detail.includes('验证码')) {
+        ElMessage.error('验证码无效或已过期，请重新申请')
+      } else if (detail && detail.includes('密码')) {
+        ElMessage.error('密码格式不符合要求，请重新输入')
+      } else {
+        ElMessage.error('请求参数有误，请检查输入信息')
+      }
+    } else if (error.response?.status === 404) {
+      ElMessage.error('用户不存在，请重新申请密码重置')
+    } else if (error.response?.status === 429) {
+      ElMessage.error('请求过于频繁，请稍后再试')
     } else if (error.response?.data?.detail) {
       ElMessage.error(error.response.data.detail)
+    } else if (error.message && error.message.includes('Network')) {
+      ElMessage.error('网络连接失败，请检查网络后重试')
     } else {
       ElMessage.error('重置失败，请稍后重试')
     }
