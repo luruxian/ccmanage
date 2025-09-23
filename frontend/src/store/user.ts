@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import request from '../utils/request';
 
 // 定义用户信息接口
 interface UserState {
@@ -133,6 +134,22 @@ export const useUserStore = defineStore('user', {
           console.error('加载用户信息失败:', error);
           this.logout();
         }
+      }
+    },
+
+    // 检查用户是否有激活的API密钥
+    async hasActiveApiKeys(): Promise<boolean> {
+      try {
+        if (!this.isLoggedIn) {
+          return false;
+        }
+
+        const response: any = await request.get('/api/v1/keys/');
+        const activeKeys = response.keys?.filter((key: any) => key.is_active) || [];
+        return activeKeys.length > 0;
+      } catch (error) {
+        console.error('检查激活密钥失败:', error);
+        return false;
       }
     }
   }

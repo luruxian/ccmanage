@@ -130,10 +130,25 @@ router.beforeEach(async (to, from, next) => {
     // 如果用户已登录且访问登录/注册/验证页，重定向到控制台
     const authPages = ['/login', '/register', '/verify-email', '/verify-success', '/verify-error', '/verify-result', '/meme']
     if (userStore.isLoggedIn && authPages.includes(to.path)) {
-      const redirectPath = userStore.isAdmin ? '/admin/dashboard' : '/dashboard'
-      console.log(`用户已登录，重定向到: ${redirectPath}`)
-      next(redirectPath)
-      return
+      if (userStore.isAdmin) {
+        console.log('管理员用户已登录，重定向到: /admin/dashboard')
+        next('/admin/dashboard')
+        return
+      } else {
+        // 普通用户需要检查是否有激活的API密钥
+        try {
+          const hasActiveKeys = await userStore.hasActiveApiKeys()
+          const redirectPath = hasActiveKeys ? '/dashboard' : '/key-activation'
+          console.log(`普通用户已登录，${hasActiveKeys ? '有激活密钥' : '无激活密钥'}，重定向到: ${redirectPath}`)
+          next(redirectPath)
+          return
+        } catch (error) {
+          console.error('检查用户密钥状态失败:', error)
+          // 如果检查失败，默认跳转到控制台
+          next('/dashboard')
+          return
+        }
+      }
     }
 
     // 检查认证要求

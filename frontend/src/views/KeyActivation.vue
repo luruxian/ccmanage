@@ -189,6 +189,7 @@ const copyToClipboard = async (text: string) => {
 
 const goToDashboard = () => {
   showSuccessDialog.value = false
+  // 激活成功后用户肯定有激活的密钥，直接跳转到控制台
   router.push('/dashboard')
 }
 

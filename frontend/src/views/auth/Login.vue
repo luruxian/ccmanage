@@ -164,8 +164,17 @@ const handleLogin = async () => {
 
     ElMessage.success('登录成功')
 
-    // 跳转到控制台
-    router.push('/dashboard')
+    // 根据用户是否有激活密钥决定跳转页面
+    try {
+      const hasActiveKeys = await userStore.hasActiveApiKeys()
+      const redirectPath = hasActiveKeys ? '/dashboard' : '/key-activation'
+      console.log(`用户登录成功，${hasActiveKeys ? '有激活密钥' : '无激活密钥'}，跳转到: ${redirectPath}`)
+      router.push(redirectPath)
+    } catch (error) {
+      console.error('检查用户密钥状态失败:', error)
+      // 如果检查失败，默认跳转到控制台
+      router.push('/dashboard')
+    }
 
   } catch (error: any) {
     console.error('登录失败:', error)
