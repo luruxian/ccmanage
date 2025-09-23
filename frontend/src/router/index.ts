@@ -6,6 +6,8 @@ import { ElMessage } from 'element-plus'
 // Lazy-loaded route components for better code splitting
 const Login = () => import('../views/auth/Login.vue')
 const Register = () => import('../views/auth/Register.vue')
+const ForgotPassword = () => import('../views/auth/ForgotPassword.vue')
+const ResetPassword = () => import('../views/auth/ResetPassword.vue')
 const EmailVerification = () => import('../views/auth/EmailVerification.vue')
 const VerifySuccess = () => import('../views/auth/VerifySuccess.vue')
 const VerifyError = () => import('../views/auth/VerifyError.vue')
@@ -33,6 +35,16 @@ const routes = [
     path: '/register',
     name: 'Register',
     component: Register
+  },
+  {
+    path: '/forgot-password',
+    name: 'ForgotPassword',
+    component: ForgotPassword
+  },
+  {
+    path: '/reset-password',
+    name: 'ResetPassword',
+    component: ResetPassword
   },
   {
     path: '/verify-email',
@@ -128,7 +140,7 @@ router.beforeEach(async (to, from, next) => {
     })
 
     // 如果用户已登录且访问登录/注册/验证页，重定向到控制台
-    const authPages = ['/login', '/register', '/verify-email', '/verify-success', '/verify-error', '/verify-result', '/meme']
+    const authPages = ['/login', '/register', '/forgot-password', '/reset-password', '/verify-email', '/verify-success', '/verify-error', '/verify-result', '/meme']
     if (userStore.isLoggedIn && authPages.includes(to.path)) {
       if (userStore.isAdmin) {
         console.log('管理员用户已登录，重定向到: /admin/dashboard')

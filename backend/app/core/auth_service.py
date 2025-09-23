@@ -101,8 +101,17 @@ class AuthService:
 
     def create_email_verification(self, db: Session, user_id: str, email: str,
                                 verification_type: str = "register") -> str:
-        """创建邮箱验证记录（基于token）"""
-        verification_token = self.generate_verification_token(email, verification_type)
+        """创建邮箱验证记录"""
+        # 根据验证类型选择不同的验证码生成方式
+        if verification_type == "reset_password":
+            # 密码重置使用6位数字验证码
+            verification_code = self.generate_verification_code()
+            logger.info(f"为密码重置生成6位验证码: {email}")
+        else:
+            # 其他类型（如注册）使用JWT token
+            verification_code = self.generate_verification_token(email, verification_type)
+            logger.info(f"为{verification_type}生成验证token: {email}")
+
         expire_at = datetime.now() + timedelta(minutes=15)  # 15分钟有效期，使用本地时间
 
         # 删除该用户之前未使用的验证记录
@@ -112,11 +121,11 @@ class AuthService:
             EmailVerification.is_used == False
         ).delete()
 
-        # 使用token作为verification_code存储
+        # 存储验证码
         email_verification = EmailVerification(
             user_id=user_id,
             email=email,
-            verification_code=verification_token,
+            verification_code=verification_code,
             verification_type=verification_type,
             expire_at=expire_at
         )
@@ -125,8 +134,8 @@ class AuthService:
         db.commit()
         db.refresh(email_verification)
 
-        logger.info(f"创建邮箱验证记录: {email}, token已生成，过期时间: {expire_at}")
-        return verification_token
+        logger.info(f"创建邮箱验证记录: {email}, 验证码类型: {verification_type}, 过期时间: {expire_at}")
+        return verification_code
 
     def verify_email_code(self, db: Session, email: str, verification_code: str) -> bool:
         """验证邮箱验证码（兼容旧版本）"""

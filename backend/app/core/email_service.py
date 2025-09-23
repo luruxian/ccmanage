@@ -193,7 +193,7 @@ class EmailService:
             "username": username,
             "reset_token": reset_token,
             "app_name": "agnets.app|agnet club",
-            "reset_url": f"http://localhost:5173/reset-password?token={reset_token}&email={email}"
+            "reset_url": f"http://localhost:5173/reset-password?email={email}&code={reset_token}"
         }
 
         html_content = f"""
@@ -208,20 +208,33 @@ class EmailService:
                 <h1 style="color: #dc3545; text-align: center;">{context['app_name']}</h1>
                 <h2 style="color: #333;">密码重置请求</h2>
                 <p>尊敬的 {context['username']}，</p>
-                <p>我们收到了您的密码重置请求。请使用以下验证码重置您的密码：</p>
+                <p>我们收到了您的密码重置请求。请使用以下6位验证码重置您的密码：</p>
 
                 <div style="background-color: #dc3545; color: white; padding: 20px; text-align: center; border-radius: 5px; margin: 20px 0;">
-                    <h3 style="margin: 0; font-size: 24px; letter-spacing: 5px;">{context['reset_code']}</h3>
+                    <h3 style="margin: 0; font-size: 32px; letter-spacing: 8px; font-family: 'Courier New', monospace;">{context['reset_token']}</h3>
+                    <p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.9;">6位验证码</p>
                 </div>
 
                 <p>验证码将在15分钟后失效。</p>
-                <p>您也可以点击以下链接重置密码：</p>
+                <p>您也可以点击以下按钮直接跳转到密码重置页面：</p>
                 <p style="text-align: center;">
                     <a href="{context['reset_url']}"
-                       style="background-color: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-                       重置密码
+                       style="background-color: #dc3545; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: inline-block; margin-bottom: 20px;">
+                       🔐 重置密码
                     </a>
                 </p>
+
+                <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #6c757d; margin: 20px 0;">
+                    <p style="color: #6c757d; font-size: 14px; margin: 0 0 10px 0;">
+                        <strong>📱 按钮无法点击？</strong>
+                    </p>
+                    <p style="color: #6c757d; font-size: 13px; margin: 0; line-height: 1.5;">
+                        请复制以下链接到您的浏览器地址栏中打开：<br>
+                        <span style="word-break: break-all; font-family: 'Courier New', monospace; background: #e9ecef; padding: 2px 4px; border-radius: 3px; font-size: 12px;">
+                            {context['reset_url']}
+                        </span>
+                    </p>
+                </div>
 
                 <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
                 <p style="color: #666; font-size: 12px;">
