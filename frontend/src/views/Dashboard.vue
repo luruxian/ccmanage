@@ -97,13 +97,20 @@
             <ElCard class="mb-4">
               <ElRow :gutter="16" class="filter-row">
                 <ElCol :span="8">
-                  <ElInput
-                    v-model="keyFilters.search"
-                    placeholder="搜索密钥名称..."
-                    :prefix-icon="ElIconSearch"
+                  <ElSelect
+                    v-model="keyFilters.package"
+                    placeholder="筛选订阅"
                     clearable
-                    @input="filterKeys"
-                  />
+                    @change="filterKeys"
+                  >
+                    <ElOption label="全部订阅" value="" />
+                    <ElOption
+                      v-for="packageName in uniquePackages"
+                      :key="packageName"
+                      :label="packageName || '未知订阅'"
+                      :value="packageName || ''"
+                    />
+                  </ElSelect>
                 </ElCol>
                 <ElCol :span="6">
                   <ElSelect
@@ -152,10 +159,10 @@
               </div>
               <div v-else>
                 <ElTable :data="filteredKeys" stripe>
-                  <ElTableColumn prop="package_name" label="套餐名称" min-width="150">
+                  <ElTableColumn prop="package_name" label="订阅名称" min-width="150">
                     <template #default="scope">
                       <div class="key-name-cell">
-                        <strong>{{ scope.row.package_name || '未知套餐' }}</strong>
+                        <strong>{{ scope.row.package_name || '未知订阅' }}</strong>
                       </div>
                     </template>
                   </ElTableColumn>
@@ -940,7 +947,7 @@ sudo yum install -y nodejs</code></pre>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   ElCard,
@@ -1007,7 +1014,7 @@ const keyStats = reactive({
 })
 
 const keyFilters = reactive({
-  search: '',
+  package: '',
   status: '',
   usage: ''
 })
@@ -1027,6 +1034,17 @@ const planInfo = reactive({
 
 const installMethod = ref('npm')
 const nodeInstallMethod = ref('windows-node')
+
+// 计算唯一的订阅列表
+const uniquePackages = computed(() => {
+  const packages = new Set()
+  apiKeys.value.forEach(key => {
+    if (key.package_name) {
+      packages.add(key.package_name)
+    }
+  })
+  return Array.from(packages).sort()
+})
 
 
 const loadUserKeys = async () => {
@@ -1109,9 +1127,9 @@ const refreshKeys = () => {
 const filterKeys = () => {
   let filtered = [...apiKeys.value]
 
-  if (keyFilters.search) {
+  if (keyFilters.package) {
     filtered = filtered.filter(key =>
-      key.key_name.toLowerCase().includes(keyFilters.search.toLowerCase())
+      key.package_name === keyFilters.package
     )
   }
 
@@ -1161,7 +1179,7 @@ const viewKeyDetails = (key: any) => {
   ElMessageBox.alert(
     `
     <div>
-      <p><strong>套餐名称:</strong> ${key.package_name || '未知套餐'}</p>
+      <p><strong>订阅名称:</strong> ${key.package_name || '未知订阅'}</p>
       <p><strong>API密钥:</strong> ${key.api_key}</p>
       <p><strong>状态:</strong> ${key.is_active ? '激活' : '禁用'}</p>
       <p><strong>使用次数:</strong> ${key.usage_count || 0}</p>
