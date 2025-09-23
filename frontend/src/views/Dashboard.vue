@@ -183,11 +183,6 @@
                       </ElTag>
                     </template>
                   </ElTableColumn>
-                  <ElTableColumn prop="usage_count" label="使用次数" width="100">
-                    <template #default="scope">
-                      <span class="usage-count">{{ scope.row.usage_count || 0 }}</span>
-                    </template>
-                  </ElTableColumn>
                   <ElTableColumn prop="last_used_at" label="最后使用" min-width="150">
                     <template #default="scope">
                       <span v-if="scope.row.last_used_at" class="last-used">
@@ -201,29 +196,15 @@
                       {{ formatDate(scope.row.created_at) }}
                     </template>
                   </ElTableColumn>
-                  <ElTableColumn label="操作" width="280">
+                  <ElTableColumn label="操作" width="200">
                     <template #default="scope">
                       <div class="action-buttons">
-                        <ElButton
-                          :type="scope.row.is_active ? 'warning' : 'success'"
-                          size="small"
-                          @click="toggleKeyStatus(scope.row)"
-                        >
-                          {{ scope.row.is_active ? '禁用' : '启用' }}
-                        </ElButton>
                         <ElButton
                           type="primary"
                           size="small"
                           @click="viewUsageHistory(scope.row)"
                         >
                           使用履历
-                        </ElButton>
-                        <ElButton
-                          type="info"
-                          size="small"
-                          @click="viewKeyDetails(scope.row)"
-                        >
-                          详情
                         </ElButton>
                         <ElButton
                           type="danger"
@@ -1182,7 +1163,6 @@ const viewKeyDetails = (key: any) => {
       <p><strong>订阅名称:</strong> ${key.package_name || '未知订阅'}</p>
       <p><strong>API密钥:</strong> ${key.api_key}</p>
       <p><strong>状态:</strong> ${key.is_active ? '激活' : '禁用'}</p>
-      <p><strong>使用次数:</strong> ${key.usage_count || 0}</p>
       <p><strong>创建时间:</strong> ${formatDate(key.created_at)}</p>
       <p><strong>最后使用:</strong> ${key.last_used_at ? formatDate(key.last_used_at) : '从未使用'}</p>
     </div>
