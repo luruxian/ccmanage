@@ -250,44 +250,437 @@
           <!-- 安装Claude Code -->
           <div v-if="activeTab === 'getting-started'" class="tab-content">
             <h2 class="mb-4">安装Claude Code</h2>
-            <ElCard>
-              <div class="getting-started-content">
-                <div class="welcome-section">
-                  <h3>欢迎使用Claude Code</h3>
-                  <p class="text-muted">快速安装和配置您的AI编程工具</p>
+
+            <!-- 系统要求 -->
+            <ElCard class="mb-4">
+              <template #header>
+                <h4>💻 系统要求</h4>
+              </template>
+              <div class="requirements-content">
+                <p class="text-muted mb-3">在开始安装之前，请确保您的系统满足以下要求：</p>
+                <ul class="requirements-list">
+                  <li><strong>Node.js 18+</strong> （用于NPM安装方式）</li>
+                  <li><strong>Git</strong> （推荐，用于版本控制功能）</li>
+                  <li><strong>稳定的网络连接</strong> （用于AI功能）</li>
+                </ul>
+              </div>
+            </ElCard>
+
+            <!-- Node.js安装指南 -->
+            <ElCard class="mb-4">
+              <template #header>
+                <h4>📦 Node.js 安装指南</h4>
+              </template>
+              <div class="nodejs-install-content">
+                <p class="text-muted mb-3">如果您还没有安装Node.js，请按照以下步骤安装：</p>
+
+                <div class="nodejs-methods">
+                  <ElTabs v-model="nodeInstallMethod" type="card">
+                    <!-- Windows Node.js安装 -->
+                    <ElTabPane label="Windows" name="windows-node">
+                      <div class="nodejs-method">
+                        <h5>🪟 官方安装包（推荐）</h5>
+                        <p class="method-desc">下载官方安装包，傻瓜式安装</p>
+                        <div class="install-steps">
+                          <ol>
+                            <li>访问 <a href="https://nodejs.org" target="_blank" class="link-primary">https://nodejs.org</a></li>
+                            <li>下载LTS版本（长期支持版本）</li>
+                            <li>运行下载的.msi文件</li>
+                            <li>按照安装向导完成安装</li>
+                          </ol>
+                        </div>
+
+                      </div>
+                    </ElTabPane>
+
+                    <!-- macOS Node.js安装 -->
+                    <ElTabPane label="macOS" name="macos-node">
+                      <div class="nodejs-method">
+                        <h5>🍎 官方安装包</h5>
+                        <p class="method-desc">下载官方pkg包安装</p>
+                        <div class="install-steps">
+                          <ol>
+                            <li>访问 <a href="https://nodejs.org" target="_blank" class="link-primary">https://nodejs.org</a></li>
+                            <li>下载LTS版本的.pkg文件</li>
+                            <li>双击运行安装包</li>
+                            <li>按照安装向导完成安装</li>
+                          </ol>
+                        </div>
+
+                        <h5 class="mt-4">🍺 Homebrew安装（推荐）</h5>
+                        <p class="method-desc">使用macOS包管理器</p>
+                        <div class="code-block">
+                          <div class="code-header">
+                            <span>Terminal</span>
+                            <ElButton size="small" @click="copyToClipboard('brew install node')">复制</ElButton>
+                          </div>
+                          <pre><code>brew install node</code></pre>
+                        </div>
+                      </div>
+                    </ElTabPane>
+
+                    <!-- Linux Node.js安装 -->
+                    <ElTabPane label="Linux" name="linux-node">
+                      <div class="nodejs-method">
+                        <h5>📦 包管理器安装</h5>
+                        <p class="method-desc">使用系统包管理器安装</p>
+
+                        <div class="linux-distros">
+                          <div class="distro-item">
+                            <h6>Ubuntu/Debian:</h6>
+                            <div class="code-block">
+                              <div class="code-header">
+                                <span>Terminal</span>
+                                <ElButton size="small" @click="copyToClipboard('curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -\\nsudo apt-get install -y nodejs')">复制</ElButton>
+                              </div>
+                              <pre><code>curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+sudo apt-get install -y nodejs</code></pre>
+                            </div>
+                          </div>
+
+                          <div class="distro-item">
+                            <h6>CentOS/RHEL/Fedora:</h6>
+                            <div class="code-block">
+                              <div class="code-header">
+                                <span>Terminal</span>
+                                <ElButton size="small" @click="copyToClipboard('curl -fsSL https://rpm.nodesource.com/setup_lts.x | sudo bash -\\nsudo yum install -y nodejs')">复制</ElButton>
+                              </div>
+                              <pre><code>curl -fsSL https://rpm.nodesource.com/setup_lts.x | sudo bash -
+sudo yum install -y nodejs</code></pre>
+                            </div>
+                          </div>
+
+                          <div class="distro-item">
+                            <h6>Arch Linux:</h6>
+                            <div class="code-block">
+                              <div class="code-header">
+                                <span>Terminal</span>
+                                <ElButton size="small" @click="copyToClipboard('sudo pacman -S nodejs npm')">复制</ElButton>
+                              </div>
+                              <pre><code>sudo pacman -S nodejs npm</code></pre>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </ElTabPane>
+                  </ElTabs>
                 </div>
 
-                <div class="quick-start-steps mt-4">
-                  <div class="step-item">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                      <h4>下载安装Claude Code</h4>
-                      <p>从官方渠道下载并安装Claude Code扩展或客户端</p>
+                <!-- Node.js安装验证 -->
+                <div class="nodejs-verification mt-4">
+                  <h5>✅ 验证Node.js安装</h5>
+                  <p class="text-muted mb-3">安装完成后，请运行以下命令确认安装成功：</p>
+
+                  <div class="verification-steps">
+                    <div class="verification-step">
+                      <h6>1️⃣ 验证 Node.js 安装</h6>
+                      <div class="code-block">
+                        <div class="code-header">
+                          <span>终端/命令提示符</span>
+                          <ElButton size="small" @click="copyToClipboard('node --version')">复制</ElButton>
+                        </div>
+                        <pre><code>node --version</code></pre>
+                      </div>
+                      <div class="expected-output">
+                        <p><strong>期望输出：</strong> <code>v18.x.x</code> 或更高版本</p>
+                      </div>
+                    </div>
+
+                    <div class="verification-step">
+                      <h6>2️⃣ 验证 NPM 安装</h6>
+                      <div class="code-block">
+                        <div class="code-header">
+                          <span>终端/命令提示符</span>
+                          <ElButton size="small" @click="copyToClipboard('npm --version')">复制</ElButton>
+                        </div>
+                        <pre><code>npm --version</code></pre>
+                      </div>
+                      <div class="expected-output">
+                        <p><strong>期望输出：</strong> <code>9.x.x</code> 或更高版本</p>
+                      </div>
                     </div>
                   </div>
 
-                  <div class="step-item">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                      <h4>激活API密钥</h4>
-                      <p>前往"API密钥"页面激活您的专属密钥</p>
+                  <div class="nodejs-troubleshooting mt-3">
+                    <h6>🔧 常见问题</h6>
+                    <div class="troubleshooting-items">
+                      <div class="troubleshooting-item">
+                        <strong>❌ 命令未找到：</strong>
+                        <ul>
+                          <li>重新启动终端/命令提示符</li>
+                          <li>Windows用户可能需要重启计算机</li>
+                          <li>确认安装路径已添加到系统PATH环境变量</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ElCard>
+
+            <!-- 安装方法选择 -->
+            <ElCard class="mb-4">
+              <template #header>
+                <h4>🚀 Claude Code安装方法</h4>
+              </template>
+              <div class="install-methods">
+                <div class="method-tabs">
+                  <ElTabs v-model="installMethod" type="card">
+                    <!-- NPM安装 -->
+                    <ElTabPane label="NPM 安装（推荐）" name="npm">
+                      <div class="install-content">
+                        <p class="text-muted mb-3">适用于所有支持Node.js的系统，安装简单快速</p>
+                        <div class="code-block">
+                          <div class="code-header">
+                            <span>Terminal / 命令提示符</span>
+                            <ElButton size="small" @click="copyToClipboard('npm install -g @anthropic-ai/claude-code')">复制</ElButton>
+                          </div>
+                          <pre><code>npm install -g @anthropic-ai/claude-code</code></pre>
+                        </div>
+                        <div class="install-note">
+                          <p><strong>📝 注意：</strong></p>
+                          <ul>
+                            <li>需要先安装 Node.js 18 或更高版本</li>
+                            <li>在某些系统上可能需要管理员权限（sudo）</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </ElTabPane>
+
+                    <!-- Windows安装 -->
+                    <ElTabPane label="Windows" name="windows">
+                      <div class="install-content">
+                        <p class="text-muted mb-3">Windows系统专用安装方法</p>
+
+                        <div class="os-method mb-4">
+                          <h5>🔵 PowerShell 安装（推荐）</h5>
+                          <div class="code-block">
+                            <div class="code-header">
+                              <span>PowerShell（以管理员身份运行）</span>
+                              <ElButton size="small" @click="copyToClipboard('irm https://claude.ai/install.ps1 | iex')">复制</ElButton>
+                            </div>
+                            <pre><code>irm https://claude.ai/install.ps1 | iex</code></pre>
+                          </div>
+                        </div>
+
+                        <div class="os-method">
+                          <h5>⬛ 命令提示符 (CMD)</h5>
+                          <div class="code-block">
+                            <div class="code-header">
+                              <span>命令提示符（以管理员身份运行）</span>
+                              <ElButton size="small" @click="copyToClipboard('curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd')">复制</ElButton>
+                            </div>
+                            <pre><code>curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd</code></pre>
+                          </div>
+                        </div>
+
+                        <div class="install-note">
+                          <p><strong>💡 Windows 小贴士：</strong></p>
+                          <ul>
+                            <li>右键点击 PowerShell 或 CMD，选择"以管理员身份运行"</li>
+                            <li>如果遇到执行策略问题，先运行：<code>Set-ExecutionPolicy RemoteSigned</code></li>
+                            <li>安装完成后重启终端以使用 <code>claude</code> 命令</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </ElTabPane>
+
+                    <!-- macOS安装 -->
+                    <ElTabPane label="macOS" name="macos">
+                      <div class="install-content">
+                        <p class="text-muted mb-3">macOS系统专用安装方法</p>
+
+                        <div class="os-method">
+                          <h5>🍎 一键安装脚本</h5>
+                          <div class="code-block">
+                            <div class="code-header">
+                              <span>Terminal</span>
+                              <ElButton size="small" @click="copyToClipboard('curl -fsSL https://claude.ai/install.sh | bash')">复制</ElButton>
+                            </div>
+                            <pre><code>curl -fsSL https://claude.ai/install.sh | bash</code></pre>
+                          </div>
+                        </div>
+
+                        <div class="install-note">
+                          <p><strong>🍎 macOS 小贴士：</strong></p>
+                          <ul>
+                            <li>打开 Terminal（终端）应用程序</li>
+                            <li>如果提示权限问题，可能需要在命令前加 <code>sudo</code></li>
+                            <li>首次运行可能会触发 macOS 安全提示，请允许执行</li>
+                            <li>如果使用 Homebrew，也可以通过包管理器安装</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </ElTabPane>
+
+                    <!-- Linux安装 -->
+                    <ElTabPane label="Linux" name="linux">
+                      <div class="install-content">
+                        <p class="text-muted mb-3">Linux系统专用安装方法</p>
+
+                        <div class="os-method">
+                          <h5>🐧 一键安装脚本</h5>
+                          <div class="code-block">
+                            <div class="code-header">
+                              <span>Terminal</span>
+                              <ElButton size="small" @click="copyToClipboard('curl -fsSL https://claude.ai/install.sh | bash')">复制</ElButton>
+                            </div>
+                            <pre><code>curl -fsSL https://claude.ai/install.sh | bash</code></pre>
+                          </div>
+                        </div>
+
+                        <div class="install-note">
+                          <p><strong>🐧 Linux 小贴士：</strong></p>
+                          <ul>
+                            <li>大多数发行版都支持该安装脚本</li>
+                            <li>如果需要管理员权限，在命令前加 <code>sudo</code></li>
+                            <li>确保已安装 <code>curl</code> 或 <code>wget</code></li>
+                            <li>安装完成后可能需要重新加载 shell 配置：<code>source ~/.bashrc</code></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </ElTabPane>
+                  </ElTabs>
+                </div>
+
+                <!-- Claude Code安装验证 -->
+                <div class="claude-verification mt-4">
+                  <h5>✅ 验证Claude Code安装</h5>
+                  <p class="text-muted mb-3">安装完成后，请运行以下命令确认Claude Code安装成功：</p>
+
+                  <div class="verification-steps">
+                    <div class="verification-step">
+                      <h6>1️⃣ 验证 Claude Code 安装</h6>
+                      <div class="code-block">
+                        <div class="code-header">
+                          <span>终端/命令提示符</span>
+                          <ElButton size="small" @click="copyToClipboard('claude --version')">复制</ElButton>
+                        </div>
+                        <pre><code>claude --version</code></pre>
+                      </div>
+                      <div class="expected-output">
+                        <p><strong>期望输出：</strong> Claude Code版本信息</p>
+                      </div>
+                    </div>
+
+                    <div class="verification-step">
+                      <h6>2️⃣ 测试 Claude Code 功能</h6>
+                      <div class="code-block">
+                        <div class="code-header">
+                          <span>终端/命令提示符</span>
+                          <ElButton size="small" @click="copyToClipboard('claude /help')">复制</ElButton>
+                        </div>
+                        <pre><code>claude /help</code></pre>
+                      </div>
+                      <div class="expected-output">
+                        <p><strong>期望输出：</strong> Claude Code帮助信息和可用命令列表</p>
+                      </div>
                     </div>
                   </div>
 
-                  <div class="step-item">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                      <h4>选择订阅计划</h4>
-                      <p>在"订阅一览"中选择适合的计划</p>
+                  <div class="claude-troubleshooting mt-3">
+                    <h6>🔧 常见问题</h6>
+                    <div class="troubleshooting-items">
+                      <div class="troubleshooting-item">
+                        <strong>❌ 命令未找到：</strong>
+                        <ul>
+                          <li>重新启动终端/命令提示符</li>
+                          <li>确认安装路径已添加到系统PATH环境变量</li>
+                          <li>Windows用户可能需要重启计算机</li>
+                        </ul>
+                      </div>
+                      <div class="troubleshooting-item">
+                        <strong>❌ 权限错误：</strong>
+                        <ul>
+                          <li>使用管理员权限运行终端</li>
+                          <li>Linux/macOS用户可能需要使用 <code>sudo</code></li>
+                        </ul>
+                      </div>
+                      <div class="troubleshooting-item">
+                        <strong>❌ 版本过低：</strong>
+                        <ul>
+                          <li>运行 <code>npm update -g @anthropic-ai/claude-code</code> 更新Claude Code</li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
+                </div>
+              </div>
+            </ElCard>
 
-                  <div class="step-item">
-                    <div class="step-number">4</div>
-                    <div class="step-content">
-                      <h4>开始编程</h4>
-                      <p>配置完成，开始使用Claude Code提升开发效率</p>
+            <!-- 使用指南 -->
+            <ElCard class="mb-4">
+              <template #header>
+                <h4>📚 快速使用指南</h4>
+              </template>
+              <div class="usage-guide">
+                <div class="row">
+                  <div class="col-md-6">
+                    <h5>🎯 基本命令</h5>
+                    <div class="command-list">
+                      <div class="command-item">
+                        <code>claude</code>
+                        <span>启动交互式会话</span>
+                      </div>
+                      <div class="command-item">
+                        <code>claude "任务描述"</code>
+                        <span>执行一次性任务</span>
+                      </div>
+                      <div class="command-item">
+                        <code>claude commit</code>
+                        <span>创建Git提交</span>
+                      </div>
+                      <div class="command-item">
+                        <code>/help</code>
+                        <span>显示帮助信息</span>
+                      </div>
                     </div>
+                  </div>
+                  <div class="col-md-6">
+                    <h5>💡 使用技巧</h5>
+                    <ul class="tips-list">
+                      <li>使用自然语言描述您的需求</li>
+                      <li>将复杂任务拆分为多个步骤</li>
+                      <li>使用 Tab 键进行命令补全</li>
+                      <li>按 ↑ 键查看命令历史</li>
+                      <li>在项目目录中运行获得最佳效果</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </ElCard>
+
+            <!-- 示例使用 -->
+            <ElCard>
+              <template #header>
+                <h4>🌟 示例使用</h4>
+              </template>
+              <div class="examples">
+                <p class="text-muted mb-3">以下是一些常见的使用示例：</p>
+                <div class="example-list">
+                  <div class="example-item">
+                    <div class="example-command">
+                      <code>"这个项目是做什么的？"</code>
+                    </div>
+                    <div class="example-desc">了解项目概况</div>
+                  </div>
+                  <div class="example-item">
+                    <div class="example-command">
+                      <code>"添加一个hello world函数"</code>
+                    </div>
+                    <div class="example-desc">生成代码</div>
+                  </div>
+                  <div class="example-item">
+                    <div class="example-command">
+                      <code>"修复这个bug"</code>
+                    </div>
+                    <div class="example-desc">调试和修复</div>
+                  </div>
+                  <div class="example-item">
+                    <div class="example-command">
+                      <code>"提交我的更改"</code>
+                    </div>
+                    <div class="example-desc">Git操作</div>
                   </div>
                 </div>
               </div>
@@ -567,7 +960,9 @@ import {
   ElRow,
   ElCol,
   ElSkeleton,
-  ElPagination
+  ElPagination,
+  ElTabs,
+  ElTabPane
 } from 'element-plus'
 import {
   Key as ElIconKey,
@@ -630,6 +1025,9 @@ const planInfo = reactive({
   total_credits: 0,
   usage_percentage: 0
 })
+
+const installMethod = ref('npm')
+const nodeInstallMethod = ref('windows-node')
 
 
 const loadUserKeys = async () => {
@@ -810,6 +1208,15 @@ const handleKeyPageChange = (page: number) => {
 const handleKeySizeChange = (size: number) => {
   keyPagination.size = size
   keyPagination.current = 1
+}
+
+const copyToClipboard = async (text: string) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    ElMessage.success('复制成功')
+  } catch (error) {
+    ElMessage.error('复制失败，请手动复制')
+  }
 }
 
 onMounted(() => {
@@ -1239,6 +1646,407 @@ onMounted(() => {
   line-height: 1.8;
 }
 
+/* 安装页面样式 */
+.requirements-content {
+  padding: 16px 0;
+}
+
+.requirements-list {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.requirements-list li {
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.install-methods {
+  padding: 16px 0;
+}
+
+.method-tabs {
+  margin-bottom: 20px;
+}
+
+.install-content {
+  padding: 20px 0;
+}
+
+.code-block {
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  margin: 16px 0;
+  overflow: hidden;
+}
+
+.code-header {
+  background: #f6f8fa;
+  padding: 8px 16px;
+  border-bottom: 1px solid #e1e4e8;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #586069;
+}
+
+.code-block pre {
+  margin: 0;
+  padding: 16px;
+  background: #f6f8fa;
+  color: #24292e;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 14px;
+  line-height: 1.45;
+  overflow-x: auto;
+}
+
+.install-note {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+.install-note p {
+  margin-bottom: 8px;
+  color: #856404;
+}
+
+.install-note ul {
+  margin: 8px 0 0 0;
+  padding-left: 20px;
+}
+
+.install-note li {
+  margin-bottom: 4px;
+  color: #856404;
+}
+
+.install-note code {
+  background: #f8f9fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 12px;
+  color: #d73a49;
+}
+
+.os-method {
+  margin-bottom: 24px;
+}
+
+.os-method h5 {
+  margin-bottom: 12px;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.usage-guide {
+  padding: 20px 0;
+}
+
+.command-list {
+  margin-top: 16px;
+}
+
+.command-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f2f5;
+}
+
+.command-item:last-child {
+  border-bottom: none;
+}
+
+.command-item code {
+  background: #f6f8fa;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 13px;
+  color: #d73a49;
+  margin-right: 12px;
+  min-width: 120px;
+}
+
+.command-item span {
+  color: #666;
+  font-size: 14px;
+}
+
+.tips-list {
+  margin: 16px 0 0 0;
+  padding-left: 20px;
+}
+
+.tips-list li {
+  margin-bottom: 8px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.examples {
+  padding: 20px 0;
+}
+
+.example-list {
+  margin-top: 16px;
+}
+
+.example-item {
+  margin-bottom: 16px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #409eff;
+}
+
+.example-command {
+  margin-bottom: 8px;
+}
+
+.example-command code {
+  background: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 14px;
+  color: #24292e;
+  border: 1px solid #e1e4e8;
+}
+
+.example-desc {
+  color: #666;
+  font-size: 13px;
+  margin-left: 4px;
+}
+
+/* Node.js安装页面样式 */
+.nodejs-install-content {
+  padding: 16px 0;
+}
+
+.nodejs-methods {
+  margin-top: 16px;
+}
+
+.nodejs-method {
+  padding: 20px 0;
+}
+
+.method-desc {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.install-steps {
+  margin: 16px 0;
+}
+
+.install-steps ol {
+  padding-left: 24px;
+}
+
+.install-steps li {
+  margin-bottom: 8px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.install-steps .link-primary {
+  color: #409eff;
+  text-decoration: none;
+}
+
+.install-steps .link-primary:hover {
+  text-decoration: underline;
+}
+
+.linux-distros {
+  margin-top: 16px;
+}
+
+.distro-item {
+  margin-bottom: 24px;
+}
+
+.distro-item h6 {
+  margin-bottom: 8px;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* Node.js验证样式 */
+.nodejs-verification {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e6f7ff;
+  background: #f6ffed;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.nodejs-verification h5 {
+  margin-bottom: 12px;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.nodejs-verification h6 {
+  margin-bottom: 12px;
+  color: #2c3e50;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.nodejs-troubleshooting {
+  margin-top: 20px;
+}
+
+.nodejs-troubleshooting h6 {
+  margin-bottom: 12px;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* Claude Code验证样式 */
+.claude-verification {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e6f7ff;
+  background: #f0f9ff;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.claude-verification h5 {
+  margin-bottom: 12px;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.claude-verification h6 {
+  margin-bottom: 12px;
+  color: #2c3e50;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.claude-troubleshooting {
+  margin-top: 20px;
+}
+
+.claude-troubleshooting h6 {
+  margin-bottom: 12px;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* 版本验证样式 */
+.verification-content {
+  padding: 16px 0;
+}
+
+.verification-steps {
+  margin-top: 16px;
+}
+
+.verification-step {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #f0f2f5;
+}
+
+.verification-step:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.verification-step h5 {
+  margin-bottom: 16px;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.expected-output {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 4px;
+}
+
+.expected-output p {
+  margin: 0;
+  font-size: 14px;
+  color: #0c4a6e;
+}
+
+.expected-output code {
+  background: #dbeafe;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 13px;
+  color: #1e40af;
+}
+
+.troubleshooting {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f2f5;
+}
+
+.troubleshooting h5 {
+  margin-bottom: 16px;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.troubleshooting-items {
+  margin-top: 16px;
+}
+
+.troubleshooting-item {
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #fef3c7;
+  border: 1px solid #fbbf24;
+  border-radius: 8px;
+}
+
+.troubleshooting-item h6 {
+  margin-bottom: 8px;
+  color: #92400e;
+  font-weight: 600;
+}
+
+.troubleshooting-item ul {
+  margin: 8px 0 0 0;
+  padding-left: 20px;
+}
+
+.troubleshooting-item li {
+  margin-bottom: 4px;
+  color: #92400e;
+  line-height: 1.5;
+}
+
+.troubleshooting-item code {
+  background: #fef9e7;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 12px;
+  color: #b45309;
+}
+
 /* 移动端适配 */
 @media (max-width: 768px) {
   .key-actions {
@@ -1252,6 +2060,21 @@ onMounted(() => {
   .api-key-cell {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .code-block pre {
+    font-size: 12px;
+    padding: 12px;
+  }
+
+  .command-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .command-item code {
+    margin-bottom: 4px;
+    min-width: auto;
   }
 }
 </style>

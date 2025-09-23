@@ -11,7 +11,9 @@
       "Bash(netstat:*)",
       "Bash(taskkill:*)",
       "Bash(curl:*)",
-      "Bash(npm --version)"
+      "Bash(npm --version)",
+      "WebFetch(domain:gaccode.com)",
+      "WebFetch(domain:docs.claude.com)"
     ],
     "deny": [],
     "ask": []
