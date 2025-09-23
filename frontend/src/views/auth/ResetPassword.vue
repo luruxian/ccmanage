@@ -173,7 +173,7 @@ const passwordStrength = ref({
 })
 
 // 自定义密码确认验证器
-const validateConfirmPassword = (rule: any, value: string, callback: any) => {
+const validateConfirmPassword = (_rule: any, value: string, callback: any) => {
   if (value === '') {
     callback(new Error('请确认密码'))
   } else if (value !== resetForm.new_password) {

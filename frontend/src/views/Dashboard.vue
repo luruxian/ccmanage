@@ -106,9 +106,9 @@
                     <ElOption label="全部订阅" value="" />
                     <ElOption
                       v-for="packageName in uniquePackages"
-                      :key="packageName"
-                      :label="packageName || '未知订阅'"
-                      :value="packageName || ''"
+                      :key="String(packageName)"
+                      :label="String(packageName || '未知订阅')"
+                      :value="String(packageName || '')"
                     />
                   </ElSelect>
                 </ElCol>
@@ -1030,12 +1030,10 @@ import {
   ElTableColumn,
   ElButton,
   ElTag,
-  ElAvatar,
   ElIcon,
   ElProgress,
   ElMessage,
   ElMessageBox,
-  ElInput,
   ElSelect,
   ElOption,
   ElRow,
@@ -1051,9 +1049,7 @@ import {
   Setting as ElIconSetting,
   SwitchButton as ElIconSwitchButton,
   Plus as ElIconPlus,
-  Box as ElIconBox,
   Refresh as ElIconRefresh,
-  Search as ElIconSearch,
   CopyDocument as ElIconCopyDocument,
   VideoPlay as ElIconVideoPlay,
   List as ElIconList,
@@ -1074,6 +1070,7 @@ interface ApiKey {
   usage_count?: number
   last_used_at?: string
   created_at: string
+  package_name?: string
 }
 
 const activeTab = ref('keys')
@@ -1178,15 +1175,16 @@ const loadPlanStatus = async () => {
   }
 }
 
-const toggleKeyStatus = async (key: any) => {
-  try {
-    await request.put(`/api/v1/keys/${key.id}/toggle`)
-    key.is_active = !key.is_active
-    ElMessage.success(`密钥已${key.is_active ? '启用' : '禁用'}`)
-  } catch (error) {
-    ElMessage.error('操作失败')
-  }
-}
+// 已删除禁用/启用按钮，此函数暂时保留
+// const toggleKeyStatus = async (key: any) => {
+//   try {
+//     await request.put(`/api/v1/keys/${key.id}/toggle`)
+//     key.is_active = !key.is_active
+//     ElMessage.success(`密钥已${key.is_active ? '启用' : '禁用'}`)
+//   } catch (error) {
+//     ElMessage.error('操作失败')
+//   }
+// }
 
 const deleteKey = async (key: any) => {
   try {
@@ -1271,24 +1269,25 @@ const viewUsageHistory = (key: any) => {
   router.push(`/usage-history/${key.api_key}`)
 }
 
-const viewKeyDetails = (key: any) => {
-  ElMessageBox.alert(
-    `
-    <div>
-      <p><strong>订阅名称:</strong> ${key.package_name || '未知订阅'}</p>
-      <p><strong>API密钥:</strong> ${key.api_key}</p>
-      <p><strong>状态:</strong> ${key.is_active ? '激活' : '禁用'}</p>
-      <p><strong>创建时间:</strong> ${formatDate(key.created_at)}</p>
-      <p><strong>最后使用:</strong> ${key.last_used_at ? formatDate(key.last_used_at) : '从未使用'}</p>
-    </div>
-    `,
-    '密钥详情',
-    {
-      dangerouslyUseHTMLString: true,
-      confirmButtonText: '关闭'
-    }
-  )
-}
+// 已删除详情按钮，此函数暂时保留
+// const viewKeyDetails = (key: any) => {
+//   ElMessageBox.alert(
+//     `
+//     <div>
+//       <p><strong>订阅名称:</strong> ${key.package_name || '未知订阅'}</p>
+//       <p><strong>API密钥:</strong> ${key.api_key}</p>
+//       <p><strong>状态:</strong> ${key.is_active ? '激活' : '禁用'}</p>
+//       <p><strong>创建时间:</strong> ${formatDate(key.created_at)}</p>
+//       <p><strong>最后使用:</strong> ${key.last_used_at ? formatDate(key.last_used_at) : '从未使用'}</p>
+//     </div>
+//     `,
+//     '密钥详情',
+//     {
+//       dangerouslyUseHTMLString: true,
+//       confirmButtonText: '关闭'
+//     }
+//   )
+// }
 
 const formatDate = (dateStr: string) => {
   if (!dateStr) return '-'

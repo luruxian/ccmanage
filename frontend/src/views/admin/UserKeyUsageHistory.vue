@@ -40,13 +40,13 @@
                 </ElTag>
               </ElDescriptionsItem>
               <ElDescriptionsItem label="激活时间">
-                {{ formatDate(keyInfo.activation_date) || '未激活' }}
+                {{ keyInfo.activation_date ? formatDate(keyInfo.activation_date) : '未激活' }}
               </ElDescriptionsItem>
               <ElDescriptionsItem label="过期时间">
-                {{ formatDate(keyInfo.expire_date) || '-' }}
+                {{ keyInfo.expire_date ? formatDate(keyInfo.expire_date) : '-' }}
               </ElDescriptionsItem>
               <ElDescriptionsItem label="最后使用">
-                {{ formatDate(keyInfo.last_used_at) || '未使用' }}
+                {{ keyInfo.last_used_at ? formatDate(keyInfo.last_used_at) : '未使用' }}
               </ElDescriptionsItem>
             </ElDescriptions>
           </div>
