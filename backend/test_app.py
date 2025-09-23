@@ -72,7 +72,7 @@ def test_config():
 
 if __name__ == "__main__":
     print("=" * 50)
-    print("CCManage 后端重构测试")
+    print("agnets.app 后端重构测试")
     print("=" * 50)
 
     tests = [

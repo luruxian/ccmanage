@@ -65,7 +65,7 @@ def read_root():
 
     return {
         "status": "ok",
-        "message": "CCManage backend service is running",
+        "message": "agnets.app backend service is running",
         "database": db_status,
         "version": settings.VERSION
     }

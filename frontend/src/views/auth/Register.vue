@@ -8,12 +8,12 @@
             <div class="logo-icon">
               <i class="fas fa-user-plus"></i>
             </div>
-            <h1 class="brand-title">CCManage</h1>
+            <h1 class="brand-title">agnets.app</h1>
           </div>
 
           <div class="brand-slogan">
-            <h2>开始使用CCManage</h2>
-            <p class="lead">安全、高效的API密钥管理平台</p>
+            <h2>开始使用agnets.app</h2>
+            <p class="lead">安全、高效的AI工具</p>
           </div>
         </div>
       </div>
@@ -30,7 +30,7 @@
 
           <div class="auth-header">
             <h2 class="auth-title">创建账户</h2>
-            <p class="auth-subtitle">注册您的CCManage账户</p>
+            <p class="auth-subtitle">注册您的agnets.app账户</p>
           </div>
 
           <ElForm

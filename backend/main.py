@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-CCManage Backend Service
+agnets.app Backend Service
 
 应用入口点
 """

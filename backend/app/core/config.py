@@ -9,8 +9,8 @@ class Settings:
     """应用配置"""
 
     # 项目信息
-    PROJECT_NAME: str = "CCManage API"
-    PROJECT_DESCRIPTION: str = "CCManage系统的后端API服务"
+    PROJECT_NAME: str = "agnets.app API"
+    PROJECT_DESCRIPTION: str = "agnets.app系统的后端API服务"
     VERSION: str = "1.0.0"
 
     # 服务器配置
@@ -50,7 +50,7 @@ class Settings:
     MAIL_FROM: str = os.getenv("MAIL_FROM", "")
     MAIL_PORT: int = int(os.getenv("MAIL_PORT", "587"))
     MAIL_SERVER: str = os.getenv("MAIL_SERVER", "smtp.gmail.com")
-    MAIL_FROM_NAME: str = os.getenv("MAIL_FROM_NAME", "CCManage系统")
+    MAIL_FROM_NAME: str = os.getenv("MAIL_FROM_NAME", "agnets.app系统")
     MAIL_STARTTLS: bool = os.getenv("MAIL_STARTTLS", "True").lower() == "true"
     MAIL_SSL_TLS: bool = os.getenv("MAIL_SSL_TLS", "False").lower() == "true"
 

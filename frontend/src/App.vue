@@ -10,7 +10,7 @@ const router = useRouter();
 const route = useRoute();
 
 // 应用名称
-const appName = import.meta.env.VITE_APP_NAME || 'CCManage';
+const appName = import.meta.env.VITE_APP_NAME || 'agnets.app';
 
 // 初始化加载用户信息
 onMounted(() => {

@@ -223,7 +223,7 @@ router.afterEach((to) => {
   }
 
   // 设置页面标题
-  const baseTitle = 'CCManage'
+  const baseTitle = 'agnets.app'
   const routeTitle = to.meta.title as string
   document.title = routeTitle ? `${routeTitle} - ${baseTitle}` : baseTitle
 
