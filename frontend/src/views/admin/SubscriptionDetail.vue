@@ -215,6 +215,19 @@
                 </template>
               </ElTableColumn>
               <ElTableColumn prop="notes" label="备注" min-width="150" />
+              <ElTableColumn label="操作" width="120" fixed="right">
+                <template #default="scope">
+                  <ElButton
+                    type="primary"
+                    size="small"
+                    @click="viewUsageHistory(scope.row)"
+                    :disabled="!scope.row.api_key"
+                  >
+                    <i class="fas fa-chart-line"></i>
+                    使用履历
+                  </ElButton>
+                </template>
+              </ElTableColumn>
             </ElTable>
           </div>
 
@@ -594,6 +607,11 @@ const copyToClipboard = async (text: string) => {
     document.body.removeChild(textArea)
     ElMessage.success('用户Key已复制到剪贴板')
   }
+}
+
+// 查看使用履历
+const viewUsageHistory = (userKey: UserKey) => {
+  router.push(`/admin/user-key-usage/${userKey.api_key}`)
 }
 
 onMounted(() => {

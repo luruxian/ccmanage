@@ -40,6 +40,37 @@ class APIKeyCRUD:
 
         return query.all()
 
+    def get_user_api_keys_with_package_info(self, user_id: str, active_only: bool = True) -> List[Dict[str, Any]]:
+        """获取用户的所有API密钥（包含套餐信息） - 专门为普通用户前端使用"""
+        query = self.db.query(APIKey).filter(APIKey.user_id == user_id)
+
+        if active_only:
+            query = query.filter(APIKey.is_active == True)
+
+        api_keys = query.all()
+
+        result = []
+        for api_key in api_keys:
+            # 获取套餐信息
+            package = None
+            if api_key.package_id:
+                package = self.db.query(Package).filter(Package.id == api_key.package_id).first()
+
+            result.append({
+                "id": api_key.id,
+                "user_key_id": api_key.id,  # 兼容前端
+                "api_key": api_key.api_key,
+                "key_name": api_key.key_name,
+                "package_name": package.package_name if package else "未知套餐",
+                "description": api_key.description,
+                "is_active": api_key.is_active,
+                "last_used_at": api_key.last_used_at,
+                "created_at": api_key.created_at,
+                "usage_count": 0  # 这里需要从usage_records表查询，暂时设为0
+            })
+
+        return result
+
     def create_api_key(self, api_key_data: Dict[str, Any]) -> APIKey:
         """创建新的API密钥"""
         db_api_key = APIKey(**api_key_data)

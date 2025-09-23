@@ -128,18 +128,19 @@ async def get_user_keys(
     """获取用户的API密钥列表"""
     try:
         api_key_crud = APIKeyCRUD(db)
-        keys = api_key_crud.get_user_api_keys(current_user.user_id)
+        keys = api_key_crud.get_user_api_keys_with_package_info(current_user.user_id)
 
         key_list = []
         for key in keys:
             key_list.append(UserKeyResponse(
-                id=key.id,
-                api_key=key.api_key,
-                key_name=key.key_name,
-                description=key.description,
-                is_active=key.is_active,
-                last_used_at=key.last_used_at,
-                created_at=key.created_at
+                id=key["id"],
+                api_key=key["api_key"],
+                key_name=key["key_name"],
+                package_name=key["package_name"],
+                description=key["description"],
+                is_active=key["is_active"],
+                last_used_at=key["last_used_at"],
+                created_at=key["created_at"]
             ))
 
         return UserKeysListResponse(

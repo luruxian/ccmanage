@@ -228,10 +228,10 @@
               </div>
               <div v-else>
                 <ElTable :data="filteredKeys" stripe>
-                  <ElTableColumn prop="key_name" label="密钥名称" min-width="150">
+                  <ElTableColumn prop="package_name" label="套餐名称" min-width="150">
                     <template #default="scope">
                       <div class="key-name-cell">
-                        <strong>{{ scope.row.key_name }}</strong>
+                        <strong>{{ scope.row.package_name || '未知套餐' }}</strong>
                         <div class="key-id text-muted small">ID: {{ scope.row.user_key_id }}</div>
                       </div>
                     </template>
@@ -271,7 +271,7 @@
                       {{ formatDate(scope.row.created_at) }}
                     </template>
                   </ElTableColumn>
-                  <ElTableColumn label="操作" width="200">
+                  <ElTableColumn label="操作" width="280">
                     <template #default="scope">
                       <div class="action-buttons">
                         <ElButton
@@ -280,6 +280,13 @@
                           @click="toggleKeyStatus(scope.row)"
                         >
                           {{ scope.row.is_active ? '禁用' : '启用' }}
+                        </ElButton>
+                        <ElButton
+                          type="primary"
+                          size="small"
+                          @click="viewUsageHistory(scope.row)"
+                        >
+                          使用履历
                         </ElButton>
                         <ElButton
                           type="info"
@@ -570,11 +577,15 @@ const copyApiKey = async (apiKey: string) => {
   }
 }
 
+const viewUsageHistory = (key: any) => {
+  router.push(`/usage-history/${key.api_key}`)
+}
+
 const viewKeyDetails = (key: any) => {
   ElMessageBox.alert(
     `
     <div>
-      <p><strong>密钥名称:</strong> ${key.key_name}</p>
+      <p><strong>套餐名称:</strong> ${key.package_name || '未知套餐'}</p>
       <p><strong>密钥ID:</strong> ${key.user_key_id}</p>
       <p><strong>API密钥:</strong> ${key.api_key}</p>
       <p><strong>状态:</strong> ${key.is_active ? '激活' : '禁用'}</p>

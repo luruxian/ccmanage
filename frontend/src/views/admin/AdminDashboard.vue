@@ -79,10 +79,6 @@
             <i class="fas fa-box"></i>
             <span>订阅管理</span>
           </ElMenuItem>
-          <ElMenuItem index="userkeys">
-            <i class="fas fa-link"></i>
-            <span>用户密钥关联</span>
-          </ElMenuItem>
           <ElMenuItem index="login-history">
             <i class="fas fa-history"></i>
             <span>登录历史</span>
@@ -221,16 +217,6 @@
         </div>
 
         <!-- 其他菜单项的占位内容 -->
-        <div v-if="activeMenu === 'userkeys'" class="content-section">
-          <div class="section-header">
-            <h2>用户密钥关联管理</h2>
-          </div>
-          <div class="placeholder-content">
-            <i class="fas fa-link fa-3x"></i>
-            <p>用户密钥关联管理功能正在开发中...</p>
-          </div>
-        </div>
-
         <div v-if="activeMenu === 'login-history'" class="content-section">
           <div class="section-header">
             <h2>登录历史</h2>

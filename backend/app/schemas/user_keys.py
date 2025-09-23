@@ -25,6 +25,7 @@ class UserKeyResponse(BaseModel):
     id: int
     api_key: str
     key_name: Optional[str]
+    package_name: Optional[str]
     description: Optional[str]
     is_active: bool
     last_used_at: Optional[datetime]

@@ -204,7 +204,6 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import {
   ElCard, ElButton, ElInput, ElSelect, ElOption, ElRow, ElCol,
@@ -228,7 +227,6 @@ interface Package {
   updated_at: string
 }
 
-const router = useRouter()
 const packages = ref<Package[]>([])
 const selectedPackage = ref<Package | null>(null)
 const packageDetailVisible = ref(false)
