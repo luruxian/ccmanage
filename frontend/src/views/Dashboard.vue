@@ -5,22 +5,9 @@
         <!-- 侧边栏 -->
         <div class="col-md-3 col-lg-2 sidebar">
           <div class="sidebar-content">
-            <div class="user-info">
-              <div class="user-avatar">
-                <ElAvatar :size="60" :src="userStore.avatar || undefined">
-                  {{ userStore.name?.charAt(0) }}
-                </ElAvatar>
-              </div>
-              <h5 class="mt-3">{{ userStore.name }}</h5>
-              <p class="text-muted">{{ userStore.email }}</p>
-            </div>
 
             <nav class="sidebar-nav">
-              <a href="#" class="nav-item active" @click="activeTab = 'overview'">
-                <ElIcon><ElIconDataAnalysis /></ElIcon>
-                概览
-              </a>
-              <a href="#" class="nav-item" @click="activeTab = 'keys'">
+              <a href="#" class="nav-item active" @click="activeTab = 'keys'">
                 <ElIcon><ElIconKey /></ElIcon>
                 API密钥
               </a>
@@ -49,81 +36,6 @@
 
         <!-- 主内容区 -->
         <div class="col-md-9 col-lg-10 main-content">
-          <!-- 概览 -->
-          <div v-if="activeTab === 'overview'" class="tab-content">
-            <h2 class="mb-4">控制台概览</h2>
-
-            <div class="row mb-4">
-              <div class="col-md-3">
-                <div class="stat-card">
-                  <div class="stat-icon bg-primary">
-                    <ElIcon><ElIconKey /></ElIcon>
-                  </div>
-                  <div class="stat-info">
-                    <h3>{{ stats.totalKeys }}</h3>
-                    <p>API密钥</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-3">
-                <div class="stat-card">
-                  <div class="stat-icon bg-success">
-                    <ElIcon><ElIconDataAnalysis /></ElIcon>
-                  </div>
-                  <div class="stat-info">
-                    <h3>{{ stats.totalRequests }}</h3>
-                    <p>总请求数</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-3">
-                <div class="stat-card">
-                  <div class="stat-icon bg-warning">
-                    <ElIcon><ElIconCoin /></ElIcon>
-                  </div>
-                  <div class="stat-info">
-                    <h3>{{ stats.creditsRemaining }}</h3>
-                    <p>剩余积分</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-3">
-                <div class="stat-card">
-                  <div class="stat-icon bg-info">
-                    <ElIcon><ElIconTimer /></ElIcon>
-                  </div>
-                  <div class="stat-info">
-                    <h3>{{ stats.planDaysLeft }}</h3>
-                    <p>套餐剩余天数</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-12">
-                <ElCard class="recent-activity">
-                  <template #header>
-                    <h5>最近活动</h5>
-                  </template>
-                  <div class="activity-list">
-                    <div class="activity-item" v-for="activity in recentActivities" :key="activity.id">
-                      <div class="activity-icon">
-                        <ElIcon><ElIconCircleCheck /></ElIcon>
-                      </div>
-                      <div class="activity-content">
-                        <p class="mb-1">{{ activity.description }}</p>
-                        <small class="text-muted">{{ activity.time }}</small>
-                      </div>
-                    </div>
-                  </div>
-                </ElCard>
-              </div>
-            </div>
-          </div>
 
           <!-- API密钥管理 -->
           <div v-if="activeTab === 'keys'" class="tab-content">
@@ -378,15 +290,11 @@ import {
   ElPagination
 } from 'element-plus'
 import {
-  DataAnalysis as ElIconDataAnalysis,
   Key as ElIconKey,
   CreditCard as ElIconCreditCard,
   Setting as ElIconSetting,
   SwitchButton as ElIconSwitchButton,
-  CircleCheck as ElIconCircleCheck,
   Plus as ElIconPlus,
-  Coin as ElIconCoin,
-  Timer as ElIconTimer,
   Box as ElIconBox,
   Refresh as ElIconRefresh,
   Search as ElIconSearch,
@@ -408,16 +316,10 @@ interface ApiKey {
   created_at: string
 }
 
-const activeTab = ref('overview')
+const activeTab = ref('keys')
 const apiKeys = ref<ApiKey[]>([])
 const filteredKeys = ref<ApiKey[]>([])
 const loadingKeys = ref(false)
-const stats = reactive({
-  totalKeys: 0,
-  totalRequests: 0,
-  creditsRemaining: 0,
-  planDaysLeft: 0
-})
 
 const keyStats = reactive({
   total: 0,
@@ -445,11 +347,6 @@ const planInfo = reactive({
   usage_percentage: 0
 })
 
-const recentActivities = ref([
-  { id: 1, description: '成功激活API密钥', time: '2分钟前' },
-  { id: 2, description: '登录系统', time: '1小时前' },
-  { id: 3, description: '更新个人信息', time: '1天前' }
-])
 
 const loadUserKeys = async () => {
   try {
@@ -468,7 +365,6 @@ const loadUserKeys = async () => {
     }).length
     keyStats.requests_total = apiKeys.value.reduce((sum, k) => sum + (k.usage_count || 0), 0)
 
-    stats.totalKeys = keyStats.total
     filterKeys()
   } catch (error) {
     console.error('获取密钥列表失败:', error)
@@ -482,7 +378,6 @@ const loadPlanStatus = async () => {
   try {
     const response = await request.get('/api/v1/keys/plan-status')
     Object.assign(planInfo, response.data)
-    stats.creditsRemaining = response.data.credits_remaining
   } catch (error) {
     console.error('获取套餐状态失败:', error)
   }
@@ -656,12 +551,6 @@ onMounted(() => {
   padding: 30px 20px;
 }
 
-.user-info {
-  text-align: center;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
-}
 
 .sidebar-nav .nav-item {
   display: flex;
@@ -695,73 +584,7 @@ onMounted(() => {
   padding: 30px;
 }
 
-.stat-card {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  display: flex;
-  align-items: center;
-}
 
-.stat-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 24px;
-  margin-right: 15px;
-}
-
-.stat-info h3 {
-  margin: 0;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.stat-info p {
-  margin: 0;
-  color: #666;
-}
-
-.recent-activity {
-  margin-top: 20px;
-}
-
-.activity-list {
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.activity-item {
-  display: flex;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.activity-item:last-child {
-  border-bottom: none;
-}
-
-.activity-icon {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: #67c23a;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 15px;
-}
-
-.activity-content {
-  flex: 1;
-}
 
 .plan-status {
   padding: 20px 0;
