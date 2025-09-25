@@ -11,7 +11,7 @@
                 <ElIcon><ElIconVideoPlay /></ElIcon>
                 安装Claude Code
               </a>
-              <a href="#" :class="['nav-item', { active: activeTab === 'keys' }]" @click="activeTab = 'keys'">
+              <a href="#" :class="['nav-item', { active: activeTab === 'keys' || activeTab === 'usage-history' }]" @click="activeTab = 'keys'">
                 <ElIcon><ElIconKey /></ElIcon>
                 API密钥
               </a>
@@ -52,7 +52,7 @@
           <!-- API密钥管理 -->
           <div v-if="activeTab === 'keys'" class="tab-content">
             <div class="d-flex justify-content-between align-items-center mb-4">
-              <h2>API密钥管理</h2>
+              <h2>API密钥一览</h2>
               <div class="key-actions">
                 <router-link to="/key-activation" class="btn btn-primary me-2">
                   <ElIcon><ElIconPlus /></ElIcon>
@@ -69,26 +69,8 @@
             <div class="row mb-4">
               <div class="col-md-3">
                 <div class="key-stat-card">
-                  <div class="stat-number">{{ keyStats.total }}</div>
-                  <div class="stat-label">总密钥数</div>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="key-stat-card">
                   <div class="stat-number">{{ keyStats.active }}</div>
                   <div class="stat-label">激活密钥</div>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="key-stat-card">
-                  <div class="stat-number">{{ keyStats.used_today }}</div>
-                  <div class="stat-label">今日使用</div>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="key-stat-card">
-                  <div class="stat-number">{{ keyStats.requests_total }}</div>
-                  <div class="stat-label">总请求数</div>
                 </div>
               </div>
             </div>
@@ -166,7 +148,7 @@
                       </div>
                     </template>
                   </ElTableColumn>
-                  <ElTableColumn prop="api_key" label="自定义密钥" show-overflow-tooltip min-width="200">
+                  <ElTableColumn prop="api_key" label="API密钥" show-overflow-tooltip min-width="200">
                     <template #default="scope">
                       <div class="api-key-cell">
                         <code class="api-key-text">{{ maskApiKey(scope.row.api_key) }}</code>
@@ -205,13 +187,6 @@
                           @click="viewUsageHistory(scope.row)"
                         >
                           使用履历
-                        </ElButton>
-                        <ElButton
-                          type="danger"
-                          size="small"
-                          @click="deleteKey(scope.row)"
-                        >
-                          删除
                         </ElButton>
                       </div>
                     </template>
@@ -943,6 +918,234 @@ sudo yum install -y nodejs</code></pre>
             </ElCard>
           </div>
 
+          <!-- 使用履历 -->
+          <div v-if="activeTab === 'usage-history'" class="tab-content">
+            <div class="usage-history-section">
+              <!-- 返回按钮 -->
+              <div class="usage-header mb-4">
+                <ElButton @click="activeTab = 'keys'" type="text" class="back-btn">
+                  <ElIcon><ElIconArrowLeft /></ElIcon>
+                  返回API密钥管理
+                </ElButton>
+                <h2>使用履历</h2>
+              </div>
+
+              <!-- API Key基本信息 -->
+              <ElCard class="mb-4" v-if="selectedApiKey">
+                <template #header>
+                  <h4>
+                    <ElIcon><ElIconKey /></ElIcon>
+                    API密钥信息
+                  </h4>
+                </template>
+                <ElDescriptions :column="2" border>
+                  <ElDescriptionsItem label="订阅名称">
+                    {{ selectedApiKey.package_name || '未知订阅' }}
+                  </ElDescriptionsItem>
+                  <ElDescriptionsItem label="API密钥">
+                    <code class="api-key-display">{{ maskApiKey(selectedApiKey.api_key) }}</code>
+                  </ElDescriptionsItem>
+                  <ElDescriptionsItem label="状态">
+                    <ElTag :type="selectedApiKey.is_active ? 'success' : 'danger'">
+                      {{ selectedApiKey.is_active ? '激活' : '禁用' }}
+                    </ElTag>
+                  </ElDescriptionsItem>
+                  <ElDescriptionsItem label="创建时间">
+                    {{ formatDate(selectedApiKey.created_at) }}
+                  </ElDescriptionsItem>
+                </ElDescriptions>
+              </ElCard>
+
+              <!-- 使用统计 -->
+              <ElCard class="mb-4">
+                <template #header>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <h4>
+                      <ElIcon><ElIconTrendCharts /></ElIcon>
+                      使用统计
+                    </h4>
+                    <ElButton @click="refreshUsageStats" :loading="loadingUsageStats">
+                      <ElIcon><ElIconRefresh /></ElIcon>
+                      刷新
+                    </ElButton>
+                  </div>
+                </template>
+
+                <div v-if="loadingUsageStats" class="text-center py-4">
+                  <ElSkeleton :rows="2" animated />
+                </div>
+
+                <div v-else class="usage-stats-grid">
+                  <div class="usage-stat-item">
+                    <div class="stat-icon requests">
+                      <ElIcon><ElIconTrendCharts /></ElIcon>
+                    </div>
+                    <div class="stat-content">
+                      <h4>{{ usageStats.total_requests || 0 }}</h4>
+                      <p>总请求次数</p>
+                    </div>
+                  </div>
+
+                  <div class="usage-stat-item">
+                    <div class="stat-icon tokens">
+                      <ElIcon><ElIconCoin /></ElIcon>
+                    </div>
+                    <div class="stat-content">
+                      <h4>{{ formatNumber(usageStats.total_tokens) || 0 }}</h4>
+                      <p>总Token数</p>
+                    </div>
+                  </div>
+
+                  <div class="usage-stat-item">
+                    <div class="stat-icon credits">
+                      <ElIcon><ElIconStarFilled /></ElIcon>
+                    </div>
+                    <div class="stat-content">
+                      <h4>{{ usageStats.total_credits_used || 0 }}</h4>
+                      <p>总积分消耗</p>
+                    </div>
+                  </div>
+
+                  <div class="usage-stat-item">
+                    <div class="stat-icon services">
+                      <ElIcon><ElIconSetting /></ElIcon>
+                    </div>
+                    <div class="stat-content">
+                      <h4>{{ usageStats.unique_services || 0 }}</h4>
+                      <p>服务类型数</p>
+                    </div>
+                  </div>
+                </div>
+              </ElCard>
+
+              <!-- 使用记录 -->
+              <ElCard>
+                <template #header>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <h4>
+                      <ElIcon><ElIconList /></ElIcon>
+                      使用记录
+                    </h4>
+                    <ElButton @click="refreshUsageRecords" :loading="loadingUsageRecords">
+                      <ElIcon><ElIconRefresh /></ElIcon>
+                      刷新
+                    </ElButton>
+                  </div>
+                </template>
+
+                <!-- 筛选器 -->
+                <div class="usage-filters mb-3">
+                  <ElRow :gutter="16">
+                    <ElCol :span="6">
+                      <ElSelect
+                        v-model="usageFilters.service"
+                        placeholder="服务类型筛选"
+                        clearable
+                        @change="applyUsageFilters"
+                      >
+                        <ElOption label="全部" value="" />
+                        <ElOption
+                          v-for="service in availableServices"
+                          :key="service"
+                          :label="service"
+                          :value="service"
+                        />
+                      </ElSelect>
+                    </ElCol>
+                    <ElCol :span="8">
+                      <ElDatePicker
+                        v-model="usageFilters.dateRange"
+                        type="datetimerange"
+                        range-separator="至"
+                        start-placeholder="开始时间"
+                        end-placeholder="结束时间"
+                        format="YYYY-MM-DD HH:mm:ss"
+                        value-format="YYYY-MM-DD HH:mm:ss"
+                        @change="applyUsageFilters"
+                        clearable
+                      />
+                    </ElCol>
+                    <ElCol :span="4">
+                      <ElButton type="primary" @click="applyUsageFilters">
+                        <ElIcon><ElIconSearch /></ElIcon>
+                        筛选
+                      </ElButton>
+                    </ElCol>
+                  </ElRow>
+                </div>
+
+                <div v-if="loadingUsageRecords" class="text-center py-4">
+                  <ElSkeleton :rows="5" animated />
+                </div>
+
+                <div v-else>
+                  <ElTable :data="usageRecords" style="width: 100%">
+                    <ElTableColumn prop="service" label="服务类型" width="150">
+                      <template #default="scope">
+                        <ElTag type="info" size="small">
+                          {{ scope.row.service }}
+                        </ElTag>
+                      </template>
+                    </ElTableColumn>
+                    <ElTableColumn prop="input_tokens" label="输入Token" width="120">
+                      <template #default="scope">
+                        {{ formatNumber(scope.row.input_tokens) || '-' }}
+                      </template>
+                    </ElTableColumn>
+                    <ElTableColumn prop="output_tokens" label="输出Token" width="120">
+                      <template #default="scope">
+                        {{ formatNumber(scope.row.output_tokens) || '-' }}
+                      </template>
+                    </ElTableColumn>
+                    <ElTableColumn prop="total_tokens" label="总Token" width="120">
+                      <template #default="scope">
+                        {{ formatNumber(scope.row.total_tokens) || '-' }}
+                      </template>
+                    </ElTableColumn>
+                    <ElTableColumn prop="credits_used" label="积分消耗" width="100">
+                      <template #default="scope">
+                        {{ scope.row.credits_used || 0 }}
+                      </template>
+                    </ElTableColumn>
+                    <ElTableColumn prop="response_status" label="响应状态" width="100">
+                      <template #default="scope">
+                        <ElTag :type="scope.row.response_status === 'success' ? 'success' : 'danger'" size="small">
+                          {{ scope.row.response_status === 'success' ? '成功' : '失败' }}
+                        </ElTag>
+                      </template>
+                    </ElTableColumn>
+                    <ElTableColumn prop="request_timestamp" label="请求时间" width="180">
+                      <template #default="scope">
+                        {{ formatDate(scope.row.request_timestamp) }}
+                      </template>
+                    </ElTableColumn>
+                    <ElTableColumn prop="error_message" label="错误信息" min-width="200">
+                      <template #default="scope">
+                        <span v-if="scope.row.error_message" class="error-message">
+                          {{ scope.row.error_message }}
+                        </span>
+                        <span v-else class="text-muted">-</span>
+                      </template>
+                    </ElTableColumn>
+                  </ElTable>
+
+                  <!-- 分页 -->
+                  <div v-if="usageRecords.length > 0" class="pagination-wrapper">
+                    <ElPagination
+                      v-model:current-page="usagePagination.current"
+                      v-model:page-size="usagePagination.size"
+                      :page-sizes="[10, 20, 50]"
+                      :total="usagePagination.total"
+                      layout="total, sizes, prev, pager, next, jumper"
+                      @size-change="handleUsageSizeChange"
+                      @current-change="handleUsagePageChange"
+                    />
+                  </div>
+                </div>
+              </ElCard>
+            </div>
+          </div>
+
           <!-- 资料中心 -->
           <div v-if="activeTab === 'resources'" class="tab-content">
             <h2 class="mb-4">资料中心</h2>
@@ -1041,7 +1244,10 @@ import {
   ElSkeleton,
   ElPagination,
   ElTabs,
-  ElTabPane
+  ElTabPane,
+  ElDescriptions,
+  ElDescriptionsItem,
+  ElDatePicker
 } from 'element-plus'
 import {
   Key as ElIconKey,
@@ -1054,7 +1260,11 @@ import {
   VideoPlay as ElIconVideoPlay,
   List as ElIconList,
   TrendCharts as ElIconTrendCharts,
-  Reading as ElIconReading
+  Reading as ElIconReading,
+  ArrowLeft as ElIconArrowLeft,
+  Coin as ElIconCoin,
+  StarFilled as ElIconStarFilled,
+  Search as ElIconSearch
 } from '@element-plus/icons-vue'
 import { useUserStore } from '../store/user'
 import request from '../utils/request'
@@ -1077,12 +1287,10 @@ const activeTab = ref('keys')
 const apiKeys = ref<ApiKey[]>([])
 const filteredKeys = ref<ApiKey[]>([])
 const loadingKeys = ref(false)
+const selectedApiKey = ref<ApiKey | null>(null)
 
 const keyStats = reactive({
-  total: 0,
-  active: 0,
-  used_today: 0,
-  requests_total: 0
+  active: 0
 })
 
 const keyFilters = reactive({
@@ -1106,6 +1314,30 @@ const planInfo = reactive({
 
 const installMethod = ref('npm')
 const nodeInstallMethod = ref('windows-node')
+
+// 使用履历相关数据
+const usageStats = reactive({
+  total_requests: 0,
+  total_tokens: 0,
+  total_credits_used: 0,
+  unique_services: 0
+})
+
+const usageRecords = ref<any[]>([])
+const availableServices = ref<string[]>([])
+const loadingUsageStats = ref(false)
+const loadingUsageRecords = ref(false)
+
+const usageFilters = reactive({
+  service: '',
+  dateRange: null as [string, string] | null
+})
+
+const usagePagination = reactive({
+  current: 1,
+  size: 20,
+  total: 0
+})
 
 // Claude Code Router 配置示例
 const routerConfigExample = ref(`{
@@ -1147,15 +1379,7 @@ const loadUserKeys = async () => {
     apiKeys.value = response.keys || []
 
     // 更新统计数据
-    keyStats.total = apiKeys.value.length
     keyStats.active = apiKeys.value.filter(k => k.is_active).length
-    keyStats.used_today = apiKeys.value.filter(k => {
-      if (!k.last_used_at) return false
-      const today = new Date().toDateString()
-      const lastUsed = new Date(k.last_used_at).toDateString()
-      return today === lastUsed
-    }).length
-    keyStats.requests_total = apiKeys.value.reduce((sum, k) => sum + (k.usage_count || 0), 0)
 
     filterKeys()
   } catch (error) {
@@ -1266,7 +1490,14 @@ const copyApiKey = async (apiKey: string) => {
 }
 
 const viewUsageHistory = (key: any) => {
-  router.push(`/usage-history/${key.api_key}`)
+  // 在同一页面切换到使用履历标签
+  activeTab.value = 'usage-history'
+  selectedApiKey.value = key
+
+  // 加载使用履历数据
+  loadUsageStats()
+  loadUsageRecords()
+  loadAvailableServices()
 }
 
 // 已删除详情按钮，此函数暂时保留
@@ -1327,6 +1558,107 @@ const copyToClipboard = async (text: string) => {
   } catch (error) {
     ElMessage.error('复制失败，请手动复制')
   }
+}
+
+// 使用履历相关方法
+const loadUsageStats = async () => {
+  if (!selectedApiKey.value) return
+
+  try {
+    loadingUsageStats.value = true
+    const params: any = {}
+    if (usageFilters.dateRange) {
+      params.start_date = usageFilters.dateRange[0]
+      params.end_date = usageFilters.dateRange[1]
+    }
+
+    const response: any = await request.get(`/api/v1/usage/stats`, {
+      params: {
+        api_key: selectedApiKey.value.api_key,
+        ...params
+      }
+    })
+    Object.assign(usageStats, response)
+  } catch (error) {
+    console.error('加载使用统计失败:', error)
+    ElMessage.error('加载使用统计失败')
+  } finally {
+    loadingUsageStats.value = false
+  }
+}
+
+const loadUsageRecords = async () => {
+  if (!selectedApiKey.value) return
+
+  try {
+    loadingUsageRecords.value = true
+    const params: any = {
+      api_key: selectedApiKey.value.api_key,
+      page: usagePagination.current,
+      page_size: usagePagination.size
+    }
+
+    if (usageFilters.service) {
+      params.service = usageFilters.service
+    }
+
+    if (usageFilters.dateRange) {
+      params.start_date = usageFilters.dateRange[0]
+      params.end_date = usageFilters.dateRange[1]
+    }
+
+    const response: any = await request.get('/api/v1/usage/history', { params })
+    usageRecords.value = response.records || []
+    usagePagination.total = response.total || 0
+  } catch (error) {
+    console.error('加载使用记录失败:', error)
+    ElMessage.error('加载使用记录失败')
+  } finally {
+    loadingUsageRecords.value = false
+  }
+}
+
+const loadAvailableServices = async () => {
+  if (!selectedApiKey.value) return
+
+  try {
+    const response: any = await request.get('/api/v1/usage/services', {
+      params: { api_key: selectedApiKey.value.api_key }
+    })
+    availableServices.value = response || []
+  } catch (error) {
+    console.error('加载服务类型失败:', error)
+  }
+}
+
+const refreshUsageStats = () => {
+  loadUsageStats()
+}
+
+const refreshUsageRecords = () => {
+  loadUsageRecords()
+}
+
+const applyUsageFilters = () => {
+  usagePagination.current = 1
+  loadUsageRecords()
+  loadUsageStats()
+}
+
+const handleUsagePageChange = (page: number) => {
+  usagePagination.current = page
+  loadUsageRecords()
+}
+
+const handleUsageSizeChange = (size: number) => {
+  usagePagination.size = size
+  usagePagination.current = 1
+  loadUsageRecords()
+}
+
+const formatNumber = (num: number) => {
+  if (num == null) return '0'
+  return num.toLocaleString()
 }
 
 onMounted(() => {
@@ -2217,6 +2549,125 @@ onMounted(() => {
   line-height: 1.6;
 }
 
+/* 使用履历页面样式 */
+.usage-history-section {
+  padding: 0;
+}
+
+.usage-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.back-btn {
+  color: #409eff;
+  padding: 8px 16px;
+}
+
+.back-btn:hover {
+  background: #ecf5ff;
+}
+
+.api-key-display {
+  background: #f5f7fa;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 12px;
+  color: #606266;
+}
+
+.usage-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.usage-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #409eff;
+}
+
+.stat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+}
+
+.stat-icon.requests { background: #3498db; }
+.stat-icon.tokens { background: #f39c12; }
+.stat-icon.credits { background: #e74c3c; }
+.stat-icon.services { background: #27ae60; }
+
+.stat-content h4 {
+  font-size: 1.8rem;
+  margin: 0;
+  color: #2c3e50;
+  font-weight: 700;
+}
+
+.stat-content p {
+  margin: 4px 0 0 0;
+  color: #7f8c8d;
+  font-size: 14px;
+}
+
+.usage-filters {
+  padding: 16px 0;
+  border-bottom: 1px solid #f0f2f5;
+}
+
+.error-message {
+  color: #f56c6c;
+  font-size: 12px;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.justify-content-between {
+  justify-content: space-between;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+
+.mb-3 {
+  margin-bottom: 1rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.py-4 {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.text-muted {
+  color: #909399;
+}
+
 /* 移动端适配 */
 @media (max-width: 768px) {
   .key-actions {
@@ -2245,6 +2696,16 @@ onMounted(() => {
   .command-item code {
     margin-bottom: 4px;
     min-width: auto;
+  }
+
+  .usage-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .usage-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
 }
 </style>
