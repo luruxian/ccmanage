@@ -13,9 +13,9 @@
               :model="activationForm"
               :rules="activationRules"
               ref="activationFormRef"
-              label-width="120px"
+              label-width="0px"
             >
-              <ElFormItem label="用户Key" prop="userKey">
+              <ElFormItem prop="userKey">
                 <ElInput
                   v-model="activationForm.userKey"
                   placeholder="请输入要激活的用户Key"
