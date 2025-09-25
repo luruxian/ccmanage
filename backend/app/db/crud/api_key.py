@@ -47,6 +47,7 @@ class APIKeyCRUD:
         if active_only:
             query = query.filter(APIKey.is_active == True)
 
+        # 获取所有记录
         api_keys = query.all()
 
         result = []
@@ -55,6 +56,26 @@ class APIKeyCRUD:
             package = None
             if api_key.package_id:
                 package = self.db.query(Package).filter(Package.id == api_key.package_id).first()
+
+            # 计算剩余天数
+            remaining_days = None
+            current_status = api_key.status or "inactive"
+
+            if api_key.expire_date:
+                from datetime import datetime, timezone
+                now = datetime.now(timezone.utc)
+                expire_date = api_key.expire_date
+                if expire_date.tzinfo is None:
+                    expire_date = expire_date.replace(tzinfo=timezone.utc)
+
+                delta = expire_date - now
+                remaining_days = max(0, delta.days)
+
+                # 如果已过期，更新状态为expired
+                if remaining_days == 0 and delta.total_seconds() < 0:
+                    current_status = "expired"
+                elif api_key.is_active and current_status == "inactive":
+                    current_status = "active"
 
             result.append({
                 "id": api_key.id,
@@ -66,8 +87,15 @@ class APIKeyCRUD:
                 "is_active": api_key.is_active,
                 "last_used_at": api_key.last_used_at,
                 "created_at": api_key.created_at,
+                "activation_date": api_key.activation_date,
+                "expire_date": api_key.expire_date,
+                "remaining_days": remaining_days,
+                "status": current_status,
                 "usage_count": 0  # 这里需要从usage_records表查询，暂时设为0
             })
+
+        # 按激活时间倒序排列，未激活的放在最后
+        result.sort(key=lambda x: x.get('activation_date') or datetime.min, reverse=True)
 
         return result
 

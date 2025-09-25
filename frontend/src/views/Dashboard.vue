@@ -103,7 +103,7 @@
                   >
                     <ElOption label="全部" value="" />
                     <ElOption label="激活" value="active" />
-                    <ElOption label="禁用" value="inactive" />
+                    <ElOption label="过期" value="expired" />
                   </ElSelect>
                 </ElCol>
                 <ElCol :span="6">
@@ -141,14 +141,14 @@
               </div>
               <div v-else>
                 <ElTable :data="filteredKeys" stripe>
-                  <ElTableColumn prop="package_name" label="订阅名称" min-width="150">
+                  <ElTableColumn prop="package_name" label="订阅名称" width="160">
                     <template #default="scope">
                       <div class="key-name-cell">
                         <strong>{{ scope.row.package_name || '未知订阅' }}</strong>
                       </div>
                     </template>
                   </ElTableColumn>
-                  <ElTableColumn prop="api_key" label="API密钥" show-overflow-tooltip min-width="200">
+                  <ElTableColumn prop="api_key" label="API密钥" show-overflow-tooltip min-width="220">
                     <template #default="scope">
                       <div class="api-key-cell">
                         <code class="api-key-text">{{ maskApiKey(scope.row.api_key) }}</code>
@@ -158,27 +158,47 @@
                       </div>
                     </template>
                   </ElTableColumn>
-                  <ElTableColumn prop="is_active" label="状态" width="100">
+                  <ElTableColumn prop="status" label="状态" width="90">
                     <template #default="scope">
-                      <ElTag :type="scope.row.is_active ? 'success' : 'danger'">
-                        {{ scope.row.is_active ? '激活' : '禁用' }}
+                      <ElTag :type="getStatusType(scope.row.status)" size="small">
+                        {{ getStatusText(scope.row.status) }}
                       </ElTag>
                     </template>
                   </ElTableColumn>
-                  <ElTableColumn prop="last_used_at" label="最后使用" min-width="150">
+                  <ElTableColumn prop="activation_date" label="激活时间" width="130">
+                    <template #default="scope">
+                      <span v-if="scope.row.activation_date" class="date-text">
+                        {{ formatDateShort(scope.row.activation_date) }}
+                      </span>
+                      <span v-else class="text-muted">未激活</span>
+                    </template>
+                  </ElTableColumn>
+                  <ElTableColumn prop="expire_date" label="过期时间" width="130">
+                    <template #default="scope">
+                      <span v-if="scope.row.expire_date" class="date-text">
+                        {{ formatDateShort(scope.row.expire_date) }}
+                      </span>
+                      <span v-else class="text-muted">永久</span>
+                    </template>
+                  </ElTableColumn>
+                  <ElTableColumn prop="remaining_days" label="剩余天数" width="100">
+                    <template #default="scope">
+                      <span v-if="scope.row.remaining_days !== null"
+                            :class="getRemainingDaysClass(scope.row.remaining_days)">
+                        {{ scope.row.remaining_days }}天
+                      </span>
+                      <span v-else class="text-muted">永久</span>
+                    </template>
+                  </ElTableColumn>
+                  <ElTableColumn prop="last_used_at" label="最后使用" width="110">
                     <template #default="scope">
                       <span v-if="scope.row.last_used_at" class="last-used">
-                        {{ formatRelativeTime(scope.row.last_used_at) }}
+                        {{ formatRelativeTimeShort(scope.row.last_used_at) }}
                       </span>
                       <span v-else class="text-muted">从未使用</span>
                     </template>
                   </ElTableColumn>
-                  <ElTableColumn prop="created_at" label="创建时间" min-width="150">
-                    <template #default="scope">
-                      {{ formatDate(scope.row.created_at) }}
-                    </template>
-                  </ElTableColumn>
-                  <ElTableColumn label="操作" width="200">
+                  <ElTableColumn label="操作" width="100" fixed="right">
                     <template #default="scope">
                       <div class="action-buttons">
                         <ElButton
@@ -186,7 +206,7 @@
                           size="small"
                           @click="viewUsageHistory(scope.row)"
                         >
-                          使用履历
+                          履历
                         </ElButton>
                       </div>
                     </template>
@@ -1280,6 +1300,10 @@ interface ApiKey {
   last_used_at?: string
   created_at: string
   package_name?: string
+  activation_date?: string
+  expire_date?: string
+  remaining_days?: number
+  status?: string
 }
 
 const activeTab = ref('keys')
@@ -1416,6 +1440,42 @@ const getProgressColor = (percentage: number) => {
   return '#f56c6c'
 }
 
+// 获取状态对应的标签类型
+const getStatusType = (status: string) => {
+  switch (status) {
+    case 'active':
+      return 'success'
+    case 'expired':
+      return 'danger'
+    case 'inactive':
+    default:
+      return 'warning'
+  }
+}
+
+// 获取状态对应的文本
+const getStatusText = (status: string) => {
+  switch (status) {
+    case 'active':
+      return '激活'
+    case 'expired':
+      return '过期'
+    case 'inactive':
+    default:
+      return '未激活'
+  }
+}
+
+// 获取剩余天数的样式类
+const getRemainingDaysClass = (days: number) => {
+  if (days <= 3) {
+    return 'text-danger fw-bold'
+  } else if (days <= 7) {
+    return 'text-warning fw-bold'
+  }
+  return 'text-success'
+}
+
 const handleLogout = () => {
   userStore.logout()
   router.push('/login')
@@ -1437,8 +1497,8 @@ const filterKeys = () => {
 
   if (keyFilters.status) {
     filtered = filtered.filter(key => {
-      if (keyFilters.status === 'active') return key.is_active
-      if (keyFilters.status === 'inactive') return !key.is_active
+      if (keyFilters.status === 'active') return key.status === 'active'
+      if (keyFilters.status === 'expired') return key.status === 'expired'
       return true
     })
   }
@@ -1509,21 +1569,25 @@ const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleString('zh-CN')
 }
 
-const formatRelativeTime = (dateStr: string) => {
+const formatDateShort = (dateStr: string) => {
+  if (!dateStr) return '-'
+  return new Date(dateStr).toLocaleDateString('zh-CN')
+}
+
+const formatRelativeTimeShort = (dateStr: string) => {
   if (!dateStr) return '-'
   const now = Date.now()
   const past = new Date(dateStr).getTime()
   const diff = now - past
 
-  const seconds = Math.floor(diff / 1000)
-  const minutes = Math.floor(seconds / 60)
+  const minutes = Math.floor(diff / (1000 * 60))
   const hours = Math.floor(minutes / 60)
   const days = Math.floor(hours / 24)
 
+  if (days > 7) return `${Math.floor(days / 7)}周前`
   if (days > 0) return `${days}天前`
   if (hours > 0) return `${hours}小时前`
-  if (minutes > 0) return `${minutes}分钟前`
-  return `${seconds}秒前`
+  return `${minutes}分钟前`
 }
 
 const handleKeyPageChange = (page: number) => {

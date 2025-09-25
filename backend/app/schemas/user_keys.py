@@ -30,6 +30,10 @@ class UserKeyResponse(BaseModel):
     is_active: bool
     last_used_at: Optional[datetime]
     created_at: datetime
+    activation_date: Optional[datetime]
+    expire_date: Optional[datetime]
+    remaining_days: Optional[int]
+    status: Optional[str]
 
     class Config:
         from_attributes = True
