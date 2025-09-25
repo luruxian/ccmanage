@@ -1236,7 +1236,6 @@ import {
   ElIcon,
   ElProgress,
   ElMessage,
-  ElMessageBox,
   ElSelect,
   ElOption,
   ElRow,
@@ -1410,21 +1409,6 @@ const loadPlanStatus = async () => {
 //   }
 // }
 
-const deleteKey = async (key: any) => {
-  try {
-    await ElMessageBox.confirm('确定要删除这个密钥吗？', '确认删除', {
-      type: 'warning'
-    })
-
-    await request.delete(`/api/v1/keys/${key.id}`)
-    await loadUserKeys()
-    ElMessage.success('密钥已删除')
-  } catch (error) {
-    if (error !== 'cancel') {
-      ElMessage.error('删除失败')
-    }
-  }
-}
 
 const getProgressColor = (percentage: number) => {
   if (percentage < 50) return '#67c23a'
