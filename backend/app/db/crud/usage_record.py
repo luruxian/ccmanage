@@ -8,6 +8,33 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def calculate_credits_used(total_tokens: int) -> int:
+    """
+    计算积分消耗
+
+    Args:
+        total_tokens: 总token数量
+
+    Returns:
+        int: 积分消耗数量（整数）
+
+    计算规则：
+    - credits_used = total_tokens / 1000，向上取整
+    - total_tokens < 1000时，按1000计算
+    """
+    if not total_tokens or total_tokens <= 0:
+        return 0
+
+    # 如果token数小于1000，按1000计算
+    effective_tokens = max(total_tokens, 1000)
+
+    # 除以1000并向上取整
+    import math
+    credits_used = math.ceil(effective_tokens / 1000)
+
+    return credits_used
+
+
 class UsageRecordCRUD:
     """使用记录CRUD操作"""
 
@@ -17,11 +44,18 @@ class UsageRecordCRUD:
     def create_usage_record(self, usage_data: Dict[str, Any]) -> Optional[UsageRecord]:
         """创建使用记录"""
         try:
+            # 如果没有提供credits_used，根据total_tokens自动计算
+            if 'credits_used' not in usage_data or usage_data['credits_used'] == 0:
+                total_tokens = usage_data.get('total_tokens', 0)
+                if total_tokens > 0:
+                    usage_data['credits_used'] = calculate_credits_used(total_tokens)
+
             db_usage = UsageRecord(**usage_data)
             self.db.add(db_usage)
             self.db.commit()
             self.db.refresh(db_usage)
-            logger.info(f"创建使用记录成功: API密钥={usage_data.get('api_key_id')}, 服务={usage_data.get('service')}")
+            logger.info(f"创建使用记录成功: API密钥={usage_data.get('api_key_id')}, 服务={usage_data.get('service')}, "
+                       f"tokens={usage_data.get('total_tokens', 0)}, credits={usage_data.get('credits_used', 0)}")
             return db_usage
         except Exception as e:
             self.db.rollback()
@@ -303,11 +337,16 @@ class UsageRecordCRUD:
             logger.error(f"无效的API密钥: {api_key}")
             return None
 
+        # 如果没有提供total_tokens，尝试从input_tokens和output_tokens计算
+        if total_tokens == 0 and (input_tokens > 0 or output_tokens > 0):
+            total_tokens = input_tokens + output_tokens
+
+        # 如果没有提供credits_used，将根据total_tokens自动计算（在create_usage_record中处理）
         usage_data = {
             "api_key_id": api_key_id,
             "service": service,
             "request_count": 1,
-            "credits_used": credits_used,
+            "credits_used": credits_used,  # 0或未提供时会自动计算
             "input_tokens": input_tokens,
             "output_tokens": output_tokens,
             "total_tokens": total_tokens,
