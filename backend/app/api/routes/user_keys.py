@@ -144,7 +144,9 @@ async def get_user_keys(
                 activation_date=key["activation_date"],
                 expire_date=key["expire_date"],
                 remaining_days=key["remaining_days"],
-                status=key["status"]
+                status=key["status"],
+                total_credits=key["total_credits"],
+                remaining_credits=key["remaining_credits"]
             ))
 
         return UserKeysListResponse(

@@ -50,6 +50,19 @@ class UsageRecordCRUD:
                 if total_tokens > 0:
                     usage_data['credits_used'] = calculate_credits_used(total_tokens)
 
+            # 扣减API密钥的剩余积分
+            api_key_id = usage_data.get('api_key_id')
+            credits_used = usage_data.get('credits_used', 0)
+
+            if api_key_id and credits_used > 0:
+                api_key = self.db.query(APIKey).filter(APIKey.id == api_key_id).first()
+                if api_key and api_key.remaining_credits is not None:
+                    # 扣减剩余积分
+                    new_remaining = max(0, api_key.remaining_credits - credits_used)
+                    api_key.remaining_credits = new_remaining
+                    logger.info(f"API密钥 {api_key_id} 积分扣减: {api_key.remaining_credits + credits_used} -> {new_remaining} "
+                               f"(消耗: {credits_used})")
+
             db_usage = UsageRecord(**usage_data)
             self.db.add(db_usage)
             self.db.commit()

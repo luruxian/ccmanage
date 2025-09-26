@@ -34,6 +34,8 @@ class UserKeyResponse(BaseModel):
     expire_date: Optional[datetime]
     remaining_days: Optional[int]
     status: Optional[str]
+    total_credits: Optional[int]
+    remaining_credits: Optional[int]
 
     class Config:
         from_attributes = True

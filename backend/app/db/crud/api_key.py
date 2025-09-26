@@ -91,6 +91,8 @@ class APIKeyCRUD:
                 "expire_date": api_key.expire_date,
                 "remaining_days": remaining_days,
                 "status": current_status,
+                "total_credits": api_key.total_credits,
+                "remaining_credits": api_key.remaining_credits,
                 "usage_count": 0  # 这里需要从usage_records表查询，暂时设为0
             })
 

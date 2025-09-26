@@ -190,12 +190,21 @@
                       <span v-else class="text-muted">永久</span>
                     </template>
                   </ElTableColumn>
-                  <ElTableColumn prop="last_used_at" label="最后使用" width="110">
+                  <ElTableColumn prop="total_credits" label="总积分" width="100">
                     <template #default="scope">
-                      <span v-if="scope.row.last_used_at" class="last-used">
-                        {{ formatRelativeTimeShort(scope.row.last_used_at) }}
+                      <span v-if="scope.row.total_credits !== null" class="credits-text">
+                        {{ scope.row.total_credits }}
                       </span>
-                      <span v-else class="text-muted">从未使用</span>
+                      <span v-else class="text-muted">-</span>
+                    </template>
+                  </ElTableColumn>
+                  <ElTableColumn prop="remaining_credits" label="剩余积分" width="100">
+                    <template #default="scope">
+                      <span v-if="scope.row.remaining_credits !== null"
+                            :class="getRemainingCreditsClass(scope.row.remaining_credits, scope.row.total_credits)">
+                        {{ scope.row.remaining_credits }}
+                      </span>
+                      <span v-else class="text-muted">-</span>
                     </template>
                   </ElTableColumn>
                   <ElTableColumn label="操作" width="100" fixed="right">
@@ -1304,6 +1313,8 @@ interface ApiKey {
   expire_date?: string
   remaining_days?: number
   status?: string
+  total_credits?: number
+  remaining_credits?: number
 }
 
 const activeTab = ref('keys')
@@ -1476,6 +1487,22 @@ const getRemainingDaysClass = (days: number) => {
   return 'text-success'
 }
 
+// 获取剩余积分的样式类
+const getRemainingCreditsClass = (remainingCredits: number, totalCredits: number) => {
+  if (!totalCredits || totalCredits <= 0) {
+    return 'text-muted'
+  }
+
+  const percentage = (remainingCredits / totalCredits) * 100
+
+  if (percentage <= 10) {
+    return 'text-danger fw-bold'
+  } else if (percentage <= 30) {
+    return 'text-warning fw-bold'
+  }
+  return 'text-success'
+}
+
 const handleLogout = () => {
   userStore.logout()
   router.push('/login')
@@ -1574,21 +1601,6 @@ const formatDateShort = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString('zh-CN')
 }
 
-const formatRelativeTimeShort = (dateStr: string) => {
-  if (!dateStr) return '-'
-  const now = Date.now()
-  const past = new Date(dateStr).getTime()
-  const diff = now - past
-
-  const minutes = Math.floor(diff / (1000 * 60))
-  const hours = Math.floor(minutes / 60)
-  const days = Math.floor(hours / 24)
-
-  if (days > 7) return `${Math.floor(days / 7)}周前`
-  if (days > 0) return `${days}天前`
-  if (hours > 0) return `${hours}小时前`
-  return `${minutes}分钟前`
-}
 
 const handleKeyPageChange = (page: number) => {
   keyPagination.current = page
