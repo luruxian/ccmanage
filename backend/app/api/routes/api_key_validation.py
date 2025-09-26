@@ -57,7 +57,15 @@ class APIKeyValidationService:
                     "ACCOUNT_BANNED"
                 )
 
-            # 3. 检查用户套餐
+            # 3. 检查API密钥的剩余积分
+            if db_api_key.remaining_credits is not None and db_api_key.remaining_credits <= 0:
+                return self._create_error_response(
+                    ErrorCodes.CREDITS_EXHAUSTED,
+                    "Insufficient credits",
+                    "INSUFFICIENT_CREDITS"
+                )
+
+            # 4. 检查用户套餐
             plan_stats = self.api_key_crud.get_plan_usage_stats(user.user_id)
             if not plan_stats["has_active_plan"]:
                 return self._create_error_response(
@@ -66,17 +74,10 @@ class APIKeyValidationService:
                     "PLAN_EXPIRED"
                 )
 
-            if plan_stats["credits_remaining"] <= 0:
-                return self._create_error_response(
-                    ErrorCodes.CREDITS_EXHAUSTED,
-                    "Credits exhausted",
-                    "CREDITS_EXHAUSTED"
-                )
-
-            # 4. 更新API密钥最后使用时间
+            # 5. 更新API密钥最后使用时间
             self.api_key_crud.update_last_used(api_key)
 
-            # 5. 返回成功响应
+            # 6. 返回成功响应
             return APIKeyValidationSuccessResponse(
                 data=APIKeyValidationSuccessData(
                     valid=True,
