@@ -522,3 +522,48 @@ class APIKeyCRUD:
             self.db.rollback()
             logger.error(f"更新real_api_key失败: {str(e)}")
             return {"success": False, "message": f"更新失败: {str(e)}"}
+
+    def reset_credits(self, api_key_id: int) -> Dict[str, Any]:
+        """重置API密钥的积分"""
+        try:
+            # 获取API密钥记录
+            api_key = self.db.query(APIKey).filter(APIKey.id == api_key_id).first()
+            if not api_key:
+                return {"success": False, "message": "API密钥不存在"}
+
+            # 检查是否有总积分设置
+            if api_key.total_credits is None or api_key.total_credits <= 0:
+                return {"success": False, "message": "该密钥没有设置总积分"}
+
+            # 检查今天是否已经重置过
+            from datetime import datetime, timezone, timedelta
+            now = datetime.now(timezone.utc)
+            today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+            if api_key.last_reset_credits_at:
+                last_reset = api_key.last_reset_credits_at
+                if last_reset.tzinfo is None:
+                    last_reset = last_reset.replace(tzinfo=timezone.utc)
+
+                if last_reset >= today_start:
+                    return {"success": False, "message": "今日已经重置过积分，每天只能重置一次"}
+
+            # 执行重置
+            old_remaining = api_key.remaining_credits or 0
+            api_key.remaining_credits = api_key.total_credits
+            api_key.last_reset_credits_at = now
+
+            self.db.commit()
+
+            logger.info(f"API密钥 {api_key_id} 积分重置: {old_remaining} -> {api_key.total_credits}")
+            return {
+                "success": True,
+                "message": "积分重置成功",
+                "old_credits": old_remaining,
+                "new_credits": api_key.total_credits
+            }
+
+        except Exception as e:
+            self.db.rollback()
+            logger.error(f"重置积分失败: {str(e)}")
+            return {"success": False, "message": f"重置失败: {str(e)}"}

@@ -53,6 +53,7 @@ class APIKey(Base):
     total_credits = Column(Integer, nullable=True, comment="总积分")
     status = Column(String(20), default="inactive", nullable=False, comment="状态: active/inactive/expired")
     notes = Column(Text, nullable=True, comment="备注信息")
+    last_reset_credits_at = Column(DateTime(timezone=True), nullable=True, comment="最后重置积分时间")
 
     created_at = Column(DateTime(timezone=True), server_default=func.now(), comment="创建时间")
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), comment="更新时间")

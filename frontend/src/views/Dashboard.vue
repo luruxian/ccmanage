@@ -207,7 +207,7 @@
                       <span v-else class="text-muted">-</span>
                     </template>
                   </ElTableColumn>
-                  <ElTableColumn label="操作" width="100" fixed="right">
+                  <ElTableColumn label="操作" width="160" fixed="right">
                     <template #default="scope">
                       <div class="action-buttons">
                         <ElButton
@@ -216,6 +216,15 @@
                           @click="viewUsageHistory(scope.row)"
                         >
                           履历
+                        </ElButton>
+                        <ElButton
+                          type="success"
+                          size="small"
+                          @click="resetCredits(scope.row)"
+                          :disabled="!canResetCredits(scope.row)"
+                          style="margin-left: 4px;"
+                        >
+                          重置积分
                         </ElButton>
                       </div>
                     </template>
@@ -1265,6 +1274,7 @@ import {
   ElIcon,
   ElProgress,
   ElMessage,
+  ElMessageBox,
   ElSelect,
   ElOption,
   ElRow,
@@ -1506,6 +1516,52 @@ const getRemainingCreditsClass = (remainingCredits: number, totalCredits: number
 const handleLogout = () => {
   userStore.logout()
   router.push('/login')
+}
+
+// 检查是否可以重置积分
+const canResetCredits = (key: any) => {
+  // 检查是否有总积分设置
+  if (!key.total_credits || key.total_credits <= 0) {
+    return false
+  }
+
+  // 检查状态是否为激活
+  if (key.status !== 'active') {
+    return false
+  }
+
+  // 这里可以添加更多检查逻辑，比如今天是否已重置过
+  // 但由于前端无法准确判断，主要依赖后端验证
+  return true
+}
+
+// 重置积分
+const resetCredits = async (key: any) => {
+  try {
+    await ElMessageBox.confirm(
+      `确定要重置 "${key.package_name || '未知订阅'}" 的积分吗？\n剩余积分将恢复到总积分数量。\n注意：每天只能重置一次！`,
+      '确认重置积分',
+      {
+        type: 'warning',
+        confirmButtonText: '确认重置',
+        cancelButtonText: '取消'
+      }
+    )
+
+    const response = await request.put(`/api/v1/keys/${key.id}/reset-credits`)
+
+    // 重新加载密钥列表以更新显示
+    await loadUserKeys()
+
+    ElMessage.success(response.data.message || '积分重置成功')
+  } catch (error: any) {
+    if (error === 'cancel') {
+      return
+    }
+
+    const message = error.response?.data?.detail || error.message || '重置失败'
+    ElMessage.error(message)
+  }
 }
 
 // 新增的密钥管理方法

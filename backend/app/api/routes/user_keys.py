@@ -268,3 +268,43 @@ async def delete_user_key(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="删除失败"
         )
+
+
+@router.put("/{key_id}/reset-credits", response_model=MessageResponse)
+async def reset_api_key_credits(
+    key_id: int,
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """重置API密钥的积分"""
+    try:
+        api_key_crud = APIKeyCRUD(db)
+
+        # 检查密钥是否属于当前用户
+        api_key = api_key_crud.get_api_key_by_id(key_id)
+        if not api_key or api_key.user_id != current_user.user_id:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="API密钥不存在"
+            )
+
+        # 执行积分重置
+        result = api_key_crud.reset_credits(key_id)
+
+        if not result["success"]:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=result["message"]
+            )
+
+        logger.info(f"积分重置成功: {current_user.user_id}, {key_id}")
+        return MessageResponse(message=result["message"])
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"重置积分失败: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="重置失败"
+        )
