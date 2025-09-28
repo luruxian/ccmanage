@@ -1423,7 +1423,7 @@ const loadUserKeys = async () => {
     apiKeys.value = response.keys || []
 
     // 更新统计数据
-    keyStats.active = apiKeys.value.filter(k => k.is_active).length
+    keyStats.active = apiKeys.value.filter(k => k.status === 'active').length
 
     filterKeys()
   } catch (error) {
