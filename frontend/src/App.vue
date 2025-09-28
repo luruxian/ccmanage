@@ -75,8 +75,9 @@ const shouldShowNavbar = () => {
             <div v-if="userStore.isLoggedIn" class="me-3 text-white">
               欢迎，{{ userStore.name }}
             </div>
-            <ElButton v-if="userStore.isLoggedIn" type="danger" @click="logout">
-              登出
+            <ElButton v-if="userStore.isLoggedIn" type="text" @click="logout" class="logout-btn">
+              <span class="logout-icon">🚪</span>
+              退出登录
             </ElButton>
             <div v-else>
               <router-link to="/login" class="btn btn-outline-light me-2">
@@ -105,5 +106,20 @@ const shouldShowNavbar = () => {
 
 .container {
   flex: 1;
+}
+
+.logout-btn {
+  color: #ffffff !important;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.logout-icon {
+  margin-right: 5px;
 }
 </style>

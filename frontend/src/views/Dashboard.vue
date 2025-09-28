@@ -29,12 +29,6 @@
               </a>
             </nav>
 
-            <div class="sidebar-footer">
-              <ElButton type="text" @click="handleLogout">
-                <ElIcon><ElIconSwitchButton /></ElIcon>
-                退出登录
-              </ElButton>
-            </div>
           </div>
         </div>
 
@@ -67,56 +61,6 @@
               </div>
             </div>
 
-            <!-- 密钥搜索和筛选 -->
-            <ElCard class="mb-4">
-              <ElRow :gutter="16" class="filter-row">
-                <ElCol :span="8">
-                  <ElSelect
-                    v-model="keyFilters.package"
-                    placeholder="筛选订阅"
-                    clearable
-                    @change="filterKeys"
-                  >
-                    <ElOption label="全部订阅" value="" />
-                    <ElOption
-                      v-for="packageName in uniquePackages"
-                      :key="String(packageName)"
-                      :label="String(packageName || '未知订阅')"
-                      :value="String(packageName || '')"
-                    />
-                  </ElSelect>
-                </ElCol>
-                <ElCol :span="6">
-                  <ElSelect
-                    v-model="keyFilters.status"
-                    placeholder="筛选状态"
-                    clearable
-                    @change="filterKeys"
-                  >
-                    <ElOption label="全部" value="" />
-                    <ElOption label="激活" value="active" />
-                    <ElOption label="过期" value="expired" />
-                  </ElSelect>
-                </ElCol>
-                <ElCol :span="6">
-                  <ElSelect
-                    v-model="keyFilters.usage"
-                    placeholder="使用情况"
-                    clearable
-                    @change="filterKeys"
-                  >
-                    <ElOption label="全部" value="" />
-                    <ElOption label="近期使用" value="recent" />
-                    <ElOption label="未使用" value="unused" />
-                  </ElSelect>
-                </ElCol>
-                <ElCol :span="4">
-                  <ElButton type="primary" @click="filterKeys" style="width: 100%">
-                    筛选
-                  </ElButton>
-                </ElCol>
-              </ElRow>
-            </ElCard>
 
             <!-- 密钥列表 -->
             <ElCard>
@@ -1062,46 +1006,6 @@ sudo yum install -y nodejs</code></pre>
                   </div>
                 </template>
 
-                <!-- 筛选器 -->
-                <div class="usage-filters mb-3">
-                  <ElRow :gutter="16">
-                    <ElCol :span="6">
-                      <ElSelect
-                        v-model="usageFilters.service"
-                        placeholder="服务类型筛选"
-                        clearable
-                        @change="applyUsageFilters"
-                      >
-                        <ElOption label="全部" value="" />
-                        <ElOption
-                          v-for="service in availableServices"
-                          :key="service"
-                          :label="service"
-                          :value="service"
-                        />
-                      </ElSelect>
-                    </ElCol>
-                    <ElCol :span="8">
-                      <ElDatePicker
-                        v-model="usageFilters.dateRange"
-                        type="datetimerange"
-                        range-separator="至"
-                        start-placeholder="开始时间"
-                        end-placeholder="结束时间"
-                        format="YYYY-MM-DD HH:mm:ss"
-                        value-format="YYYY-MM-DD HH:mm:ss"
-                        @change="applyUsageFilters"
-                        clearable
-                      />
-                    </ElCol>
-                    <ElCol :span="4">
-                      <ElButton type="primary" @click="applyUsageFilters">
-                        <ElIcon><ElIconSearch /></ElIcon>
-                        筛选
-                      </ElButton>
-                    </ElCol>
-                  </ElRow>
-                </div>
 
                 <div v-if="loadingUsageRecords" class="text-center py-4">
                   <ElSkeleton :rows="5" animated />
@@ -1328,11 +1232,6 @@ const keyStats = reactive({
   active: 0
 })
 
-const keyFilters = reactive({
-  package: '',
-  status: '',
-  usage: ''
-})
 
 const keyPagination = reactive({
   current: 1,
@@ -1363,10 +1262,6 @@ const availableServices = ref<string[]>([])
 const loadingUsageStats = ref(false)
 const loadingUsageRecords = ref(false)
 
-const usageFilters = reactive({
-  service: '',
-  dateRange: null as [string, string] | null
-})
 
 const usagePagination = reactive({
   current: 1,
@@ -1395,16 +1290,6 @@ const routerConfigExample = ref(`{
   ]
 }`)
 
-// 计算唯一的订阅列表
-const uniquePackages = computed(() => {
-  const packages = new Set()
-  apiKeys.value.forEach(key => {
-    if (key.package_name) {
-      packages.add(key.package_name)
-    }
-  })
-  return Array.from(packages).sort()
-})
 
 
 const loadUserKeys = async () => {
@@ -1416,7 +1301,7 @@ const loadUserKeys = async () => {
     // 更新统计数据
     keyStats.active = apiKeys.value.filter(k => k.status === 'active').length
 
-    filterKeys()
+    filteredKeys.value = apiKeys.value
   } catch (error) {
     console.error('获取密钥列表失败:', error)
     ElMessage.error('获取密钥列表失败')
@@ -1505,10 +1390,6 @@ const getRemainingCreditsClass = (remainingCredits: number, totalCredits: number
 }
 
 
-const handleLogout = () => {
-  userStore.logout()
-  router.push('/login')
-}
 
 // 检查是否可以重置积分
 const canResetCredits = (key: any) => {
@@ -1561,37 +1442,6 @@ const refreshKeys = () => {
   loadUserKeys()
 }
 
-const filterKeys = () => {
-  let filtered = [...apiKeys.value]
-
-  if (keyFilters.package) {
-    filtered = filtered.filter(key =>
-      key.package_name === keyFilters.package
-    )
-  }
-
-  if (keyFilters.status) {
-    filtered = filtered.filter(key => {
-      if (keyFilters.status === 'active') return key.status === 'active'
-      if (keyFilters.status === 'expired') return key.status === 'expired'
-      return true
-    })
-  }
-
-  if (keyFilters.usage) {
-    filtered = filtered.filter(key => {
-      if (keyFilters.usage === 'recent') {
-        if (!key.last_used_at) return false
-        const daysDiff = (Date.now() - new Date(key.last_used_at).getTime()) / (1000 * 60 * 60 * 24)
-        return daysDiff <= 7 // 7天内使用过
-      }
-      if (keyFilters.usage === 'unused') return !key.last_used_at
-      return true
-    })
-  }
-
-  filteredKeys.value = filtered
-}
 
 const maskApiKey = (apiKey: string) => {
   if (!apiKey) return '-'
@@ -1675,10 +1525,6 @@ const loadUsageStats = async () => {
   try {
     loadingUsageStats.value = true
     const params: any = {}
-    if (usageFilters.dateRange) {
-      params.start_date = usageFilters.dateRange[0]
-      params.end_date = usageFilters.dateRange[1]
-    }
 
     const response: any = await request.get(`/api/v1/usage/stats`, {
       params: {
@@ -1706,14 +1552,7 @@ const loadUsageRecords = async () => {
       page_size: usagePagination.size
     }
 
-    if (usageFilters.service) {
-      params.service = usageFilters.service
-    }
 
-    if (usageFilters.dateRange) {
-      params.start_date = usageFilters.dateRange[0]
-      params.end_date = usageFilters.dateRange[1]
-    }
 
     const response: any = await request.get('/api/v1/usage/history', { params })
     usageRecords.value = response.records || []
@@ -1747,11 +1586,6 @@ const refreshUsageRecords = () => {
   loadUsageRecords()
 }
 
-const applyUsageFilters = () => {
-  usagePagination.current = 1
-  loadUsageRecords()
-  loadUsageStats()
-}
 
 const handleUsagePageChange = (page: number) => {
   usagePagination.current = page
@@ -1814,12 +1648,6 @@ onMounted(() => {
   margin-right: 10px;
 }
 
-.sidebar-footer {
-  position: absolute;
-  bottom: 30px;
-  left: 20px;
-  right: 20px;
-}
 
 .main-content {
   padding: 30px;
@@ -2969,10 +2797,6 @@ onMounted(() => {
   font-size: 14px;
 }
 
-.usage-filters {
-  padding: 16px 0;
-  border-bottom: 1px solid #f0f2f5;
-}
 
 .error-message {
   color: #f56c6c;
