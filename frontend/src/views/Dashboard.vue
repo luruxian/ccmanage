@@ -19,10 +19,6 @@
                 <ElIcon><ElIconList /></ElIcon>
                 订阅一览
               </a>
-              <a href="#" :class="['nav-item', { active: activeTab === 'plan' }]" @click="activeTab = 'plan'">
-                <ElIcon><ElIconCreditCard /></ElIcon>
-                订阅状态
-              </a>
               <a href="#" :class="['nav-item', { active: activeTab === 'promotion' }]" @click="activeTab = 'promotion'">
                 <ElIcon><ElIconTrendCharts /></ElIcon>
                 推广计划
@@ -30,10 +26,6 @@
               <a href="#" :class="['nav-item', { active: activeTab === 'resources' }]" @click="activeTab = 'resources'">
                 <ElIcon><ElIconReading /></ElIcon>
                 资料中心
-              </a>
-              <a href="#" :class="['nav-item', { active: activeTab === 'settings' }]" @click="activeTab = 'settings'">
-                <ElIcon><ElIconSetting /></ElIcon>
-                设置
               </a>
             </nav>
 
@@ -140,96 +132,121 @@
                 </router-link>
               </div>
               <div v-else>
-                <ElTable :data="filteredKeys" stripe>
-                  <ElTableColumn prop="package_name" label="订阅名称" width="160">
-                    <template #default="scope">
-                      <div class="key-name-cell">
-                        <strong>{{ scope.row.package_name || '未知订阅' }}</strong>
+                <div class="custom-table">
+                  <div class="table-header">
+                    <div class="header-row">
+                      <div class="col-subscription">订阅名称</div>
+                      <div class="col-api-key">API密钥</div>
+                      <div class="col-status">状态</div>
+                      <div class="col-activation">激活时间</div>
+                      <div class="col-expire">过期时间</div>
+                      <div class="col-days">剩余天数</div>
+                      <div class="col-actions">操作</div>
+                    </div>
+                  </div>
+                  <div class="table-body">
+                    <div v-for="key in filteredKeys" :key="key.id" class="key-item">
+                      <!-- 第一行：主要信息 -->
+                      <div class="main-row">
+                        <div class="col-subscription">
+                          <div class="key-name-cell">
+                            <strong>{{ key.package_name || '未知订阅' }}</strong>
+                          </div>
+                        </div>
+                        <div class="col-api-key">
+                          <div class="api-key-cell">
+                            <code class="api-key-text">{{ maskApiKey(key.api_key) }}</code>
+                            <ElButton size="small" text @click="copyApiKey(key.api_key)">
+                              <ElIcon><ElIconCopyDocument /></ElIcon>
+                            </ElButton>
+                          </div>
+                        </div>
+                        <div class="col-status">
+                          <ElTag :type="getStatusType(key.status)" size="small">
+                            {{ getStatusText(key.status) }}
+                          </ElTag>
+                        </div>
+                        <div class="col-activation">
+                          <span v-if="key.activation_date" class="date-text">
+                            {{ formatDateShort(key.activation_date) }}
+                          </span>
+                          <span v-else class="text-muted">未激活</span>
+                        </div>
+                        <div class="col-expire">
+                          <span v-if="key.expire_date" class="date-text">
+                            {{ formatDateShort(key.expire_date) }}
+                          </span>
+                          <span v-else class="text-muted">永久</span>
+                        </div>
+                        <div class="col-days">
+                          <span v-if="key.remaining_days !== null"
+                                :class="getRemainingDaysClass(key.remaining_days)">
+                            {{ key.remaining_days }}天
+                          </span>
+                          <span v-else class="text-muted">永久</span>
+                        </div>
+                        <div class="col-actions">
+                          <div class="action-buttons">
+                            <ElButton
+                              type="primary"
+                              size="small"
+                              @click="viewUsageHistory(key)"
+                            >
+                              履历
+                            </ElButton>
+                            <ElButton
+                              type="success"
+                              size="small"
+                              @click="resetCredits(key)"
+                              :disabled="!canResetCredits(key)"
+                              style="margin-left: 4px;"
+                            >
+                              重置积分
+                            </ElButton>
+                          </div>
+                        </div>
                       </div>
-                    </template>
-                  </ElTableColumn>
-                  <ElTableColumn prop="api_key" label="API密钥" show-overflow-tooltip min-width="220">
-                    <template #default="scope">
-                      <div class="api-key-cell">
-                        <code class="api-key-text">{{ maskApiKey(scope.row.api_key) }}</code>
-                        <ElButton size="small" text @click="copyApiKey(scope.row.api_key)">
-                          <ElIcon><ElIconCopyDocument /></ElIcon>
-                        </ElButton>
+                      <!-- 第二行：积分信息 -->
+                      <div class="credits-row">
+                        <div class="credits-content">
+                          <div class="credits-info-container">
+                            <div class="credits-basic">
+                              <div class="credit-item">
+                                <span class="credit-label">总积分：</span>
+                                <span v-if="key.total_credits !== null" class="credit-value">
+                                  {{ key.total_credits }}
+                                </span>
+                                <span v-else class="text-muted">-</span>
+                              </div>
+                              <div class="credit-item">
+                                <span class="credit-label">剩余积分：</span>
+                                <span v-if="key.remaining_credits !== null"
+                                      class="credit-value"
+                                      :class="getRemainingCreditsClass(key.remaining_credits, key.total_credits)">
+                                  {{ key.remaining_credits }}
+                                </span>
+                                <span v-else class="text-muted">-</span>
+                              </div>
+                            </div>
+                            <div v-if="key.total_credits && key.total_credits > 0" class="credits-progress">
+                              <div class="progress-info">
+                                <span class="progress-label">使用进度</span>
+                                <span class="progress-text">
+                                  {{ Math.round(((key.total_credits - (key.remaining_credits || 0)) / key.total_credits) * 100) }}%
+                                </span>
+                              </div>
+                              <ElProgress
+                                :percentage="Math.round(((key.total_credits - (key.remaining_credits || 0)) / key.total_credits) * 100)"
+                                :color="getProgressColor(Math.round(((key.total_credits - (key.remaining_credits || 0)) / key.total_credits) * 100))"
+                                :stroke-width="6"
+                              />
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </template>
-                  </ElTableColumn>
-                  <ElTableColumn prop="status" label="状态" width="90">
-                    <template #default="scope">
-                      <ElTag :type="getStatusType(scope.row.status)" size="small">
-                        {{ getStatusText(scope.row.status) }}
-                      </ElTag>
-                    </template>
-                  </ElTableColumn>
-                  <ElTableColumn prop="activation_date" label="激活时间" width="130">
-                    <template #default="scope">
-                      <span v-if="scope.row.activation_date" class="date-text">
-                        {{ formatDateShort(scope.row.activation_date) }}
-                      </span>
-                      <span v-else class="text-muted">未激活</span>
-                    </template>
-                  </ElTableColumn>
-                  <ElTableColumn prop="expire_date" label="过期时间" width="130">
-                    <template #default="scope">
-                      <span v-if="scope.row.expire_date" class="date-text">
-                        {{ formatDateShort(scope.row.expire_date) }}
-                      </span>
-                      <span v-else class="text-muted">永久</span>
-                    </template>
-                  </ElTableColumn>
-                  <ElTableColumn prop="remaining_days" label="剩余天数" width="100">
-                    <template #default="scope">
-                      <span v-if="scope.row.remaining_days !== null"
-                            :class="getRemainingDaysClass(scope.row.remaining_days)">
-                        {{ scope.row.remaining_days }}天
-                      </span>
-                      <span v-else class="text-muted">永久</span>
-                    </template>
-                  </ElTableColumn>
-                  <ElTableColumn prop="total_credits" label="总积分" width="100">
-                    <template #default="scope">
-                      <span v-if="scope.row.total_credits !== null" class="credits-text">
-                        {{ scope.row.total_credits }}
-                      </span>
-                      <span v-else class="text-muted">-</span>
-                    </template>
-                  </ElTableColumn>
-                  <ElTableColumn prop="remaining_credits" label="剩余积分" width="100">
-                    <template #default="scope">
-                      <span v-if="scope.row.remaining_credits !== null"
-                            :class="getRemainingCreditsClass(scope.row.remaining_credits, scope.row.total_credits)">
-                        {{ scope.row.remaining_credits }}
-                      </span>
-                      <span v-else class="text-muted">-</span>
-                    </template>
-                  </ElTableColumn>
-                  <ElTableColumn label="操作" width="160" fixed="right">
-                    <template #default="scope">
-                      <div class="action-buttons">
-                        <ElButton
-                          type="primary"
-                          size="small"
-                          @click="viewUsageHistory(scope.row)"
-                        >
-                          履历
-                        </ElButton>
-                        <ElButton
-                          type="success"
-                          size="small"
-                          @click="resetCredits(scope.row)"
-                          :disabled="!canResetCredits(scope.row)"
-                          style="margin-left: 4px;"
-                        >
-                          重置积分
-                        </ElButton>
-                      </div>
-                    </template>
-                  </ElTableColumn>
-                </ElTable>
+                    </div>
+                  </div>
+                </div>
 
                 <!-- 分页 -->
                 <div v-if="filteredKeys.length > 0" class="pagination-wrapper">
@@ -880,32 +897,6 @@ sudo yum install -y nodejs</code></pre>
             </div>
           </div>
 
-          <!-- 订阅状态 -->
-          <div v-if="activeTab === 'plan'" class="tab-content">
-            <h2 class="mb-4">订阅状态</h2>
-            <ElCard>
-              <div class="plan-status">
-                <div class="plan-header">
-                  <h4>{{ planInfo.plan_type }}</h4>
-                  <ElTag :type="planInfo.has_active_plan ? 'success' : 'warning'">
-                    {{ planInfo.has_active_plan ? '激活中' : '未激活' }}
-                  </ElTag>
-                </div>
-
-                <div class="plan-usage mt-4">
-                  <p>积分使用情况</p>
-                  <ElProgress
-                    :percentage="planInfo.usage_percentage"
-                    :color="getProgressColor(planInfo.usage_percentage)"
-                  />
-                  <div class="usage-info mt-2">
-                    <span>剩余: {{ planInfo.credits_remaining }}</span>
-                    <span class="float-end">总计: {{ planInfo.total_credits }}</span>
-                  </div>
-                </div>
-              </div>
-            </ElCard>
-          </div>
 
           <!-- 推广计划 -->
           <div v-if="activeTab === 'promotion'" class="tab-content">
@@ -988,8 +979,8 @@ sudo yum install -y nodejs</code></pre>
                       {{ selectedApiKey.is_active ? '激活' : '禁用' }}
                     </ElTag>
                   </ElDescriptionsItem>
-                  <ElDescriptionsItem label="创建时间">
-                    {{ formatDate(selectedApiKey.created_at) }}
+                  <ElDescriptionsItem label="激活时间">
+                    {{ formatDate(selectedApiKey.activation_date) }}
                   </ElDescriptionsItem>
                 </ElDescriptions>
               </ElCard>
@@ -1513,6 +1504,7 @@ const getRemainingCreditsClass = (remainingCredits: number, totalCredits: number
   return 'text-success'
 }
 
+
 const handleLogout = () => {
   userStore.logout()
   router.push('/login')
@@ -1635,7 +1627,7 @@ const viewUsageHistory = (key: any) => {
 //       <p><strong>订阅名称:</strong> ${key.package_name || '未知订阅'}</p>
 //       <p><strong>API密钥:</strong> ${key.api_key}</p>
 //       <p><strong>状态:</strong> ${key.is_active ? '激活' : '禁用'}</p>
-//       <p><strong>创建时间:</strong> ${formatDate(key.created_at)}</p>
+//       <p><strong>激活时间:</strong> ${formatDate(key.activation_date)}</p>
 //       <p><strong>最后使用:</strong> ${key.last_used_at ? formatDate(key.last_used_at) : '从未使用'}</p>
 //     </div>
 //     `,
@@ -1938,6 +1930,242 @@ onMounted(() => {
 .action-buttons .el-button {
   font-size: 0.8rem;
   padding: 4px 8px;
+}
+
+/* 展开行样式 */
+.expand-content {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-left: 4px solid #007bff;
+}
+
+.credits-info {
+  max-width: 600px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.info-label {
+  font-weight: 500;
+  color: #666;
+  min-width: 80px;
+}
+
+.info-value {
+  font-weight: 600;
+}
+
+.progress-section {
+  margin-top: 16px;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progress-label {
+  font-weight: 500;
+  color: #333;
+}
+
+.progress-text {
+  font-weight: 600;
+  color: #666;
+}
+
+/* 自定义表格样式 */
+.custom-table {
+  border: 1px solid #e4e7ed;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.table-header {
+  background-color: #f5f7fa;
+  border-bottom: 1px solid #e4e7ed;
+}
+
+.header-row {
+  display: flex;
+  padding: 12px 16px;
+  font-weight: 600;
+  color: #909399;
+  font-size: 14px;
+}
+
+.table-body {
+  background-color: #fff;
+}
+
+.key-item {
+  border-bottom: 2px solid #e9ecef;
+  background-color: #ffffff;
+}
+
+.key-item:last-child {
+  border-bottom: none;
+}
+
+.key-item:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.key-item:nth-child(even) .main-row,
+.key-item:nth-child(even) .credits-row {
+  background-color: #f8f9fa;
+}
+
+.key-item:nth-child(odd) .main-row,
+.key-item:nth-child(odd) .credits-row {
+  background-color: #ffffff;
+}
+
+.main-row {
+  display: flex;
+  padding: 12px 16px;
+  align-items: center;
+  min-height: 60px;
+}
+
+.credits-row {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.credits-content {
+  padding: 12px 16px;
+}
+
+.credits-info-container {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.credits-basic {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.credit-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.credit-label {
+  font-weight: 500;
+  color: #666;
+  font-size: 14px;
+}
+
+.credit-value {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.credits-progress {
+  flex: 1;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.credits-progress .progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.credits-progress .progress-label {
+  font-size: 13px;
+  color: #666;
+}
+
+.credits-progress .progress-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* 列宽度设置 */
+.col-subscription {
+  width: 160px;
+  min-width: 160px;
+}
+
+.col-api-key {
+  flex: 1;
+  min-width: 220px;
+}
+
+.col-status {
+  width: 90px;
+  min-width: 90px;
+}
+
+.col-activation {
+  width: 130px;
+  min-width: 130px;
+}
+
+.col-expire {
+  width: 130px;
+  min-width: 130px;
+}
+
+.col-days {
+  width: 100px;
+  min-width: 100px;
+}
+
+.col-actions {
+  width: 160px;
+  min-width: 160px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .header-row,
+  .main-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .col-subscription,
+  .col-api-key,
+  .col-status,
+  .col-activation,
+  .col-expire,
+  .col-days,
+  .col-actions {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .credits-info-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .credits-basic {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .credits-progress {
+    width: 100%;
+    max-width: none;
+  }
 }
 
 .pagination-wrapper {
