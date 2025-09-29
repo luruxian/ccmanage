@@ -20,6 +20,7 @@ const AdminDashboard = () => import('../views/admin/AdminDashboard.vue')
 const SubscriptionDetail = () => import('../views/admin/SubscriptionDetail.vue')
 const UserKeyUsageHistory = () => import('../views/admin/UserKeyUsageHistory.vue')
 const UsageHistory = () => import('../views/UsageHistory.vue')
+const ClaudeCodeBestPractices = () => import('../views/ClaudeCodeBestPractices.vue')
 
 const routes = [
   {
@@ -111,6 +112,12 @@ const routes = [
     path: '/usage-history/:apiKey',
     name: 'UsageHistory',
     component: UsageHistory,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/claude-code-best-practices',
+    name: 'ClaudeCodeBestPractices',
+    component: ClaudeCodeBestPractices,
     meta: { requiresAuth: true }
   }
 ]

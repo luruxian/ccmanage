@@ -1092,7 +1092,7 @@ sudo yum install -y nodejs</code></pre>
                   </template>
                   <div class="resource-content">
                     <p>详细的API文档和使用指南</p>
-                    <ElButton type="text">查看文档</ElButton>
+                    <ElButton type="text" @click="goToClaudeCodeBestPractices">查看文档</ElButton>
                   </div>
                 </ElCard>
               </div>
@@ -1442,6 +1442,10 @@ const refreshKeys = () => {
   loadUserKeys()
 }
 
+const goToClaudeCodeBestPractices = () => {
+  router.push('/claude-code-best-practices')
+}
+
 
 const maskApiKey = (apiKey: string) => {
   if (!apiKey) return '-'
@@ -1606,6 +1610,13 @@ const formatNumber = (num: number) => {
 onMounted(() => {
   loadUserKeys()
   loadPlanStatus()
+
+  // 检查URL参数中的tab参数
+  const urlParams = new URLSearchParams(window.location.search)
+  const tabParam = urlParams.get('tab')
+  if (tabParam && ['keys', 'getting-started', 'packages', 'promotion', 'resources'].includes(tabParam)) {
+    activeTab.value = tabParam
+  }
 })
 </script>
 

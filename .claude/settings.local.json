@@ -15,7 +15,8 @@
       "WebFetch(domain:gaccode.com)",
       "WebFetch(domain:docs.claude.com)",
       "WebFetch(domain:github.com)",
-      "WebFetch(domain:raw.githubusercontent.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:www.anthropic.com)"
     ],
     "deny": [],
     "ask": []
