@@ -1087,11 +1087,11 @@ sudo yum install -y nodejs</code></pre>
                 <ElCard class="resource-card">
                   <template #header>
                     <div class="resource-header">
-                      <h4>📖 使用文档</h4>
+                      <h4>📖 Claude Code最佳实践</h4>
                     </div>
                   </template>
                   <div class="resource-content">
-                    <p>详细的API文档和使用指南</p>
+                    <p>本文档翻译自 Anthropic 官方博客文章 <a href="https://www.anthropic.com/engineering/claude-code-best-practices" target=“_blank”>Claude Code Best Practices</a></p>
                     <ElButton type="text" @click="goToClaudeCodeBestPractices">查看文档</ElButton>
                   </div>
                 </ElCard>
