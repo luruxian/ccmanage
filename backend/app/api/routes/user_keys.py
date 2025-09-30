@@ -182,9 +182,13 @@ async def get_user_plan_status(
 
     except Exception as e:
         logger.error(f"获取用户套餐状态失败: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="获取失败"
+        # 返回默认值而不是抛出异常，避免对没有API key的用户造成错误
+        return UserPlanStatusResponse(
+            has_active_plan=False,
+            plan_type="无订阅",
+            credits_remaining=0,
+            total_credits=0,
+            usage_percentage=0
         )
 
 

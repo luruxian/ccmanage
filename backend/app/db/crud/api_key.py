@@ -477,8 +477,11 @@ class APIKeyCRUD:
                 usage_percentage = (used_credits / active_key.total_credits) * 100
 
             # 获取套餐信息
-            package = self.db.query(Package).filter(Package.id == active_key.package_id).first()
-            plan_type = package.package_code if package else "unknown"
+            package = None
+            plan_type = "unknown"
+            if active_key.package_id:
+                package = self.db.query(Package).filter(Package.id == active_key.package_id).first()
+                plan_type = package.package_code if package else "unknown"
 
             return {
                 "has_active_plan": True,

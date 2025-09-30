@@ -1307,6 +1307,15 @@ const loadPlanStatus = async () => {
     Object.assign(planInfo, response.data)
   } catch (error) {
     console.error('获取套餐状态失败:', error)
+    // 设置默认值确保页面能正常显示
+    Object.assign(planInfo, {
+      has_active_plan: false,
+      plan_type: '无订阅',
+      credits_remaining: 0,
+      total_credits: 0,
+      usage_percentage: 0
+    })
+    // 不显示错误提示，避免对没有API key的用户造成困扰
   }
 }
 
