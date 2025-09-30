@@ -9,13 +9,34 @@ let requestQueue: Array<(token: string) => void> = [];
 // 获取API基础URL
 const getBaseURL = () => {
   const envURL = import.meta.env.VITE_API_BASE_URL;
-  // 始终使用完整的baseURL，不使用相对路径
-  const baseURL = envURL || 'http://localhost:8001';
+
+  // 如果有环境变量配置，直接使用
+  if (envURL) {
+    return envURL;
+  }
+
+  // 自动检测协议和主机
+  const protocol = window.location.protocol;
+  const hostname = window.location.hostname;
+  const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+
+  let baseURL: string;
+
+  if (isLocalhost) {
+    // 本地开发环境，使用HTTP
+    baseURL = 'http://localhost:8001';
+  } else {
+    // 生产环境，使用当前页面的协议和主机
+    const port = protocol === 'https:' ? '' : ':8001';
+    baseURL = `${protocol}//${hostname}${port}/api`;
+  }
 
   // 在开发环境打印配置信息
   if (import.meta.env.DEV) {
     console.log('🔗 API BaseURL:', baseURL);
     console.log('🌍 Environment:', import.meta.env.MODE);
+    console.log('🌐 Protocol:', protocol);
+    console.log('🏠 Hostname:', hostname);
   }
 
   return baseURL;
@@ -40,7 +61,7 @@ const refreshToken = async (): Promise<string | null> => {
     }
 
     const response = await axios.post(
-      `${getBaseURL()}/api/v1/auth/refresh`,
+      `${getBaseURL()}/v1/auth/refresh`,
       { refresh_token: refreshToken },
       {
         headers: {

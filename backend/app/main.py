@@ -48,10 +48,21 @@ app = FastAPI(
 # 配置CORS中间件
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_HOSTS,
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allow_headers=[
+        "Authorization",
+        "Content-Type",
+        "X-Requested-With",
+        "X-User-ID",
+        "X-User-Role",
+        "X-Request-ID",
+        "X-Forwarded-Proto",
+        "X-Forwarded-For",
+        "X-Real-IP"
+    ],
+    expose_headers=["X-Request-ID"],
 )
 
 # 根路由健康检查

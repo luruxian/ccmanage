@@ -91,7 +91,7 @@ class EmailService:
                     <div style="padding: 40px 30px;">
                         <!-- 品牌标识 -->
                         <div style="text-align: center; margin-bottom: 30px;">
-                            <div style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 25px; border-radius: 50px; font-weight: 700; font-size: 18px; margin-bottom: 15px;">
+                            <div style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #718096; padding: 15px 25px; border-radius: 50px; font-weight: 700; font-size: 18px; margin-bottom: 15px;">
                                 🤖 agnets.app | agnet club
                             </div>
                         </div>
@@ -109,8 +109,8 @@ class EmailService:
                                 我们很高兴您决定加入 agnets.app 社区！作为 agnet club 的新成员，您将能够：
                             </p>
                             <ul style="color: #4a5568; margin: 15px 0 0 0; padding-left: 20px; line-height: 1.8;">
-                                <li>🚀 创建和管理智能代理</li>
-                                <li>🔗 无缝集成各种API服务</li>
+                                <li>🚀 利用Claude Code更高效地完成编程工作</li>
+                                <li>🔗 实现开发工作流的无缝整合</li>
                                 <li>📊 实时监控使用情况</li>
                                 <li>🎯 享受专业级的技术支持</li>
                             </ul>
@@ -166,7 +166,7 @@ class EmailService:
                         <div style="text-align: center; margin-top: 30px;">
                             <p style="color: #718096; font-size: 14px; margin: 0 0 10px 0;">需要帮助？我们随时为您服务</p>
                             <p style="color: #667eea; font-size: 14px; margin: 0;">
-                                📧 support@agnets.app | 🌐 agnets.app
+                                📧 club.agnet@gmail.com | 🌐 https://agnets.app
                             </p>
                         </div>
                     </div>
@@ -176,7 +176,7 @@ class EmailService:
                         <p style="color: #a0aec0; font-size: 12px; text-align: center; margin: 0; line-height: 1.5;">
                             如果您没有注册 agnets.app 账户，请忽略此邮件。<br>
                             此邮件由系统自动发送，请勿直接回复。<br><br>
-                            © 2024 agnets.app | agnet club. All rights reserved.
+                            © 2025 agnets.app | agnet club. All rights reserved.
                         </p>
                     </div>
                 </div>

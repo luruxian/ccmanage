@@ -38,7 +38,40 @@ class Settings:
     SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key-here")
 
     # CORS配置
-    ALLOWED_HOSTS: List[str] = ["*"]  # 生产环境应限制来源
+    ALLOWED_HOSTS: List[str] = [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://localhost:8080",
+        "https://localhost:3000",
+        "https://localhost:5173",
+        "https://localhost:8080"
+    ]  # 生产环境配置，支持HTTP和HTTPS
+
+    # 从环境变量获取允许的来源
+    @property
+    def CORS_ORIGINS(self) -> List[str]:
+        """动态获取CORS允许的来源"""
+        origins = self.ALLOWED_HOSTS.copy()
+
+        # 从环境变量添加额外的来源
+        env_origins = os.getenv("CORS_ORIGINS", "")
+        if env_origins:
+            origins.extend([origin.strip() for origin in env_origins.split(",")])
+
+        # 如果设置了前端URL，添加到允许列表
+        if self.FRONTEND_URL and self.FRONTEND_URL not in origins:
+            origins.append(self.FRONTEND_URL)
+
+        # 自动添加HTTPS版本
+        https_origins = []
+        for origin in origins:
+            if origin.startswith("http://") and not origin.startswith("http://localhost"):
+                https_origin = origin.replace("http://", "https://")
+                if https_origin not in origins:
+                    https_origins.append(https_origin)
+        origins.extend(https_origins)
+
+        return list(set(origins))  # 去重
 
     # 数据库连接池配置
     DB_POOL_SIZE: int = int(os.getenv("DB_POOL_SIZE", "10"))
