@@ -632,8 +632,16 @@ sudo yum install -y nodejs</code></pre>
                   <p class="text-muted mb-3">创建配置文件来启用 Router 功能：</p>
 
                   <div class="config-step">
-                    <h6>3️⃣ 创建配置文件</h6>
+                    <h6>3️⃣ 获取配置文件</h6>
                     <p class="text-muted small mb-2">在用户目录下创建 <code>~/.claude-code-router/config.json</code> 文件：</p>
+
+                    <div class="download-config-notice mb-3">
+                      <p class="text-muted small">
+                        <strong>💡 便捷方式：</strong> 您可以在 <strong>API密钥一览</strong> 页面点击对应密钥的 <strong>下载配置</strong> 按钮，
+                        获取已包含您API密钥的 <code>config.json</code> 文件。
+                      </p>
+                    </div>
+
                     <div class="code-block">
                       <div class="code-header">
                         <span>配置文件示例</span>
@@ -1270,23 +1278,56 @@ const usagePagination = reactive({
 
 // Claude Code Router 配置示例
 const routerConfigExample = ref(`{
-  "providers": {
-    "anthropic": {
-      "type": "anthropic",
-      "apiKey": "$ANTHROPIC_API_KEY"
+  "LOG": true,
+  "LOG_LEVEL": "debug",
+  "CLAUDE_PATH": "",
+  "HOST": "127.0.0.1",
+  "PORT": 3456,
+  "APIKEY": "sk-ant-local-12345",
+  "API_TIMEOUT_MS": "600000",
+  "PROXY_URL": "",
+  "transformers": [],
+  "Providers": [
+    {
+      "name": "deepseek",
+      "api_base_url": "http://endpoint.agnets.app/api/chat/completions",
+      "api_key": "{{API_KEY}}",
+      "models": [
+        "deepseek-chat",
+        "deepseek-reasoner"
+      ],
+      "transformer": {
+        "use": [
+          "deepseek"
+        ],
+        "deepseek-chat": {
+          "use": [
+            "tooluse"
+          ]
+        }
+      }
+    }
+  ],
+  "StatusLine": {
+    "enabled": false,
+    "currentStyle": "default",
+    "default": {
+      "modules": []
     },
-    "openrouter": {
-      "type": "openrouter",
-      "apiKey": "$OPENROUTER_API_KEY"
+    "powerline": {
+      "modules": []
     }
   },
-  "routes": [
-    {
-      "name": "default",
-      "provider": "anthropic",
-      "model": "claude-3-5-sonnet-20241022"
-    }
-  ]
+  "Router": {
+    "default": "deepseek,deepseek-reasoner",
+    "background": "deepseek,deepseek-chat",
+    "think": "deepseek,deepseek-reasoner",
+    "longContext": "deepseek,deepseek-reasoner",
+    "longContextThreshold": 60000,
+    "webSearch": "deepseek,deepseek-reasoner",
+    "image": "deepseek,deepseek-reasoner"
+  },
+  "CUSTOM_ROUTER_PATH": ""
 }`)
 
 
