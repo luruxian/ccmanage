@@ -147,6 +147,14 @@
                             >
                               重置积分
                             </ElButton>
+                            <ElButton
+                              type="info"
+                              size="small"
+                              @click="downloadConfig(key)"
+                              style="margin-left: 4px;"
+                            >
+                              下载配置
+                            </ElButton>
                           </div>
                         </div>
                       </div>
@@ -1439,6 +1447,39 @@ const resetCredits = async (key: any) => {
   }
 }
 
+// 下载配置文件
+const downloadConfig = async (key: any) => {
+  try {
+    const response: any = await request.get(`/api/v1/keys/${key.id}/download-config`)
+
+    if (response.config && response.filename) {
+      // 创建Blob对象
+      const blob = new Blob([JSON.stringify(response.config, null, 2)], {
+        type: 'application/json'
+      })
+
+      // 创建下载链接
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = response.filename
+      document.body.appendChild(a)
+      a.click()
+
+      // 清理
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+
+      ElMessage.success('配置文件下载成功')
+    } else {
+      ElMessage.error('下载失败：响应数据格式错误')
+    }
+  } catch (error: any) {
+    const message = error.response?.data?.detail || error.message || '下载配置文件失败'
+    ElMessage.error(message)
+  }
+}
+
 // 新增的密钥管理方法
 const refreshKeys = () => {
   loadUserKeys()
@@ -1974,8 +2015,8 @@ onMounted(() => {
 }
 
 .col-actions {
-  width: 160px;
-  min-width: 160px;
+  width: 200px;
+  min-width: 200px;
 }
 
 /* 响应式设计 */

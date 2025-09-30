@@ -1,6 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
+import os
+import json
 
 from ...schemas.user_keys import (
     KeyActivationRequest,
@@ -311,4 +314,64 @@ async def reset_api_key_credits(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="重置失败"
+        )
+
+
+@router.get("/{key_id}/download-config")
+async def download_api_key_config(
+    key_id: int,
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """下载API密钥的配置文件"""
+    try:
+        api_key_crud = APIKeyCRUD(db)
+
+        # 检查密钥是否属于当前用户
+        api_key = api_key_crud.get_api_key_by_id(key_id)
+        if not api_key or api_key.user_id != current_user.user_id:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="API密钥不存在"
+            )
+
+        # 读取配置文件模板
+        template_path = os.path.join(os.path.dirname(__file__), "../../../config_template.json")
+
+        if not os.path.exists(template_path):
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="配置文件模板不存在"
+            )
+
+        with open(template_path, 'r', encoding='utf-8') as f:
+            config_template = f.read()
+
+        # 替换API密钥占位符
+        config_content = config_template.replace("{{API_KEY}}", api_key.api_key)
+
+        # 验证JSON格式
+        try:
+            json.loads(config_content)
+        except json.JSONDecodeError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"配置文件格式错误: {str(e)}"
+            )
+
+        # 返回JSON响应，前端将处理下载
+        return JSONResponse(
+            content={
+                "config": json.loads(config_content),
+                "filename": f"config-{api_key.key_name or 'default'}.json"
+            }
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"下载配置文件失败: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="下载配置文件失败"
         )
