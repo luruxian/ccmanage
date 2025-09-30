@@ -91,17 +91,17 @@
 
                       <p>CLAUDE.md文件没有必需的格式。我们建议保持简洁和人类可读。例如：</p>
                       <div class="code-example">
-                        <pre># Bash commands
-- npm run build: Build the project
-- npm run typecheck: Run the typechecker
+                        <pre># Bash命令
+- npm run build: 构建项目
+- npm run typecheck: 运行类型检查器
 
-# Code style
-- Use ES modules (import/export) syntax, not CommonJS (require)
-- Destructure imports when possible (eg. import { foo } from 'bar')
+# 代码风格
+- 使用ES模块 (import/export) 语法，而不是CommonJS (require)
+- 尽可能使用解构导入 (例如 import { foo } from 'bar')
 
-# Workflow
-- Be sure to typecheck when you're done making a series of code changes
-- Prefer running single tests, and not the whole test suite, for performance</pre>
+# 工作流程
+- 在完成一系列代码更改后务必进行类型检查
+- 为了性能考虑，优先运行单个测试，而不是整个测试套件</pre>
                       </div>
 
                       <p>您可以将CLAUDE.md文件放在几个位置：</p>
@@ -156,33 +156,33 @@
                         <li>在全局配置中（在所有项目中可用）</li>
                         <li>在检入的.mcp.json文件中（对在您代码库中工作的任何人都可用）</li>
                       </ul>
-                      <p>When working with MCP, it can also be helpful to launch Claude with the --mcp-debug flag to help identify configuration issues.</p>
+                      <p>在使用MCP时，使用--mcp-debug标志启动Claude来帮助识别配置问题也会很有帮助。</p>
                       <h5>c. 使用自定义斜杠命令</h5>
                       <p>对于重复的工作流程——调试循环、日志分析等——将提示模板存储在.claude/commands文件夹内的Markdown文件中。当您键入/时，这些通过斜杠命令菜单变得可用。</p>
                       <p>
-                        Custom slash commands can include the special keyword $ARGUMENTS to pass parameters from command invocation.
+                        自定义斜杠命令可以包含特殊关键字$ARGUMENTS来从命令调用传递参数。
 
-For example, here’s a slash command that you could use to automatically pull and fix a Github issue:
+例如，这是一个您可以用来自动拉取和修复Github问题的斜杠命令：
                       </p>
                       <div class="code-example">
-                        <pre>Please analyze and fix the GitHub issue: $ARGUMENTS.
+                        <pre>请分析并修复GitHub问题：$ARGUMENTS。
 
-Follow these steps:
+按照以下步骤操作：
 
-1. Use `gh issue view` to get the issue details
-2. Understand the problem described in the issue
-3. Search the codebase for relevant files
-4. Implement the necessary changes to fix the issue
-5. Write and run tests to verify the fix
-6. Ensure code passes linting and type checking
-7. Create a descriptive commit message
-8. Push and create a PR
+1. 使用`gh issue view`获取问题详情
+2. 理解问题中描述的问题
+3. 搜索代码库中的相关文件
+4. 实施必要的更改来修复问题
+5. 编写并运行测试来验证修复
+6. 确保代码通过linting和类型检查
+7. 创建描述性提交消息
+8. 推送并创建PR
 
-Remember to use the GitHub CLI (`gh`) for all GitHub-related tasks.
+记住使用GitHub CLI (`gh`)进行所有与GitHub相关的任务。
                         </pre>
                       </div>
                       <p>
-                        Putting the above content into .claude/commands/fix-github-issue.md makes it available as the /project:fix-github-issue command in Claude Code. You could then for example use /project:fix-github-issue 1234 to have Claude fix issue #1234. Similarly, you can add your own personal commands to the ~/.claude/commands folder for commands you want available in all of your sessions.
+                        将上述内容放入.claude/commands/fix-github-issue.md中，使其在Claude Code中作为/project:fix-github-issue命令可用。然后您可以例如使用/project:fix-github-issue 1234让Claude修复问题#1234。同样，您可以将自己的个人命令添加到~/.claude/commands文件夹中，用于您希望在所有会话中可用的命令。
                       </p>
                     </section>
 
@@ -193,136 +193,136 @@ Remember to use the GitHub CLI (`gh`) for all GitHub-related tasks.
                       <h5>a. 探索、规划、编码、提交</h5>
                       <p>这种多功能工作流程适合许多问题：</p>
                       <ol>
-                        <li>Ask Claude to read relevant files, images, or URLs, providing either general pointers ("read the file that handles logging") or specific filenames ("read logging.py"), but explicitly tell it not to write any code just yet.
+                        <li>要求Claude阅读相关文件、图像或URL，提供一般性指向（如"阅读处理日志记录的文件"）或特定文件名（如"阅读logging.py"），但明确告诉它暂时不要编写任何代码。
                           <ol>
                             <li>
-                              This is the part of the workflow where you should consider strong use of subagents, especially for complex problems. Telling Claude to use subagents to verify details or investigate particular questions it might have, especially early on in a conversation or task, tends to preserve context availability without much downside in terms of lost efficiency.
+                              这是工作流程中您应该考虑大量使用子代理的部分，特别是对于复杂问题。告诉Claude使用子代理来验证细节或调查它可能有的特定问题，尤其是在对话或任务的早期阶段，往往能在不降低效率的情况下保持上下文的可用性。
                             </li>
                           </ol>
                         </li>
                         <li>
-                          Ask Claude to make a plan for how to approach a specific problem. We recommend using the word "think" to trigger extended thinking mode, which gives Claude additional computation time to evaluate alternatives more thoroughly. These specific phrases are mapped directly to increasing levels of thinking budget in the system: "think" < "think hard" < "think harder" < "ultrathink." Each level allocates progressively more thinking budget for Claude to use.
+                          要求Claude制定解决特定问题的计划。我们建议使用"think"这个词来触发扩展思考模式，这给Claude额外的计算时间来更彻底地评估替代方案。这些特定短语直接映射到系统中递增的思考预算级别："think" < "think hard" < "think harder" < "ultrathink"。每个级别为Claude分配递增的思考预算。
                           <ol>
                             <li>
-                              If the results of this step seem reasonable, you can have Claude create a document or a GitHub issue with its plan so that you can reset to this spot if the implementation (step 3) isn’t what you want.
+                              如果这一步的结果看起来合理，您可以让Claude创建一个文档或GitHub问题来记录其计划，这样如果实现（第3步）不是您想要的，您可以重置到这个位置。
                             </li>
                           </ol>
                         </li>
-                        <li>Ask Claude to implement its solution in code. This is also a good place to ask it to explicitly verify the reasonableness of its solution as it implements pieces of the solution.</li>
-                        <li>Ask Claude to commit the result and create a pull request. If relevant, this is also a good time to have Claude update any READMEs or changelogs with an explanation of what it just did.</li>
+                        <li>要求Claude在代码中实现其解决方案。这也是要求它在实现解决方案的各个部分时明确验证其合理性的好地方。</li>
+                        <li>要求Claude提交结果并创建拉取请求。如果相关的话，这也是让Claude更新任何README或变更日志，解释它刚才做了什么的好时机。</li>
                       </ol>
-                      <p>Steps #1-#2 are crucial—without them, Claude tends to jump straight to coding a solution. While sometimes that's what you want, asking Claude to research and plan first significantly improves performance for problems requiring deeper thinking upfront.</p>
+                      <p>步骤#1-#2是至关重要的——没有它们，Claude往往会直接跳到编码解决方案。虽然有时这就是您想要的，但首先要求Claude进行研究和规划，对于需要前期深入思考的问题，会显著提高性能。</p>
                       <h5>b. 编写测试、提交；编码、迭代、提交</h5>
                       <p>这是Anthropic最喜欢的工作流程，用于可以通过单元、集成或端到端测试轻松验证的更改。测试驱动开发（TDD）与代理式编程变得更加强大。</p>
                       <ol>
                         <li>
-                          Ask Claude to write tests based on expected input/output pairs. Be explicit about the fact that you’re doing test-driven development so that it avoids creating mock implementations, even for functionality that doesn’t exist yet in the codebase.
+                          要求Claude基于预期的输入/输出对编写测试。明确说明您正在进行测试驱动开发，这样它就不会创建模拟实现，即使对于代码库中尚不存在的功能也是如此。
                         </li>
                         <li>
-                          Tell Claude to run the tests and confirm they fail. Explicitly telling it not to write any implementation code at this stage is often helpful.
+                          告诉Claude运行测试并确认它们失败。明确告诉它在这个阶段不要编写任何实现代码通常是有帮助的。
                         </li>
                         <li>
-                          Ask Claude to commit the tests when you’re satisfied with them.
+                          当您对测试满意时，要求Claude提交测试。
                         </li>
                         <li>
-                          Ask Claude to write code that passes the tests, instructing it not to modify the tests. Tell Claude to keep going until all tests pass. It will usually take a few iterations for Claude to write code, run the tests, adjust the code, and run the tests again.
+                          要求Claude编写通过测试的代码，指示它不要修改测试。告诉Claude继续进行，直到所有测试都通过。Claude通常需要几次迭代来编写代码、运行测试、调整代码，然后再次运行测试。
                           <ol>
-                            <li>At this stage, it can help to ask it to verify with independent subagents that the implementation isn’t overfitting to the tests</li>
+                            <li>在这个阶段，要求它使用独立的子代理验证实现没有过度拟合测试可能会有帮助</li>
                           </ol>
                         </li>
-                        <li>Ask Claude to commit the code once you’re satisfied with the changes.</li>
+                        <li>一旦您对更改满意，要求Claude提交代码。</li>
                       </ol>
-                      <p>Claude performs best when it has a clear target to iterate against—a visual mock, a test case, or another kind of output. By providing expected outputs like tests, Claude can make changes, evaluate results, and incrementally improve until it succeeds.</p>
+                      <p>当Claude有明确的迭代目标时表现最佳——视觉模拟、测试用例或其他类型的输出。通过提供测试等预期输出，Claude可以进行更改、评估结果，并逐步改进直到成功。</p>
 
 
                       <h5>c. 编写代码、截图结果、迭代</h5>
                       <p>类似于测试工作流程，您可以为Claude提供视觉目标，通过浏览器截图、设计模拟等方式进行迭代改进。</p>
                       <ol>
                         <li>
-                          Give Claude a way to take browser screenshots (e.g., with the Puppeteer MCP server, an iOS simulator MCP server, or manually copy / paste screenshots into Claude).
+                          为Claude提供截取浏览器截图的方法（例如，使用Puppeteer MCP服务器、iOS模拟器MCP服务器，或手动复制/粘贴截图到Claude中）。
                         </li>
                         <li>
-                          Give Claude a visual mock by copying / pasting or drag-dropping an image, or giving Claude the image file path.
+                          通过复制/粘贴或拖拽图像，或提供图像文件路径，为Claude提供视觉模拟。
                         </li>
                         <li>
-Ask Claude to implement the design in code, take screenshots of the result, and iterate until its result matches the mock.
+要求Claude在代码中实现设计，截取结果截图，并迭代直到其结果与模拟匹配。
                         </li>
                         <li>
-Ask Claude to commit when you're satisfied.
+当您满意时要求Claude提交。
                         </li>
                       </ol>
-                      <p>Like humans, Claude's outputs tend to improve significantly with iteration. While the first version might be good, after 2-3 iterations it will typically look much better. Give Claude the tools to see its outputs for best results.
+                      <p>像人类一样，Claude的输出往往会随着迭代而显著改善。虽然第一个版本可能不错，但经过2-3次迭代后通常会看起来好得多。为Claude提供查看其输出的工具以获得最佳结果。
 
 </p>
                       <div class="image-container">
                         <img src="../assets/images/docs/1-1600x1143.webp" alt="Claude Code Best Practices" class="practice-image" />
                       </div>
                       <h5>d. 安全YOLO模式</h5>
-                      <p>Instead of supervising Claude, you can use claude --dangerously-skip-permissions to bypass all permission checks and let Claude work uninterrupted until completion. This works well for workflows like fixing lint errors or generating boilerplate code.
+                      <p>您可以使用claude --dangerously-skip-permissions来绕过所有权限检查，让Claude不受干扰地工作直至完成，而不是监督Claude。这对于修复lint错误或生成样板代码等工作流程效果很好。
 
-Letting Claude run arbitrary commands is risky and can result in data loss, system corruption, or even data exfiltration (e.g., via prompt injection attacks). To minimize these risks, use --dangerously-skip-permissions in a container without internet access. You can follow this reference implementation using Docker Dev Containers.</p>
+让Claude运行任意命令是有风险的，可能导致数据丢失、系统损坏，甚至数据泄露（例如，通过提示注入攻击）。为了最小化这些风险，请在没有互联网访问的容器中使用--dangerously-skip-permissions。您可以遵循这个使用Docker开发容器的参考实现。</p>
 
                       <h5>e. 代码库问答</h5>
-                      <p>When onboarding to a new codebase, use Claude Code for learning and exploration. You can ask Claude the same sorts of questions you would ask another engineer on the project when pair programming. Claude can agentically search the codebase to answer general questions like:</p>
+                      <p>在适应新代码库时，使用Claude Code进行学习和探索。您可以向Claude询问在结对编程时会向项目中其他工程师询问的同类问题。Claude可以代理式地搜索代码库来回答一般性问题，如：</p>
                       <ol>
                         <li>
-How does logging work?
+日志记录是如何工作的？
                         </li>
                          <li>
-                          How do I make a new API endpoint? 
+                          如何创建新的API端点？
                         </li>
                          <li>
-                          What does async move { ... } do on line 134 of foo.rs?
+                          foo.rs第134行的async move { ... }是做什么的？
                         </li>
                          <li>
-                          What edge cases does CustomerOnboardingFlowImpl handle?
+                          CustomerOnboardingFlowImpl处理哪些边缘情况？
                         </li>
                          <li>
-                          Why are we calling foo() instead of bar() on line 333?
+                          为什么我们在第333行调用foo()而不是bar()？
                         </li>
                          <li>
-                          What’s the equivalent of line 334 of baz.py in Java?
+                          baz.py第334行在Java中的等价物是什么？
                         </li>
                       </ol>
                       <p>
-                        At Anthropic, using Claude Code in this way has become our core onboarding workflow, significantly improving ramp-up time and reducing load on other engineers. No special prompting is required! Simply ask questions, and Claude will explore the code to find answers.
+                        在Anthropic，以这种方式使用Claude Code已经成为我们的核心入职工作流程，显著改善了上手时间并减少了其他工程师的负担。不需要特殊的提示！只需提问，Claude就会探索代码来寻找答案。
                       </p>
                       <div class="image-container">
                         <img src="../assets/images/docs/5-1600x1278.png" alt="Claude Code Best Practices" class="practice-image" />
                       </div>
                       <h5>f. 使用Claude与git交互</h5>
-                      <p>Claude can effectively handle many git operations. Many Anthropic engineers use Claude for 90%+ of our git interactions:</p>
+                      <p>Claude可以有效处理许多git操作。许多Anthropic工程师使用Claude进行90%以上的git交互：</p>
                       <ol>
                         <li>
-Searching git history to answer questions like "What changes made it into v1.2.3?", "Who owns this particular feature?", or "Why was this API designed this way?" It helps to explicitly prompt Claude to look through git history to answer queries like these.
+搜索git历史记录来回答诸如"哪些更改进入了v1.2.3？"、"谁拥有这个特定功能？"或"为什么这个API是这样设计的？"等问题。明确提示Claude查看git历史记录来回答这类查询会有帮助。
                         </li>
                         <li>
-                         Writing commit messages. Claude will look at your changes and recent history automatically to compose a message taking all the relevant context into account 
+                         编写提交消息。Claude会自动查看您的更改和最近的历史记录，考虑所有相关上下文来编写消息
                         </li>
                         <li>
-                          Handling complex git operations like reverting files, resolving rebase conflicts, and comparing and grafting patches
+                          处理复杂的git操作，如还原文件、解决变基冲突、比较和移植补丁
                         </li>
                       </ol>
                       <h5>g. 使用Claude与GitHub交互</h5>
                       <p>Claude Code可以管理许多GitHub交互，包括创建拉取请求、实现代码审查评论的一次性解决方案等。</p>
                       <ol>
                         <li>
-                          Creating pull requests: Claude understands the shorthand "pr" and will generate appropriate commit messages based on the diff and surrounding context.
+                          创建拉取请求：Claude理解"pr"这个简写，并会基于差异和周围上下文生成适当的提交消息。
                         </li>
                         <li>
-                          Implementing one-shot resolutions for simple code review comments: just tell it to fix comments on your PR (optionally, give it more specific instructions) and push back to the PR branch when it's done.
+                          为简单的代码审查评论实现一次性解决方案：只需告诉它修复您PR上的评论（可选地，给它更具体的指令），完成后推送到PR分支。
                         </li>
                         <li>
-                          Fixing failing builds or linter warnings
+                          修复失败的构建或linter警告
                         </li>
                         <li>
-                          Categorizing and triaging open issues by asking Claude to loop over open GitHub issues
+                          通过要求Claude循环遍历开放的GitHub问题来分类和处理开放问题
                         </li>
                       </ol>
-                      <p>This eliminates the need to remember gh command line syntax while automating routine tasks.</p>
+                      <p>这消除了记住gh命令行语法的需要，同时自动化了常规任务。</p>
                       <h5>h. 使用Claude处理Jupyter笔记本</h5>
-                      <p>Researchers and data scientists at Anthropic use Claude Code to read and write Jupyter notebooks. Claude can interpret outputs, including images, providing a fast way to explore and interact with data. There are no required prompts or workflows, but a workflow we recommend is to have Claude Code and a .ipynb file open side-by-side in VS Code.</p>
-                      <p>You can also ask Claude to clean up or make aesthetic improvements to your Jupyter notebook before you show it to colleagues. Specifically telling it to make the notebook or its data visualizations “aesthetically pleasing” tends to help remind it that it’s optimizing for a human viewing experience.</p>
+                      <p>Anthropic的研究人员和数据科学家使用Claude Code来读写Jupyter笔记本。Claude可以解释输出，包括图像，提供快速探索和与数据交互的方式。没有必需的提示或工作流程，但我们推荐的工作流程是在VS Code中并排打开Claude Code和.ipynb文件。</p>
+                      <p>您还可以要求Claude在向同事展示之前清理或美化您的Jupyter笔记本。特别告诉它让笔记本或其数据可视化"美观"往往有助于提醒它为人类观看体验进行优化。</p>
                     </section>
 
                     <section>
@@ -331,120 +331,120 @@ Searching git history to answer questions like "What changes made it into v1.2.3
 
                       <h5>a. 在指令中要具体</h5>
                       <p>Claude Code的成功率随着更具体的指令显著提高，特别是在首次尝试时。提前给出明确方向减少了后期过程修正的需要。</p>
-                      <p>For example:</p>
+                      <p>例如：</p>
                       <div class="code-example">
                         <table>
                           <thead>
                             <tr>
-                              <th>Poor</th>
-                              <th>Good</th>
+                              <th>差的</th>
+                              <th>好的</th>
                             </tr>
                           </thead>
                           <tbody>
 
                             <tr>
-                              <td>add tests for foo.py</td>
-                              <td>write a new test case for foo.py, covering the edge case where the user is logged out. avoid mocks</td>
+                              <td>为foo.py添加测试</td>
+                              <td>为foo.py编写新的测试用例，覆盖用户已登出的边缘情况。避免使用模拟</td>
                             </tr>
                             <tr>
-                              <td>why does ExecutionFactory have such a weird api?</td>
-                              <td>look through ExecutionFactory's git history and summarize how its api came to be</td>
+                              <td>为什么ExecutionFactory有如此奇怪的api？</td>
+                              <td>查看ExecutionFactory的git历史记录并总结其api是如何形成的</td>
                             </tr>
                             <tr>
-                              <td>add a calendar widget</td>
-                              <td>look at how existing widgets are implemented on the home page to understand the patterns and specifically how code and interfaces are separated out. HotDogWidget.php is a good example to start with. then, follow the pattern to implement a new calendar widget that lets the user select a month and paginate forwards/backwards to pick a year. Build from scratch without libraries other than the ones already used in the rest of the codebase.</td>
+                              <td>添加日历小部件</td>
+                              <td>查看主页上现有小部件的实现方式以了解模式，特别是代码和接口是如何分离的。HotDogWidget.php是一个很好的起点。然后，遵循模式实现一个新的日历小部件，让用户选择月份并向前/向后翻页选择年份。从头构建，除了代码库其余部分已使用的库外，不使用其他库。</td>
                             </tr>
                           </tbody>
                         </table>
-                        
+
                       </div>
-                      <p>Claude can infer intent, but it can't read minds. Specificity leads to better alignment with expectations.</p>
+                      <p>Claude可以推断意图，但它无法读心术。具体性能带来与期望更好的一致性。</p>
                       <div class="image-container">
                         <img src="../assets/images/docs/2-1360x1126.webp" alt="Claude Code Best Practices" class="practice-image" />
                       </div>
                       <h5>b. 给Claude图像</h5>
-                      <p>Claude excels with images and diagrams through several methods:</p>
+                      <p>Claude通过几种方法在图像和图表方面表现出色：</p>
                       <ol>
                         <li>
-                          Paste screenshots (pro tip: hit cmd+ctrl+shift+4 in macOS to screenshot to clipboard and ctrl+v to paste. Note that this is not cmd+v like you would usually use to paste on mac and does not work remotely.)
+                          粘贴截图（专业提示：在macOS中按cmd+ctrl+shift+4截图到剪贴板，然后按ctrl+v粘贴。注意这不是您通常在mac上粘贴时使用的cmd+v，并且不适用于远程连接。）
                         </li>
                         <li>
-                          Drag and drop images directly into the prompt input
+                          将图像直接拖放到提示输入中
                         </li>
                         <li>
-                          Provide file paths for images
+                          提供图像的文件路径
                         </li>
                       </ol>
-                      <p>This is particularly useful when working with design mocks as reference points for UI development, and visual charts for analysis and debugging. If you are not adding visuals to context, it can still be helpful to be clear with Claude about how important it is for the result to be visually appealing.</p>
+                      <p>这在使用设计模拟作为UI开发的参考点，以及使用视觉图表进行分析和调试时特别有用。如果您没有向上下文添加视觉元素，向Claude明确说明结果的视觉吸引力有多重要仍然会有帮助。</p>
                       <div class="image-container">
                         <img src="../assets/images/docs/4-1450x1164.webp" alt="Claude Code Best Practices" class="practice-image" />
                       </div>
                       <h5>c. 提及您希望Claude查看或处理的文件</h5>
-                      <p>Use tab-completion to quickly reference files or folders anywhere in your repository, helping Claude find or update the right resources.</p>
+                      <p>使用制表符补全快速引用仓库中任何位置的文件或文件夹，帮助Claude找到或更新正确的资源。</p>
                       <div class="image-container">
                         <img src="../assets/images/docs/6-1306x1088.webp" alt="Claude Code Best Practices" class="practice-image" />
                       </div>
 
 
                       <h5>d. 给Claude URL</h5>
-                      <p>Paste specific URLs alongside your prompts for Claude to fetch and read. To avoid permission prompts for the same domains (e.g., docs.foo.com), use /permissions to add domains to your allowlist.</p>
+                      <p>在您的提示中粘贴特定的URL，让Claude获取和阅读。为了避免相同域名（例如docs.foo.com）的权限提示，使用/permissions将域名添加到您的允许列表中。</p>
 
                       <h5>e. 及早和经常进行过程修正</h5>
-                      <p>While auto-accept mode (shift+tab to toggle) lets Claude work autonomously, you'll typically get better results by being an active collaborator and guiding Claude's approach. You can get the best results by thoroughly explaining the task to Claude at the beginning, but you can also course correct Claude at any time. For example, if Claude gets stuck on a part of the task, you can ask it to explain the problem and then try to fix it. You can also ask Claude to use a different approach if it's not working as expected.</p>
+                      <p>虽然自动接受模式（shift+tab切换）让Claude自主工作，但通过成为积极的协作者并指导Claude的方法，您通常会获得更好的结果。您可以通过在开始时彻底向Claude解释任务来获得最佳结果，但您也可以随时对Claude进行过程修正。例如，如果Claude在任务的某一部分卡住了，您可以要求它解释问题然后尝试修复。如果没有按预期工作，您也可以要求Claude使用不同的方法。</p>
                       <p>
-                        These four tools help with course correction:
+                        这四个工具有助于过程修正：
                       </p>
                       <ol>
-                        <li>Ask Claude to make a plan before coding. Explicitly tell it not to code until you’ve confirmed its plan looks good.</li>
+                        <li>要求Claude在编码前制定计划。明确告诉它在您确认其计划看起来不错之前不要编码。</li>
                         <li>
-                          Press Escape to interrupt Claude during any phase (thinking, tool calls, file edits), preserving context so you can redirect or expand instructions.
+                          在任何阶段（思考、工具调用、文件编辑）按Escape键中断Claude，保留上下文以便您可以重定向或扩展指令。
                         </li>
                         <li>
-                          Double-tap Escape to jump back in history, edit a previous prompt, and explore a different direction. You can edit the prompt and repeat until you get the result you're looking for.
+                          双击Escape键回到历史记录，编辑之前的提示，并探索不同的方向。您可以编辑提示并重复，直到获得您想要的结果。
                         </li>
                         <li>
-                          Ask Claude to undo changes, often in conjunction with option #2 to take a different approach.
+                          要求Claude撤销更改，通常与选项#2结合使用以采取不同的方法。
                         </li>
                       </ol>
                       <p>
-                        Though Claude Code occasionally solves problems perfectly on the first attempt, using these correction tools generally produces better solutions faster.
+                        虽然Claude Code偶尔会在第一次尝试时完美解决问题，但使用这些修正工具通常能更快产生更好的解决方案。
                       </p>
 
                       <h5>f. 使用/clear保持上下文专注</h5>
                       <p>在长会话期间，Claude的上下文窗口可能会被无关的对话、文件内容和命令填满。在任务之间频繁使用/clear命令重置上下文窗口。</p>
 
                       <h5>g. 为复杂工作流程使用检查清单和草稿本</h5>
-                      <p>For large tasks with multiple steps or requiring exhaustive solutions—like code migrations, fixing numerous lint errors, or running complex build scripts—improve performance by having Claude use a Markdown file (or even a GitHub issue!) as a checklist and working scratchpad:</p>
+                      <p>对于有多个步骤或需要详尽解决方案的大型任务——如代码迁移、修复大量lint错误或运行复杂构建脚本——通过让Claude使用Markdown文件（甚至GitHub问题！）作为检查清单和工作草稿本来改善性能：</p>
                       <p>
-                        For example, to fix a large number of lint issues, you can do the following:
+                        例如，要修复大量的lint问题，您可以执行以下操作：
                       </p>
                       <ol>
-                        <li>Tell Claude to run the lint command and write all resulting errors (with filenames and line numbers) to a Markdown checklist</li>
-                        <li>Instruct Claude to address each issue one by one, fixing and verifying before checking it off and moving to the next</li>
+                        <li>告诉Claude运行lint命令并将所有产生的错误（包括文件名和行号）写入Markdown检查清单</li>
+                        <li>指示Claude逐一解决每个问题，在检查完成并移动到下一个之前修复和验证</li>
                       </ol>
 
                       <h5>h. 将数据传递给Claude</h5>
-                      <p>Several methods exist for providing data to Claude:</p>
+                      <p>向Claude提供数据有几种方法：</p>
                       <ol>
-                        <li>Copy and paste directly into your prompt (most common approach)</li> 
-                        <li>Pipe into Claude Code (e.g., cat foo.txt | claude), particularly useful for logs, CSVs, and large data</li>
-                        <li>Tell Claude to pull data via bash commands, MCP tools, or custom slash commands</li>
-                        <li>Ask Claude to read files or fetch URLs (works for images too)</li>
+                        <li>直接复制粘贴到您的提示中（最常见的方法）</li>
+                        <li>管道传输到Claude Code（例如，cat foo.txt | claude），对于日志、CSV和大数据特别有用</li>
+                        <li>告诉Claude通过bash命令、MCP工具或自定义斜杠命令拉取数据</li>
+                        <li>要求Claude读取文件或获取URL（对图像也有效）</li>
                       </ol>
                       <p>
-                        Most sessions involve a combination of these approaches. For example, you can pipe in a log file, then tell Claude to use a tool to pull in additional context to debug the logs.
+                        大多数会话涉及这些方法的组合。例如，您可以管道传入日志文件，然后告诉Claude使用工具拉取额外的上下文来调试日志。
                       </p>
                     </section>
 
                     <section>
                       <h4>5. 使用无头模式自动化您的基础设施</h4>
-                      <p>Claude Code includes headless mode for non-interactive contexts like CI, pre-commit hooks, build scripts, and automation. Use the -p flag with a prompt to enable headless mode, and --output-format stream-json for streaming JSON output.</p>
-                      <p>Note that headless mode does not persist between sessions. You have to trigger it each session.</p>
+                      <p>Claude Code包含无头模式，用于CI、预提交钩子、构建脚本和自动化等非交互式上下文。使用-p标志和提示来启用无头模式，使用--output-format stream-json进行流式JSON输出。</p>
+                      <p>注意无头模式不会在会话之间持续。您必须在每个会话中触发它。</p>
                       <h5>a. 使用Claude进行问题分类</h5>
-                      <p>Headless mode can power automations triggered by GitHub events, such as when a new issue is created in your repository. For example, the public Claude Code repository uses Claude to inspect new issues as they come in and assign appropriate labels.</p>
+                      <p>无头模式可以为GitHub事件触发的自动化提供动力，例如在您的仓库中创建新问题时。例如，公共Claude Code仓库使用Claude检查新问题并分配适当的标签。</p>
 
                       <h5>b. 使用Claude作为代码检查器</h5>
-                      <p>Claude Code can provide subjective code reviews beyond what traditional linting tools detect, identifying issues like typos, stale comments, misleading function or variable names, and more.</p>
+                      <p>Claude Code可以提供超越传统linting工具检测的主观代码审查，识别拼写错误、过时注释、误导性函数或变量名等问题。</p>
                     </section>
 
                     <section>
@@ -452,80 +452,80 @@ Searching git history to answer questions like "What changes made it into v1.2.3
                       <p>除了独立使用外，一些最强大的应用涉及并行运行多个Claude实例：</p>
 
                       <h5>a. 让一个Claude编写代码；使用另一个Claude验证</h5>
-                      <p>A simple but effective approach is to have one Claude write code while another reviews or tests it. Similar to working with multiple engineers, sometimes having separate context is beneficial:</p>
+                      <p>一个简单但有效的方法是让一个Claude编写代码，而另一个Claude审查或测试它。类似于与多个工程师合作，有时拥有独立的上下文是有益的：</p>
                       <ol>
-                        <li>Use Claude to write code</li>
-                        <li>Run /clear or start a second Claude in another terminal</li>
-                        <li>Have the second Claude review the first Claude's work</li>
-                        <li>Start another Claude (or /clear again) to read both the code and review feedback</li>
-                        <li>Have this Claude edit the code based on the feedback</li>
+                        <li>使用Claude编写代码</li>
+                        <li>运行/clear或在另一个终端中启动第二个Claude</li>
+                        <li>让第二个Claude审查第一个Claude的工作</li>
+                        <li>启动另一个Claude（或再次/clear）来阅读代码和审查反馈</li>
+                        <li>让这个Claude基于反馈编辑代码</li>
                       </ol>
                       <p>
-                        You can do something similar with tests: have one Claude write tests, then have another Claude write code to make the tests pass. You can even have your Claude instances communicate with each other by giving them separate working scratchpads and telling them which one to write to and which one to read from.
+                        您可以对测试做类似的事情：让一个Claude编写测试，然后让另一个Claude编写代码使测试通过。您甚至可以通过给Claude实例分配单独的工作草稿本，并告诉它们写入哪一个和从哪一个读取，让它们相互通信。
                       </p>
-                      <p>This separation often yields better results than having a single Claude handle everything.
+                      <p>这种分离通常比让单个Claude处理所有事情产生更好的结果。
                       </p>
                       <h5>b. 拥有仓库的多个检出</h5>
-                      <p>Rather than waiting for Claude to complete each step, something many engineers at Anthropic do is:</p>
+                      <p>Anthropic的许多工程师不是等待Claude完成每个步骤，而是这样做：</p>
                       <ol>
-                        <li>Create 3-4 git checkouts in separate folders</li>
-                        <li>Open each folder in separate terminal tabs</li>
-                        <li>Start Claude in each folder with different tasks</li>
-                        <li>Cycle through to check progress and approve/deny permission requests</li>
+                        <li>在单独的文件夹中创建3-4个git检出</li>
+                        <li>在单独的终端标签中打开每个文件夹</li>
+                        <li>在每个文件夹中用不同的任务启动Claude</li>
+                        <li>循环检查进度并批准/拒绝权限请求</li>
                       </ol>
                       <h5>c. 使用git worktrees</h5>
-                      <p>This approach shines for multiple independent tasks, offering a lighter-weight alternative to multiple checkouts. Git worktrees allow you to check out multiple branches from the same repository into separate directories. Each worktree has its own working directory with isolated files, while sharing the same Git history and reflog.</p>
-                      <p>Using git worktrees enables you to run multiple Claude sessions simultaneously on different parts of your project, each focused on its own independent task. For instance, you might have one Claude refactoring your authentication system while another builds a completely unrelated data visualization component. Since the tasks don't overlap, each Claude can work at full speed without waiting for the other's changes or dealing with merge conflicts:</p>
+                      <p>这种方法在多个独立任务中表现出色，提供了比多个检出更轻量级的替代方案。Git worktrees允许您将同一仓库的多个分支检出到单独的目录中。每个worktree都有自己的工作目录和隔离的文件，同时共享相同的Git历史记录和reflog。</p>
+                      <p>使用git worktrees使您能够在项目的不同部分同时运行多个Claude会话，每个会话专注于自己的独立任务。例如，您可能有一个Claude重构身份验证系统，而另一个构建完全不相关的数据可视化组件。由于任务不重叠，每个Claude都可以全速工作，无需等待另一个的更改或处理合并冲突：</p>
                       <ol>
-                        <li>Create worktrees: git worktree add ../project-feature-a feature-a
+                        <li>创建worktrees：git worktree add ../project-feature-a feature-a
                         </li>
-                        <li>Launch Claude in each worktree: cd ../project-feature-a && claude
+                        <li>在每个worktree中启动Claude：cd ../project-feature-a && claude
                         </li>
-                        <li>Create additional worktrees as needed (repeat steps 1-2 in new terminal tabs)
+                        <li>根据需要创建额外的worktrees（在新的终端标签中重复步骤1-2）
                         </li>
                       </ol>
-                      <p>Some tips:</p>
+                      <p>一些提示：</p>
                       <ol>
-                        <li>Use consistent naming conventions
+                        <li>使用一致的命名约定
                         </li>
-                        <li>Maintain one terminal tab per worktree
+                        <li>为每个worktree维护一个终端标签
                         </li>
-                        <li>If you’re using iTerm2 on Mac, set up notifications for when Claude needs attention
+                        <li>如果您在Mac上使用iTerm2，请设置当Claude需要注意时的通知
                         </li>
-                        <li>Use separate IDE windows for different worktrees
+                        <li>为不同的worktrees使用单独的IDE窗口
                         </li>
-                        <li>Clean up when finished: git worktree remove ../project-feature-a
+                        <li>完成时清理：git worktree remove ../project-feature-a
                         </li>
                       </ol>
                       <h5>d. 使用带有自定义工具的无头模式</h5>
                       <p>claude -p（无头模式）将Claude Code程序化集成到更大的工作流程中，同时利用其内置工具和系统提示。</p>
                       <ol>
-                        <li>Fanning out handles large migrations or analyses (e.g., analyzing sentiment in hundreds of logs or analyzing thousands of CSVs):
+                        <li>扇出处理大型迁移或分析（例如，分析数百个日志中的情感或分析数千个CSV）：
                           <ol>
                             <li>
-Have Claude write a script to generate a task list. For example, generate a list of 2k files that need to be migrated from framework A to framework B.
+让Claude编写一个脚本来生成任务列表。例如，生成需要从框架A迁移到框架B的2k个文件列表。
                             </li>
                             <li>
-                              Loop through tasks, calling Claude programmatically for each and giving it a task and a set of tools it can use. For example: claude -p “migrate foo.py from React to Vue. When you are done, you MUST return the string OK if you succeeded, or FAIL if the task failed.” --allowedTools Edit Bash(git commit:*)
+                              循环执行任务，为每个任务程序化调用Claude并给它一个任务和一组可以使用的工具。例如：claude -p "将foo.py从React迁移到Vue。完成后，如果成功您必须返回字符串OK，如果任务失败则返回FAIL。" --allowedTools Edit Bash(git commit:*)
                             </li>
                             <li>
-                              Run the script several times and refine your prompt to get the desired outcome.
+                              多次运行脚本并改进您的提示以获得所需的结果。
                             </li>
                           </ol>
                         </li>
-                        <li>Pipelining integrates Claude into existing data/processing pipelines:
+                        <li>管道化将Claude集成到现有的数据/处理管道中：
                            <ol>
-                            <li>Call claude -p “your prompt” --json | your_command, where your_command is the next step of your processing pipeline
+                            <li>调用claude -p "您的提示" --json | your_command，其中your_command是处理管道的下一步
                             </li>
                             <li>
-                              That’s it! JSON output (optional) can help provide structure for easier automated processing.
+                              就是这样！JSON输出（可选）可以帮助为更容易的自动化处理提供结构。
                             </li>
                           </ol>
                         </li>
                       </ol>
-                      <p>For both of these use cases, it can be helpful to use the --verbose flag for debugging the Claude invocation. We generally recommend turning verbose mode off in production for cleaner output.
+                      <p>对于这两种用例，使用--verbose标志来调试Claude调用可能会有帮助。我们通常建议在生产中关闭详细模式以获得更清洁的输出。
                       </p>
-                      <p>What are your tips and best practices for working with Claude Code? Tag @AnthropicAI so we can see what you're building!</p>
+                      <p>您在使用Claude Code方面有什么提示和最佳实践？标记@AnthropicAI，这样我们就能看到您在构建什么！</p>
                     </section>
 
                     <section>

@@ -1091,8 +1091,8 @@ sudo yum install -y nodejs</code></pre>
                     </div>
                   </template>
                   <div class="resource-content">
-                    <p>本文档翻译自 Anthropic 官方博客文章 <a href="https://www.anthropic.com/engineering/claude-code-best-practices" target=“_blank”>Claude Code Best Practices</a></p>
-                    <ElButton type="text" @click="goToClaudeCodeBestPractices">查看文档</ElButton>
+                    <p>本文档翻译自 Anthropic 官方博客文章。<ElButton type="text" @click="goToClaudeCodeBestPractices">Claude Code最佳实践（中文翻译）</ElButton></p>
+                    <p>官方原文： <a href="https://www.anthropic.com/engineering/claude-code-best-practices" target=“_blank”>Claude Code Best Practices（English）</a></p>
                   </div>
                 </ElCard>
               </div>
