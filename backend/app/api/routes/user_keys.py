@@ -363,7 +363,7 @@ async def download_api_key_config(
         return JSONResponse(
             content={
                 "config": json.loads(config_content),
-                "filename": f"config-{api_key.key_name or 'default'}.json"
+                "filename": "config.json"
             }
         )
 
