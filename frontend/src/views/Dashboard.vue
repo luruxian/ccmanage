@@ -89,7 +89,7 @@
                     </div>
                   </div>
                   <div class="table-body">
-                    <div v-for="key in filteredKeys" :key="key.id" class="key-item">
+                    <div v-for="key in filteredKeys" :key="key.user_key_id" class="key-item">
                       <!-- 第一行：主要信息 -->
                       <div class="main-row">
                         <div class="col-subscription">
@@ -1158,7 +1158,7 @@ sudo yum install -y nodejs</code></pre>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   ElCard,
@@ -1170,23 +1170,16 @@ import {
   ElProgress,
   ElMessage,
   ElMessageBox,
-  ElSelect,
-  ElOption,
-  ElRow,
-  ElCol,
   ElSkeleton,
   ElPagination,
   ElTabs,
   ElTabPane,
   ElDescriptions,
-  ElDescriptionsItem,
-  ElDatePicker
+  ElDescriptionsItem
 } from 'element-plus'
 import {
   Key as ElIconKey,
-  CreditCard as ElIconCreditCard,
   Setting as ElIconSetting,
-  SwitchButton as ElIconSwitchButton,
   Plus as ElIconPlus,
   Refresh as ElIconRefresh,
   CopyDocument as ElIconCopyDocument,
@@ -1196,16 +1189,14 @@ import {
   Reading as ElIconReading,
   ArrowLeft as ElIconArrowLeft,
   Coin as ElIconCoin,
-  StarFilled as ElIconStarFilled,
-  Search as ElIconSearch
+  StarFilled as ElIconStarFilled
 } from '@element-plus/icons-vue'
-import { useUserStore } from '../store/user'
 import request from '../utils/request'
 
 const router = useRouter()
-const userStore = useUserStore()
 
 interface ApiKey {
+  id?: string
   user_key_id: string
   key_name: string
   api_key: string
@@ -1338,7 +1329,7 @@ const getProgressColor = (percentage: number) => {
 }
 
 // 获取状态对应的标签类型
-const getStatusType = (status: string) => {
+const getStatusType = (status?: string) => {
   switch (status) {
     case 'active':
       return 'success'
@@ -1351,7 +1342,7 @@ const getStatusType = (status: string) => {
 }
 
 // 获取状态对应的文本
-const getStatusText = (status: string) => {
+const getStatusText = (status?: string) => {
   switch (status) {
     case 'active':
       return '激活'
@@ -1364,7 +1355,8 @@ const getStatusText = (status: string) => {
 }
 
 // 获取剩余天数的样式类
-const getRemainingDaysClass = (days: number) => {
+const getRemainingDaysClass = (days?: number) => {
+  if (days === undefined || days === null) return 'text-muted'
   if (days <= 3) {
     return 'text-danger fw-bold'
   } else if (days <= 7) {
@@ -1374,7 +1366,8 @@ const getRemainingDaysClass = (days: number) => {
 }
 
 // 获取剩余积分的样式类
-const getRemainingCreditsClass = (remainingCredits: number, totalCredits: number) => {
+const getRemainingCreditsClass = (remainingCredits?: number, totalCredits?: number) => {
+  if (remainingCredits === undefined || totalCredits === undefined) return 'text-muted'
   if (!totalCredits || totalCredits <= 0) {
     return 'text-muted'
   }
@@ -1493,12 +1486,12 @@ const viewUsageHistory = (key: any) => {
 //   )
 // }
 
-const formatDate = (dateStr: string) => {
+const formatDate = (dateStr?: string) => {
   if (!dateStr) return '-'
   return new Date(dateStr).toLocaleString('zh-CN')
 }
 
-const formatDateShort = (dateStr: string) => {
+const formatDateShort = (dateStr?: string) => {
   if (!dateStr) return '-'
   return new Date(dateStr).toLocaleDateString('zh-CN')
 }
