@@ -757,7 +757,7 @@ sudo yum install -y nodejs</code></pre>
                       <div class="package-header">
                         <h4>基础版</h4>
                         <div class="package-price">
-                          <span class="price">¥99</span>
+                          <span class="price">¥199</span>
                           <span class="period">/月</span>
                         </div>
                       </div>
@@ -769,7 +769,7 @@ sudo yum install -y nodejs</code></pre>
                         <li>✓ 邮件技术支持</li>
                         <li>✓ 基础文档访问</li>
                       </ul>
-                      <ElButton type="primary" class="package-btn">选择计划</ElButton>
+                      <ElButton type="primary" class="package-btn" @click="handleBasicPlanClick">选择计划</ElButton>
                     </div>
                   </ElCard>
                 </div>
@@ -1446,6 +1446,12 @@ const refreshKeys = () => {
 
 const goToClaudeCodeBestPractices = () => {
   router.push('/claude-code-best-practices')
+}
+
+// 处理基础版计划点击事件
+const handleBasicPlanClick = () => {
+  // 跳转到外部页面，这里可以根据需要修改URL
+  window.open('https://claude.ai/pricing', '_blank')
 }
 
 

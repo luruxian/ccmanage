@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试基础版计划点击功能</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .success {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .instruction {
+            background-color: #e8f4fd;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 15px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #409eff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .button:hover {
+            background-color: #337ab7;
+        }
+    </style>
+</head>
+<body>
+    <h1>基础版计划点击功能测试</h1>
+
+    <div class="test-section">
+        <h2>✅ 功能已实现</h2>
+        <p class="success">基础版"选择计划"按钮的外部页面跳转功能已成功添加！</p>
+
+        <h3>实现内容：</h3>
+        <ul>
+            <li>✅ 在Dashboard.vue中为基础版"选择计划"按钮添加了点击事件处理</li>
+            <li>✅ 创建了 <code>handleBasicPlanClick</code> 函数</li>
+            <li>✅ 配置为跳转到 Claude AI 官方定价页面</li>
+            <li>✅ 使用 <code>window.open('https://claude.ai/pricing', '_blank')</code> 在新标签页打开</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🔗 测试访问</h2>
+        <div class="instruction">
+            <strong>访问应用进行测试：</strong><br>
+            1. 打开浏览器访问: <a href="http://localhost:5181" target="_blank">http://localhost:5181</a><br>
+            2. 登录到用户账户<br>
+            3. 点击导航中的"订阅一览"标签<br>
+            4. 在基础版套餐卡片中点击"选择计划"按钮<br>
+            5. 验证是否在新标签页中打开了Claude AI官方定价页面
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>⚙️ 自定义配置</h2>
+        <p>如果需要修改跳转的目标URL，请编辑以下文件：</p>
+        <code>frontend/src/views/Dashboard.vue</code>
+
+        <p>找到 <code>handleBasicPlanClick</code> 函数，修改其中的URL：</p>
+        <pre style="background: #f4f4f4; padding: 10px; border-radius: 4px;">
+const handleBasicPlanClick = () => {
+  // 修改这里的URL为您需要的目标页面
+  window.open('https://claude.ai/pricing', '_blank')
+}</pre>
+    </div>
+
+    <div class="test-section">
+        <h2>🧪 功能测试按钮</h2>
+        <p>点击下面的按钮测试跳转功能：</p>
+        <button class="button" onclick="window.open('https://claude.ai/pricing', '_blank')">
+            测试跳转到Claude AI定价页面
+        </button>
+    </div>
+
+    <div class="test-section">
+        <h2>📝 技术细节</h2>
+        <ul>
+            <li><strong>修改的文件：</strong> <code>frontend/src/views/Dashboard.vue</code></li>
+            <li><strong>修改位置：</strong> 第772行（基础版选择计划按钮）</li>
+            <li><strong>添加的函数：</strong> <code>handleBasicPlanClick</code> (第1452-1455行)</li>
+            <li><strong>跳转方式：</strong> 新标签页打开（<code>_blank</code>）</li>
+            <li><strong>目标URL：</strong> https://claude.ai/pricing</li>
+        </ul>
+    </div>
+</body>
+</html>
