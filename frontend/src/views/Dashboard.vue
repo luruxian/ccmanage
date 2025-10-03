@@ -181,17 +181,14 @@
                               </div>
                             </div>
                             <div v-if="key.total_credits && key.total_credits > 0" class="credits-progress">
-                              <div class="progress-info">
+                              <div class="progress-with-label">
                                 <span class="progress-label">使用进度</span>
-                                <span class="progress-text">
-                                  {{ Math.round(((key.total_credits - (key.remaining_credits || 0)) / key.total_credits) * 100) }}%
-                                </span>
+                                <ElProgress
+                                  :percentage="Math.round(((key.total_credits - (key.remaining_credits || 0)) / key.total_credits) * 100)"
+                                  :color="getProgressColor(Math.round(((key.total_credits - (key.remaining_credits || 0)) / key.total_credits) * 100))"
+                                  :stroke-width="6"
+                                />
                               </div>
-                              <ElProgress
-                                :percentage="Math.round(((key.total_credits - (key.remaining_credits || 0)) / key.total_credits) * 100)"
-                                :color="getProgressColor(Math.round(((key.total_credits - (key.remaining_credits || 0)) / key.total_credits) * 100))"
-                                :stroke-width="6"
-                              />
                             </div>
                           </div>
                         </div>
@@ -2004,6 +2001,23 @@ onMounted(() => {
   flex: 1;
   min-width: 200px;
   max-width: 300px;
+}
+
+.progress-with-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress-with-label .progress-label {
+  font-size: 13px;
+  color: #666;
+  white-space: nowrap;
+  min-width: 60px;
+}
+
+.progress-with-label .el-progress {
+  flex: 1;
 }
 
 .credits-progress .progress-info {
