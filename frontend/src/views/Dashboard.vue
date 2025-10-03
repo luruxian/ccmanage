@@ -182,10 +182,10 @@
                             </div>
                             <div v-if="key.total_credits && key.total_credits > 0" class="credits-progress">
                               <div class="progress-with-label">
-                                <span class="progress-label">使用进度</span>
+                                <span class="progress-label">剩余积分</span>
                                 <ElProgress
-                                  :percentage="Math.round(((key.total_credits - (key.remaining_credits || 0)) / key.total_credits) * 100)"
-                                  :color="getProgressColor(Math.round(((key.total_credits - (key.remaining_credits || 0)) / key.total_credits) * 100))"
+                                  :percentage="Math.round(((key.remaining_credits || 0) / key.total_credits) * 100)"
+                                  :color="getProgressColor(Math.round(((key.remaining_credits || 0) / key.total_credits) * 100))"
                                   :stroke-width="6"
                                 />
                               </div>
@@ -1378,9 +1378,9 @@ const loadPlanStatus = async () => {
 
 
 const getProgressColor = (percentage: number) => {
-  if (percentage < 50) return '#67c23a'
-  if (percentage < 80) return '#e6a23c'
-  return '#f56c6c'
+  if (percentage > 50) return '#67c23a'  // 剩余积分多，绿色
+  if (percentage > 20) return '#e6a23c'  // 剩余积分中等，橙色
+  return '#f56c6c'  // 剩余积分少，红色
 }
 
 // 获取状态对应的标签类型
