@@ -21,13 +21,6 @@
       <!-- 右侧登录表单区 (桌面端30%) -->
       <div class="auth-section">
         <div class="auth-card">
-          <!-- 主题切换按钮 -->
-          <div class="theme-toggle">
-            <button @click="toggleTheme" class="theme-btn" :title="themeStore.isDark ? '切换到浅色模式' : '切换到深色模式'">
-              <i :class="themeStore.isDark ? 'fas fa-sun' : 'fas fa-moon'"></i>
-            </button>
-          </div>
-
           <div class="auth-header">
             <h2 class="auth-title">欢迎回来</h2>
             <p class="auth-subtitle">登录到您的agnets.app账户</p>
@@ -221,11 +214,6 @@ const clearLoginError = () => {
   }
 }
 
-const toggleTheme = () => {
-  themeStore.toggleTheme()
-  themeStore.saveThemePreference()
-}
-
 onMounted(() => {
   themeStore.initializeTheme()
 
@@ -338,39 +326,6 @@ onMounted(() => {
   width: 100%;
   max-width: 400px;
   position: relative;
-}
-
-/* 主题切换按钮 */
-.theme-toggle {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 10;
-}
-
-.theme-btn {
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 50%;
-  background: #f8f9fa;
-  color: #2c3e50;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.theme-btn:hover {
-  background: #e9ecef;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.theme-btn i {
-  font-size: 16px;
 }
 
 .auth-header {
@@ -605,16 +560,6 @@ onMounted(() => {
 :global(.dark-theme) .auth-card {
   background: #0d1117;
   border: 1px solid #30363d;
-}
-
-:global(.dark-theme) .theme-btn {
-  background: #21262d;
-  color: #f0f6fc;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-}
-
-:global(.dark-theme) .theme-btn:hover {
-  background: #30363d;
 }
 
 :global(.dark-theme) .auth-title {
