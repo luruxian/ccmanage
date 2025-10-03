@@ -91,11 +91,9 @@ import { ref, reactive } from 'vue'
 // import { useRouter } from 'vue-router' // 未使用，已注释
 import { ElForm, ElFormItem, ElInput, ElButton, ElMessage } from 'element-plus'
 import { Message as ElIconMessage } from '@element-plus/icons-vue'
-import { useThemeStore } from '../../store/theme'
 import request from '../../utils/request'
 
 // const router = useRouter() // 未使用，已注释
-const themeStore = useThemeStore()
 
 const loading = ref(false)
 const emailSent = ref(false)
