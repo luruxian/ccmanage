@@ -1038,7 +1038,7 @@ sudo yum install -y nodejs</code></pre>
           <div v-if="activeTab === 'resources'" class="tab-content">
             <h2 class="mb-4">资料中心</h2>
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-12">
                 <ElCard class="resource-card">
                   <template #header>
                     <div class="resource-header">
@@ -1047,49 +1047,7 @@ sudo yum install -y nodejs</code></pre>
                   </template>
                   <div class="resource-content">
                     <p>本文档翻译自 Anthropic 官方博客文章。<ElButton type="text" @click="goToClaudeCodeBestPractices">Claude Code最佳实践（中文翻译）</ElButton></p>
-                    <p>官方原文： <a href="https://www.anthropic.com/engineering/claude-code-best-practices" target=“_blank”>Claude Code Best Practices（English）</a></p>
-                  </div>
-                </ElCard>
-              </div>
-
-              <div class="col-md-6">
-                <ElCard class="resource-card">
-                  <template #header>
-                    <div class="resource-header">
-                      <h4>🎥 视频教程</h4>
-                    </div>
-                  </template>
-                  <div class="resource-content">
-                    <p>快速上手Claude Code的视频教程</p>
-                    <ElButton type="text">观看视频</ElButton>
-                  </div>
-                </ElCard>
-              </div>
-
-              <div class="col-md-6">
-                <ElCard class="resource-card">
-                  <template #header>
-                    <div class="resource-header">
-                      <h4>💬 社区论坛</h4>
-                    </div>
-                  </template>
-                  <div class="resource-content">
-                    <p>与其他开发者交流经验</p>
-                    <ElButton type="text">访问论坛</ElButton>
-                  </div>
-                </ElCard>
-              </div>
-
-              <div class="col-md-6">
-                <ElCard class="resource-card">
-                  <template #header>
-                    <div class="resource-header">
-                      <h4>🤝 技术支持</h4>
-                    </div>
-                  </template>
-                  <div class="resource-content">
-                    <p>获得专业的技术支持服务</p>
-                    <ElButton type="text">联系支持</ElButton>
+                    <p>官方原文： <a href="https://www.anthropic.com/engineering/claude-code-best-practices" target="_blank">Claude Code Best Practices（English）</a></p>
                   </div>
                 </ElCard>
               </div>
