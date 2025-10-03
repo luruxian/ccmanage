@@ -47,6 +47,7 @@
                 type="email"
                 size="large"
                 :prefix-icon="ElIconUser"
+                @keyup.enter="handleLogin"
               />
             </ElFormItem>
 
@@ -58,6 +59,7 @@
                 size="large"
                 :prefix-icon="ElIconLock"
                 show-password
+                @keyup.enter="handleLogin"
               />
             </ElFormItem>
 
@@ -144,10 +146,19 @@ interface LoginResponse {
 const handleLogin = async () => {
   if (!loginFormRef.value) return
 
+  // 先进行客户端表单验证
   try {
     await loginFormRef.value.validate()
-    loading.value = true
+  } catch (validationError) {
+    // 表单验证失败，显示客户端校验错误提示
+    ElMessage.error('请检查表单填写是否正确')
+    return
+  }
 
+  // 表单验证通过，开始登录请求
+  loading.value = true
+
+  try {
     const response: LoginResponse = await request.post('/api/v1/auth/login', {
       email: loginForm.email,
       password: loginForm.password
@@ -179,6 +190,7 @@ const handleLogin = async () => {
   } catch (error: any) {
     console.error('登录失败:', error)
 
+    // 服务器端登录错误处理
     if (error.response?.status === 401) {
       ElMessage.error('邮箱或密码错误')
     } else if (error.response?.data?.detail) {
