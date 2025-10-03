@@ -760,7 +760,7 @@ sudo yum install -y nodejs</code></pre>
             <h2 class="mb-4">订阅一览</h2>
             <div class="packages-content">
               <div class="packages-header mb-4">
-                <p class="text-muted">浏览可用的订阅计划，选择最适合您的服务</p>
+                <p class="text-muted">选择最适合您的订阅计划，每日5400积分，支持每天重置一次</p>
               </div>
 
               <div class="row">
@@ -768,21 +768,47 @@ sudo yum install -y nodejs</code></pre>
                   <ElCard class="package-card">
                     <template #header>
                       <div class="package-header">
-                        <h4>基础版</h4>
+                        <h4>日卡</h4>
                         <div class="package-price">
-                          <span class="price">¥199</span>
-                          <span class="period">/月</span>
+                          <span class="price">¥9.8</span>
+                          <span class="period">/日</span>
                         </div>
                       </div>
                     </template>
                     <div class="package-content">
                       <ul class="package-features">
-                        <li>✓ 10,000 API调用/月</li>
-                        <li>✓ 基础AI模型访问</li>
-                        <li>✓ 邮件技术支持</li>
-                        <li>✓ 基础文档访问</li>
+                        <li>✓ 24小时有效期</li>
+                        <li>✓ 每日5400积分</li>
+                        <li>✓ 支持每天重置一次</li>
+                        <li>✓ 即买即用</li>
+                        <li>✓ 适合短期试用</li>
                       </ul>
-                      <ElButton type="primary" class="package-btn" @click="handleBasicPlanClick">选择计划</ElButton>
+                      <ElButton type="primary" class="package-btn" @click="handleDayCardClick">立即购买</ElButton>
+                    </div>
+                  </ElCard>
+                </div>
+
+                <div class="col-md-4">
+                  <ElCard class="package-card">
+                    <template #header>
+                      <div class="package-header">
+                        <h4>周卡</h4>
+                        
+                        <div class="package-price">
+                          <span class="price">¥49.8</span>
+                          <span class="period">/周</span>
+                        </div>
+                      </div>
+                    </template>
+                    <div class="package-content">
+                      <ul class="package-features">
+                        <li>✓ 7天有效期 (168小时)</li>
+                        <li>✓ 每日5400积分</li>
+                        <li>✓ 支持每天重置一次</li>
+                        <li>✓ 性价比超值</li>
+                        <li>✓ 适合中短期项目</li>
+                      </ul>
+                      <ElButton type="primary" class="package-btn" @click="handleWeekCardClick">立即购买</ElButton>
                     </div>
                   </ElCard>
                 </div>
@@ -791,48 +817,24 @@ sudo yum install -y nodejs</code></pre>
                   <ElCard class="package-card featured">
                     <template #header>
                       <div class="package-header">
-                        <h4>专业版</h4>
+                        <h4>月卡</h4>
                         <div class="package-badge">推荐</div>
                         <div class="package-price">
-                          <span class="price">¥299</span>
+                          <span class="price">¥199</span>
                           <span class="period">/月</span>
                         </div>
                       </div>
                     </template>
                     <div class="package-content">
                       <ul class="package-features">
-                        <li>✓ 50,000 API调用/月</li>
-                        <li>✓ 高级AI模型访问</li>
-                        <li>✓ 优先技术支持</li>
-                        <li>✓ 完整文档和教程</li>
-                        <li>✓ 自定义集成支持</li>
+                        <li>✓ 30天有效期 (720小时)</li>
+                        <li>✓ 每日5400积分</li>
+                        <li>✓ 支持每天重置一次</li>
+                        <li>✓ 最超值选择</li>
+                        <li>✓ 适合长期使用</li>
+                        <li>✓ 专属客服支持</li>
                       </ul>
-                      <ElButton type="primary" class="package-btn">选择计划</ElButton>
-                    </div>
-                  </ElCard>
-                </div>
-
-                <div class="col-md-4">
-                  <ElCard class="package-card">
-                    <template #header>
-                      <div class="package-header">
-                        <h4>企业版</h4>
-                        <div class="package-price">
-                          <span class="price">¥999</span>
-                          <span class="period">/月</span>
-                        </div>
-                      </div>
-                    </template>
-                    <div class="package-content">
-                      <ul class="package-features">
-                        <li>✓ 无限 API调用</li>
-                        <li>✓ 所有AI模型访问</li>
-                        <li>✓ 24/7专属支持</li>
-                        <li>✓ 定制化解决方案</li>
-                        <li>✓ 专属客户经理</li>
-                        <li>✓ SLA保证</li>
-                      </ul>
-                      <ElButton type="primary" class="package-btn">联系销售</ElButton>
+                      <ElButton type="primary" class="package-btn" @click="handleMonthCardClick">立即购买</ElButton>
                     </div>
                   </ElCard>
                 </div>
@@ -841,12 +843,13 @@ sudo yum install -y nodejs</code></pre>
               <div class="packages-notice mt-4">
                 <ElCard>
                   <div class="notice-content">
-                    <h5>💡 选择提示</h5>
+                    <h5>💡 订阅说明</h5>
                     <p class="text-muted">
-                      • 基础版适合个人开发者和小型项目<br>
-                      • 专业版适合中小企业和团队开发<br>
-                      • 企业版适合大型企业和高频使用场景<br>
-                      • 所有计划都支持随时升级或降级
+                      • 日卡：适合临时使用和功能体验<br>
+                      • 周卡：适合短期项目开发和测试<br>
+                      • 月卡：适合长期开发和持续使用<br>
+                      • 所有计划均提供每日5400积分，每天可重置一次<br>
+                      • 购买后不生效，激活后才开始生效计时。
                     </p>
                   </div>
                 </ElCard>
@@ -1128,7 +1131,6 @@ import {
 } from 'element-plus'
 import {
   Key as ElIconKey,
-  Setting as ElIconSetting,
   Plus as ElIconPlus,
   Refresh as ElIconRefresh,
   CopyDocument as ElIconCopyDocument,
@@ -1136,9 +1138,7 @@ import {
   List as ElIconList,
   TrendCharts as ElIconTrendCharts,
   Reading as ElIconReading,
-  ArrowLeft as ElIconArrowLeft,
-  Coin as ElIconCoin,
-  StarFilled as ElIconStarFilled
+  ArrowLeft as ElIconArrowLeft
 } from '@element-plus/icons-vue'
 import request from '../utils/request'
 
@@ -1463,10 +1463,20 @@ const goToClaudeCodeBestPractices = () => {
   router.push('/claude-code-best-practices')
 }
 
-// 处理基础版计划点击事件
-const handleBasicPlanClick = () => {
-  // 跳转到外部页面，这里可以根据需要修改URL
-  window.open('https://claude.ai/pricing', '_blank')
+// 处理订阅卡片点击事件
+const handleDayCardClick = () => {
+  // 跳转到日卡购买页面
+  window.open('https://www.goofish.com/item?spm=a21ybx.personal.feeds.1.44016ac2aDwbw4&id=983395304846&categoryId=50023914', '_blank')
+}
+
+const handleWeekCardClick = () => {
+  // 跳转到周卡购买页面
+  window.open('https://www.goofish.com/item?spm=a21ybx.personal.feeds.1.44016ac2aDwbw4&id=983395304846&categoryId=50023914', '_blank')
+}
+
+const handleMonthCardClick = () => {
+  // 跳转到月卡购买页面
+  window.open('https://www.goofish.com/item?spm=a21ybx.personal.feeds.1.44016ac2aDwbw4&id=983395304846&categoryId=50023914', '_blank')
 }
 
 
@@ -1605,10 +1615,6 @@ const loadAvailableServices = async () => {
   }
 }
 
-const refreshUsageStats = () => {
-  loadUsageStats()
-}
-
 const refreshUsageRecords = () => {
   loadUsageRecords()
 }
@@ -1623,11 +1629,6 @@ const handleUsageSizeChange = (size: number) => {
   usagePagination.size = size
   usagePagination.current = 1
   loadUsageRecords()
-}
-
-const formatNumber = (num: number) => {
-  if (num == null) return '0'
-  return num.toLocaleString()
 }
 
 onMounted(() => {
