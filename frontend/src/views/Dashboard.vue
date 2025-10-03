@@ -1356,6 +1356,13 @@ const canResetCredits = (key: any) => {
 // 重置积分
 const resetCredits = async (key: any) => {
   try {
+    // 检查key对象是否有有效的ID
+    const keyId = key.id || key.user_key_id
+    if (!keyId) {
+      ElMessage.error('密钥ID无效，无法重置积分')
+      return
+    }
+
     await ElMessageBox.confirm(
       `确定要重置 "${key.package_name || '未知订阅'}" 的积分吗？\n剩余积分将恢复到总积分数量。\n注意：每天只能重置一次！`,
       '确认重置积分',
@@ -1366,18 +1373,33 @@ const resetCredits = async (key: any) => {
       }
     )
 
-    const response = await request.put(`/api/v1/keys/${key.id}/reset-credits`)
+    console.log('重置积分请求 - 密钥ID:', keyId)
+    const response = await request.put(`/api/v1/keys/${keyId}/reset-credits`)
+    console.log('重置积分响应:', response)
 
     // 重新加载密钥列表以更新显示
     await loadUserKeys()
 
-    ElMessage.success(response.data.message || '积分重置成功')
+    // 安全地访问响应数据
+    const message = response?.data?.message || '积分重置成功'
+    ElMessage.success(message)
   } catch (error: any) {
     if (error === 'cancel') {
       return
     }
 
-    const message = error.response?.data?.detail || error.message || '重置失败'
+    console.error('重置积分失败:', error)
+
+    // 改进错误处理
+    let message = '重置失败'
+    if (error?.response?.data?.detail) {
+      message = error.response.data.detail
+    } else if (error?.response?.data?.message) {
+      message = error.response.data.message
+    } else if (error?.message) {
+      message = error.message
+    }
+
     ElMessage.error(message)
   }
 }
@@ -1385,7 +1407,16 @@ const resetCredits = async (key: any) => {
 // 下载配置文件
 const downloadConfig = async (key: any) => {
   try {
-    const response: any = await request.get(`/api/v1/keys/${key.id}/download-config`)
+    // 检查key对象是否有有效的ID
+    const keyId = key.id || key.user_key_id
+    if (!keyId) {
+      ElMessage.error('密钥ID无效，无法下载配置')
+      return
+    }
+
+    console.log('下载配置请求 - 密钥ID:', keyId)
+    const response: any = await request.get(`/api/v1/keys/${keyId}/download-config`)
+    console.log('下载配置响应:', response)
 
     if (response.config && response.filename) {
       // 创建Blob对象
@@ -1410,7 +1441,18 @@ const downloadConfig = async (key: any) => {
       ElMessage.error('下载失败：响应数据格式错误')
     }
   } catch (error: any) {
-    const message = error.response?.data?.detail || error.message || '下载配置文件失败'
+    console.error('下载配置失败:', error)
+
+    // 改进错误处理
+    let message = '下载配置文件失败'
+    if (error?.response?.data?.detail) {
+      message = error.response.data.detail
+    } else if (error?.response?.data?.message) {
+      message = error.response.data.message
+    } else if (error?.message) {
+      message = error.message
+    }
+
     ElMessage.error(message)
   }
 }
