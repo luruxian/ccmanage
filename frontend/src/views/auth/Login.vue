@@ -48,6 +48,7 @@
                 size="large"
                 :prefix-icon="ElIconUser"
                 @keyup.enter="handleLogin"
+                @input="clearLoginError"
               />
             </ElFormItem>
 
@@ -60,8 +61,15 @@
                 :prefix-icon="ElIconLock"
                 show-password
                 @keyup.enter="handleLogin"
+                @input="clearLoginError"
               />
             </ElFormItem>
+
+            <!-- 登录错误提示 -->
+            <div v-if="loginError" class="login-error" key="login-error">
+              <i class="fas fa-exclamation-circle"></i>
+              {{ loginError }}
+            </div>
 
             <ElFormItem>
               <ElButton
@@ -107,6 +115,7 @@ const themeStore = useThemeStore()
 
 const loading = ref(false)
 const loginFormRef = ref()
+const loginError = ref('')
 
 const loginForm = reactive({
   email: '',
@@ -146,12 +155,15 @@ interface LoginResponse {
 const handleLogin = async () => {
   if (!loginFormRef.value) return
 
+  // 清除之前的错误信息
+  loginError.value = ''
+
   // 先进行客户端表单验证
   try {
     await loginFormRef.value.validate()
   } catch (validationError) {
     // 表单验证失败，显示客户端校验错误提示
-    ElMessage.error('请检查表单填写是否正确')
+    loginError.value = '请检查表单填写是否正确'
     return
   }
 
@@ -190,16 +202,22 @@ const handleLogin = async () => {
   } catch (error: any) {
     console.error('登录失败:', error)
 
-    // 服务器端登录错误处理
+    // 服务器端登录错误处理 - 显示在表单上
     if (error.response?.status === 401) {
-      ElMessage.error('邮箱或密码错误')
+      loginError.value = '邮箱或密码错误，请重新输入'
     } else if (error.response?.data?.detail) {
-      ElMessage.error(error.response.data.detail)
+      loginError.value = error.response.data.detail
     } else {
-      ElMessage.error('登录失败，请稍后重试')
+      loginError.value = '登录失败，请稍后重试'
     }
   } finally {
     loading.value = false
+  }
+}
+
+const clearLoginError = () => {
+  if (loginError.value) {
+    loginError.value = ''
   }
 }
 
@@ -379,6 +397,27 @@ onMounted(() => {
 
 .auth-form .el-form-item {
   margin-bottom: 24px;
+}
+
+/* 登录错误提示样式 */
+.login-error {
+  background: #fef0f0;
+  border: 1px solid #fbc4c4;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  color: #f56565;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.login-error i {
+  font-size: 16px;
 }
 
 .auth-submit-btn {
@@ -614,6 +653,13 @@ onMounted(() => {
 :global(.dark-theme) .auth-submit-btn:hover {
   background: #2ea043;
   box-shadow: 0 6px 20px rgba(35, 134, 54, 0.5);
+}
+
+/* Dark theme login error styles */
+:global(.dark-theme) .login-error {
+  background: #2d1b1e;
+  border-color: #5a2d2d;
+  color: #ff7875;
 }
 
 /* Dark theme Element Plus overrides */

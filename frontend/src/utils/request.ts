@@ -156,6 +156,14 @@ service.interceptors.response.use(
 
       switch (status) {
         case 401:
+          // 检查是否是登录请求
+          const isLoginRequest = config?.url?.includes('/auth/login');
+
+          if (isLoginRequest) {
+            // 登录请求的401错误，不需要跳转，由登录组件处理
+            break;
+          }
+
           // Token过期，尝试刷新
           if (!config._retry && !isRefreshing) {
             config._retry = true;
