@@ -51,12 +51,15 @@
               </div>
             </div>
 
-            <!-- 密钥统计卡片 -->
-            <div class="row mb-4">
-              <div class="col-md-3">
-                <div class="key-stat-card">
-                  <div class="stat-number">{{ keyStats.active }}</div>
-                  <div class="stat-label">激活密钥</div>
+            <!-- 密钥统计 -->
+            <div class="key-stats-inline mb-4">
+              <div class="stat-badge">
+                <div class="stat-icon">
+                  <ElIcon><ElIconKey /></ElIcon>
+                </div>
+                <div class="stat-content">
+                  <span class="stat-number">{{ keyStats.active }}</span>
+                  <span class="stat-label">激活密钥</span>
                 </div>
               </div>
             </div>
@@ -1711,6 +1714,59 @@ onMounted(() => {
 .key-actions {
   display: flex;
   gap: 8px;
+}
+
+/* 密钥统计内联样式 */
+.key-stats-inline {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.stat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #67c23a 0%, #85ce61 100%);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 25px;
+  box-shadow: 0 3px 12px rgba(103, 194, 58, 0.3);
+  transition: all 0.3s ease;
+}
+
+.stat-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(103, 194, 58, 0.4);
+}
+
+.stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  font-size: 14px;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.stat-content .stat-number {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.stat-content .stat-label {
+  font-size: 12px;
+  opacity: 0.9;
+  font-weight: 500;
 }
 
 .key-stat-card {
