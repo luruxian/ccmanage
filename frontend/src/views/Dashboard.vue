@@ -942,76 +942,27 @@ sudo yum install -y nodejs</code></pre>
                 </ElDescriptions>
               </ElCard>
 
-              <!-- 使用统计 -->
-              <ElCard class="mb-4">
-                <template #header>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <h4>
-                      <ElIcon><ElIconTrendCharts /></ElIcon>
-                      使用统计
-                    </h4>
-                    <ElButton @click="refreshUsageStats" :loading="loadingUsageStats">
-                      <ElIcon><ElIconRefresh /></ElIcon>
-                      刷新
-                    </ElButton>
-                  </div>
-                </template>
-
-                <div v-if="loadingUsageStats" class="text-center py-4">
-                  <ElSkeleton :rows="2" animated />
-                </div>
-
-                <div v-else class="usage-stats-grid">
-                  <div class="usage-stat-item">
-                    <div class="stat-icon requests">
-                      <ElIcon><ElIconTrendCharts /></ElIcon>
-                    </div>
-                    <div class="stat-content">
-                      <h4>{{ usageStats.total_requests || 0 }}</h4>
-                      <p>总请求次数</p>
-                    </div>
-                  </div>
-
-                  <div class="usage-stat-item">
-                    <div class="stat-icon tokens">
-                      <ElIcon><ElIconCoin /></ElIcon>
-                    </div>
-                    <div class="stat-content">
-                      <h4>{{ formatNumber(usageStats.total_tokens) || 0 }}</h4>
-                      <p>总Token数</p>
-                    </div>
-                  </div>
-
-                  <div class="usage-stat-item">
-                    <div class="stat-icon credits">
-                      <ElIcon><ElIconStarFilled /></ElIcon>
-                    </div>
-                    <div class="stat-content">
-                      <h4>{{ usageStats.total_credits_used || 0 }}</h4>
-                      <p>总积分消耗</p>
-                    </div>
-                  </div>
-
-                  <div class="usage-stat-item">
-                    <div class="stat-icon services">
-                      <ElIcon><ElIconSetting /></ElIcon>
-                    </div>
-                    <div class="stat-content">
-                      <h4>{{ usageStats.unique_services || 0 }}</h4>
-                      <p>服务类型数</p>
-                    </div>
-                  </div>
-                </div>
-              </ElCard>
-
               <!-- 使用记录 -->
               <ElCard>
                 <template #header>
                   <div class="d-flex justify-content-between align-items-center">
-                    <h4>
-                      <ElIcon><ElIconList /></ElIcon>
-                      使用记录
-                    </h4>
+                    <div class="records-header-info">
+                      <h4>
+                        <ElIcon><ElIconList /></ElIcon>
+                        使用记录
+                      </h4>
+                      <div class="total-requests-badge">
+                        <div class="badge-content">
+                          <span class="badge-icon">
+                            <ElIcon><ElIconTrendCharts /></ElIcon>
+                          </span>
+                          <div class="badge-text">
+                            <span class="badge-label">总请求次数</span>
+                            <span class="badge-value">{{ usageStats.total_requests || 0 }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                     <ElButton @click="refreshUsageRecords" :loading="loadingUsageRecords">
                       <ElIcon><ElIconRefresh /></ElIcon>
                       刷新
@@ -1031,21 +982,6 @@ sudo yum install -y nodejs</code></pre>
                         <ElTag type="info" size="small">
                           {{ scope.row.service }}
                         </ElTag>
-                      </template>
-                    </ElTableColumn>
-                    <ElTableColumn prop="input_tokens" label="输入Token" width="120">
-                      <template #default="scope">
-                        {{ formatNumber(scope.row.input_tokens) || '-' }}
-                      </template>
-                    </ElTableColumn>
-                    <ElTableColumn prop="output_tokens" label="输出Token" width="120">
-                      <template #default="scope">
-                        {{ formatNumber(scope.row.output_tokens) || '-' }}
-                      </template>
-                    </ElTableColumn>
-                    <ElTableColumn prop="total_tokens" label="总Token" width="120">
-                      <template #default="scope">
-                        {{ formatNumber(scope.row.total_tokens) || '-' }}
                       </template>
                     </ElTableColumn>
                     <ElTableColumn prop="credits_used" label="积分消耗" width="100">
@@ -2866,50 +2802,59 @@ onMounted(() => {
   color: #606266;
 }
 
-.usage-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  padding: 20px 0;
+/* 使用记录头部样式 */
+.records-header-info h4 {
+  margin-bottom: 8px;
 }
 
-.usage-stat-item {
+.total-requests-badge {
+  margin-top: 8px;
+}
+
+.badge-content {
   display: flex;
   align-items: center;
-  gap: 15px;
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border-left: 4px solid #409eff;
+  gap: 8px;
+  background: linear-gradient(135deg, #409eff 0%, #5cadff 100%);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.3);
+  transition: all 0.3s ease;
 }
 
-.stat-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+.badge-content:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.4);
+}
+
+.badge-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  font-size: 12px;
 }
 
-.stat-icon.requests { background: #3498db; }
-.stat-icon.tokens { background: #f39c12; }
-.stat-icon.credits { background: #e74c3c; }
-.stat-icon.services { background: #27ae60; }
+.badge-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
 
-.stat-content h4 {
-  font-size: 1.8rem;
-  margin: 0;
-  color: #2c3e50;
+.badge-label {
+  font-size: 11px;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+.badge-value {
+  font-size: 16px;
   font-weight: 700;
-}
-
-.stat-content p {
-  margin: 4px 0 0 0;
-  color: #7f8c8d;
-  font-size: 14px;
+  margin-top: 1px;
 }
 
 
@@ -2981,8 +2926,27 @@ onMounted(() => {
     min-width: auto;
   }
 
-  .usage-stats-grid {
-    grid-template-columns: 1fr;
+  .records-header-info {
+    text-align: left;
+  }
+
+  .total-requests-badge {
+    margin-top: 8px;
+  }
+
+  .badge-content {
+    padding: 6px 10px;
+    gap: 6px;
+  }
+
+  .badge-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+  }
+
+  .badge-value {
+    font-size: 14px;
   }
 
   .usage-header {
