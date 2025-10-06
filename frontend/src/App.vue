@@ -55,31 +55,36 @@ const shouldShowNavbar = () => {
     <nav v-if="shouldShowNavbar()" class="navbar navbar-expand-lg navbar-dark bg-primary">
       <div class="container-fluid">
         <a class="navbar-brand" href="#" @click="goHome">{{ appName }}</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="切换导航">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto">
             <li class="nav-item" v-if="userStore.isLoggedIn">
               <router-link class="nav-link" to="/dashboard" :class="{ active: route.path === '/dashboard' }">
+                <i class="fas fa-tachometer-alt d-lg-none me-2"></i>
                 控制台
               </router-link>
             </li>
             <li class="nav-item" v-if="userStore.isLoggedIn">
               <router-link class="nav-link" to="/key-activation" :class="{ active: route.path === '/key-activation' }">
+                <i class="fas fa-key d-lg-none me-2"></i>
                 密钥激活
               </router-link>
             </li>
           </ul>
           <div class="d-flex align-items-center">
-            <div v-if="userStore.isLoggedIn" class="me-3 text-white">
+            <div v-if="userStore.isLoggedIn" class="me-3 text-white d-none d-lg-block">
               欢迎，{{ userStore.name }}
+            </div>
+            <div v-if="userStore.isLoggedIn" class="d-lg-none user-info-mobile me-3 text-white">
+              <small>{{ userStore.name }}</small>
             </div>
             <ElButton v-if="userStore.isLoggedIn" type="text" @click="logout" class="logout-btn">
               <span class="logout-icon">🚪</span>
-              退出登录
+              <span class="d-none d-md-inline">退出登录</span>
             </ElButton>
-            <div v-else>
+            <div v-else class="auth-buttons">
               <router-link to="/login" class="btn btn-outline-light me-2">
                 登录
               </router-link>
@@ -215,5 +220,50 @@ body {
 .btn-light:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+}
+
+/* 移动端导航栏优化 */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 8px 0;
+  }
+
+  .navbar-brand {
+    font-size: 1.2rem;
+  }
+
+  .navbar-collapse {
+    margin-top: 8px;
+  }
+
+  .navbar-nav {
+    margin-bottom: 12px;
+  }
+
+  .nav-link {
+    padding: 12px 16px !important;
+    margin: 2px 0;
+  }
+
+  .user-info-mobile {
+    font-size: 14px;
+  }
+
+  .auth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .auth-buttons .btn {
+    width: 100%;
+    margin: 0;
+  }
+
+  .logout-btn {
+    padding: 10px 16px !important;
+    font-size: 14px;
+  }
 }
 </style>

@@ -256,4 +256,60 @@ const goToDashboard = () => {
   background: #409eff;
   color: white;
 }
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+  .key-activation {
+    padding: 20px 0;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  }
+
+  .activation-card {
+    padding: 24px 20px;
+    border-radius: 12px;
+    margin: 0 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+
+  .activation-card h2 {
+    font-size: 1.5rem;
+  }
+
+  .activation-card .text-muted {
+    font-size: 14px;
+  }
+
+  .form-help small {
+    font-size: 12px;
+  }
+
+  .key-info {
+    padding: 16px;
+    margin: 16px 0;
+  }
+
+  .btn-outline-primary {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 14px;
+    min-height: 44px;
+  }
+
+  /* 表单输入框移动端优化 */
+  .el-input__inner {
+    font-size: 16px;
+    min-height: 44px;
+  }
+
+  .el-button {
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  /* 对话框移动端优化 */
+  .el-dialog {
+    width: 90% !important;
+    max-width: 400px;
+  }
+}
 </style>

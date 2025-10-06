@@ -1,11 +1,39 @@
 <template>
   <div class="dashboard">
+    <!-- 移动端侧边栏抽屉 -->
+    <div class="mobile-sidebar-overlay" v-if="showMobileSidebar" @click="showMobileSidebar = false"></div>
+    <div class="mobile-sidebar" :class="{ 'mobile-sidebar-open': showMobileSidebar }">
+      <div class="mobile-sidebar-content">
+        <nav class="sidebar-nav">
+          <a href="#" :class="['nav-item', { active: activeTab === 'getting-started' }]" @click="setActiveTab('getting-started')">
+            <ElIcon><ElIconVideoPlay /></ElIcon>
+            安装Claude Code
+          </a>
+          <a href="#" :class="['nav-item', { active: activeTab === 'keys' || activeTab === 'usage-history' }]" @click="setActiveTab('keys')">
+            <ElIcon><ElIconKey /></ElIcon>
+            API密钥
+          </a>
+          <a href="#" :class="['nav-item', { active: activeTab === 'packages' }]" @click="setActiveTab('packages')">
+            <ElIcon><ElIconList /></ElIcon>
+            订阅一览
+          </a>
+          <a href="#" :class="['nav-item', { active: activeTab === 'promotion' }]" @click="setActiveTab('promotion')">
+            <ElIcon><ElIconTrendCharts /></ElIcon>
+            推广计划
+          </a>
+          <a href="#" :class="['nav-item', { active: activeTab === 'resources' }]" @click="setActiveTab('resources')">
+            <ElIcon><ElIconReading /></ElIcon>
+            资料中心
+          </a>
+        </nav>
+      </div>
+    </div>
+
     <div class="container-fluid">
       <div class="row">
-        <!-- 侧边栏 -->
-        <div class="col-md-3 col-lg-2 sidebar">
+        <!-- 桌面端侧边栏 -->
+        <div class="col-md-3 col-lg-2 sidebar d-none d-md-block">
           <div class="sidebar-content">
-
             <nav class="sidebar-nav">
               <a href="#" :class="['nav-item', { active: activeTab === 'getting-started' }]" @click="activeTab = 'getting-started'">
                 <ElIcon><ElIconVideoPlay /></ElIcon>
@@ -28,12 +56,20 @@
                 资料中心
               </a>
             </nav>
-
           </div>
         </div>
 
         <!-- 主内容区 -->
-        <div class="col-md-9 col-lg-10 main-content">
+        <div class="col-12 col-md-9 col-lg-10 main-content">
+          <!-- 移动端顶部栏 -->
+          <div class="mobile-header d-md-none">
+            <button class="mobile-menu-btn" @click="showMobileSidebar = true">
+              <i class="fas fa-bars"></i>
+            </button>
+            <div class="mobile-title">
+              {{ getCurrentTabTitle() }}
+            </div>
+          </div>
 
           <!-- API密钥管理 -->
           <div v-if="activeTab === 'keys'" class="tab-content">
@@ -1097,6 +1133,7 @@ const apiKeys = ref<ApiKey[]>([])
 const filteredKeys = ref<ApiKey[]>([])
 const loadingKeys = ref(false)
 const selectedApiKey = ref<ApiKey | null>(null)
+const showMobileSidebar = ref(false)
 
 // 重置积分弹窗相关
 const resetCreditsDialogVisible = ref(false)
@@ -1539,6 +1576,25 @@ const loadAvailableServices = async () => {
   } catch (error) {
     console.error('加载服务类型失败:', error)
   }
+}
+
+// 移动端设置激活标签
+const setActiveTab = (tab: string) => {
+  activeTab.value = tab
+  showMobileSidebar.value = false
+}
+
+// 获取当前标签页标题
+const getCurrentTabTitle = () => {
+  const titles: Record<string, string> = {
+    'keys': 'API密钥',
+    'getting-started': '安装Claude Code',
+    'packages': '订阅一览',
+    'promotion': '推广计划',
+    'resources': '资料中心',
+    'usage-history': '使用履历'
+  }
+  return titles[activeTab.value] || '控制台'
 }
 
 const refreshUsageRecords = () => {
@@ -3063,6 +3119,265 @@ onMounted(() => {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+  }
+}
+
+/* 移动端侧边栏样式 */
+.mobile-sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.mobile-sidebar {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 280px;
+  height: 100%;
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  z-index: 1000;
+  transition: left 0.3s ease;
+  overflow-y: auto;
+}
+
+.mobile-sidebar-open {
+  left: 0;
+}
+
+.mobile-sidebar-content {
+  padding: 80px 20px 20px;
+}
+
+.mobile-header {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  margin: -40px -40px 20px -40px;
+}
+
+.mobile-menu-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #64748b;
+  padding: 8px;
+  margin-right: 12px;
+  cursor: pointer;
+}
+
+.mobile-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* 移动端主内容区调整 */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 20px 16px;
+  }
+
+  .main-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .el-card {
+    border-radius: 12px !important;
+  }
+
+  .key-stats-inline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .stat-badge {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .d-flex.justify-content-between {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .key-actions {
+    width: 100%;
+  }
+
+  .key-actions .btn {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .package-card {
+    margin-bottom: 20px;
+  }
+
+  .packages-grid .col-md-4 {
+    margin-bottom: 20px;
+  }
+
+  /* 表格移动端优化 */
+  .custom-table {
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .table-header {
+    display: none;
+  }
+
+  .key-item {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .key-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .main-row {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px;
+  }
+
+  .col-subscription,
+  .col-api-key,
+  .col-status,
+  .col-activation,
+  .col-expire,
+  .col-days,
+  .col-actions {
+    width: 100%;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .col-subscription::before {
+    content: "订阅名称：";
+    font-weight: 500;
+    color: #64748b;
+  }
+
+  .col-api-key::before {
+    content: "API密钥：";
+    font-weight: 500;
+    color: #64748b;
+  }
+
+  .col-status::before {
+    content: "状态：";
+    font-weight: 500;
+    color: #64748b;
+  }
+
+  .col-activation::before {
+    content: "激活时间：";
+    font-weight: 500;
+    color: #64748b;
+  }
+
+  .col-expire::before {
+    content: "过期时间：";
+    font-weight: 500;
+    color: #64748b;
+  }
+
+  .col-days::before {
+    content: "剩余天数：";
+    font-weight: 500;
+    color: #64748b;
+  }
+
+  .col-actions::before {
+    content: "操作：";
+    font-weight: 500;
+    color: #64748b;
+  }
+
+  .action-buttons {
+    flex-direction: row;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .action-buttons .el-button {
+    font-size: 12px;
+    padding: 8px 12px;
+    min-width: auto;
+    min-height: 36px;
+  }
+
+  /* 按钮组移动端优化 */
+  .key-actions .btn,
+  .key-actions .el-button {
+    min-height: 44px;
+    font-size: 14px;
+  }
+
+  /* 表单移动端优化 */
+  .el-form-item {
+    margin-bottom: 20px;
+  }
+
+  .el-input__inner {
+    font-size: 16px;
+  }
+
+  /* 积分信息移动端优化 */
+  .credits-info-container {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .credits-basic {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .credits-progress {
+    width: 100%;
+    max-width: none;
+  }
+
+  /* 代码块移动端优化 */
+  .code-block pre {
+    font-size: 12px;
+    padding: 12px;
+    overflow-x: auto;
+  }
+
+  .code-header {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  /* 安装步骤移动端优化 */
+  .step-item {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .step-number {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    margin-right: 12px;
   }
 }
 </style>

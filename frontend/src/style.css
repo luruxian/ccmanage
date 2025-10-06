@@ -21,6 +21,31 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background-color: #f8f9fa;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* 移动端字体大小调整 */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+  }
+
+  h4, h5, h6 {
+    font-size: 1.1rem;
+  }
 }
 
 /* 重置链接样式 */
@@ -47,4 +72,51 @@ button {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* 移动端触摸优化 */
+@media (max-width: 768px) {
+  /* 增加按钮触摸区域 */
+  .btn, .el-button {
+    min-height: 44px;
+    padding: 12px 16px;
+    font-size: 16px; /* 防止iOS缩放 */
+  }
+
+  /* 表单输入框触摸优化 */
+  .el-input__inner,
+  .el-select .el-input__inner,
+  .el-textarea__inner {
+    min-height: 44px;
+    font-size: 16px; /* 防止iOS缩放 */
+  }
+
+  /* 增加链接触摸区域 */
+  a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+  }
+
+  /* 导航链接触摸优化 */
+  .nav-link {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* 禁用文本选择 */
+  * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* 允许文本输入框选择 */
+  input, textarea {
+    -webkit-user-select: text;
+    user-select: text;
+  }
 }
