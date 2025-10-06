@@ -952,6 +952,57 @@ claude
             </div>
           </div>
 
+          <!-- 重置积分确认弹窗 -->
+          <ElDialog
+            v-model="resetCreditsDialogVisible"
+            title="重置积分确认"
+            width="500px"
+            :close-on-click-modal="false"
+            :close-on-press-escape="false"
+            class="reset-credits-dialog"
+          >
+            <div class="dialog-content">
+              <div class="dialog-icon">
+                <div class="icon-wrapper">
+                  <i class="fas fa-sync-alt"></i>
+                </div>
+              </div>
+              <div class="dialog-text">
+                <h3 class="dialog-title">确认重置积分</h3>
+                <p class="dialog-subtitle">您即将重置以下订阅的积分</p>
+                <div class="key-info">
+                  <div class="info-item">
+                    <span class="label">订阅名称：</span>
+                    <span class="value">{{ resetCreditsKey?.package_name || '未知订阅' }}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="label">当前积分：</span>
+                    <span class="value">{{ resetCreditsKey?.remaining_credits || 0 }} / {{ resetCreditsKey?.total_credits || 0 }}</span>
+                  </div>
+                </div>
+                <div class="warning-note">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  <span>重置后积分将恢复到总积分数量，每天只能重置一次！</span>
+                </div>
+              </div>
+            </div>
+            <template #footer>
+              <div class="dialog-footer">
+                <ElButton @click="resetCreditsDialogVisible = false" class="cancel-btn">
+                  取消
+                </ElButton>
+                <ElButton
+                  type="primary"
+                  @click="confirmResetCredits"
+                  :loading="resettingCredits"
+                  class="confirm-btn"
+                >
+                  {{ resettingCredits ? '重置中...' : '确认重置' }}
+                </ElButton>
+              </div>
+            </template>
+          </ElDialog>
+
           <!-- 资料中心 -->
           <div v-if="activeTab === 'resources'" class="tab-content">
             <h2 class="mb-4">资料中心</h2>
@@ -1006,7 +1057,8 @@ import {
   ElTabs,
   ElTabPane,
   ElDescriptions,
-  ElDescriptionsItem
+  ElDescriptionsItem,
+  ElDialog
 } from 'element-plus'
 import {
   Key as ElIconKey,
@@ -1046,6 +1098,11 @@ const apiKeys = ref<ApiKey[]>([])
 const filteredKeys = ref<ApiKey[]>([])
 const loadingKeys = ref(false)
 const selectedApiKey = ref<ApiKey | null>(null)
+
+// 重置积分弹窗相关
+const resetCreditsDialogVisible = ref(false)
+const resettingCredits = ref(false)
+const resetCreditsKey = ref<ApiKey | null>(null)
 
 const keyStats = reactive({
   active: 0
@@ -1218,25 +1275,25 @@ const canResetCredits = (key: any) => {
   return true
 }
 
-// 重置积分
-const resetCredits = async (key: any) => {
+// 重置积分 - 打开确认弹窗
+const resetCredits = (key: any) => {
+  resetCreditsKey.value = key
+  resetCreditsDialogVisible.value = true
+}
+
+// 确认重置积分
+const confirmResetCredits = async () => {
+  if (!resetCreditsKey.value) return
+
   try {
+    resettingCredits.value = true
+
     // 检查key对象是否有有效的ID
-    const keyId = key.id || key.user_key_id
+    const keyId = resetCreditsKey.value.id || resetCreditsKey.value.user_key_id
     if (!keyId) {
       ElMessage.error('密钥ID无效，无法重置积分')
       return
     }
-
-    await ElMessageBox.confirm(
-      `确定要重置 "${key.package_name || '未知订阅'}" 的积分吗？\n剩余积分将恢复到总积分数量。\n注意：每天只能重置一次！`,
-      '确认重置积分',
-      {
-        type: 'warning',
-        confirmButtonText: '确认重置',
-        cancelButtonText: '取消'
-      }
-    )
 
     console.log('重置积分请求 - 密钥ID:', keyId)
     const response = await request.put(`/api/v1/keys/${keyId}/reset-credits`)
@@ -1248,11 +1305,11 @@ const resetCredits = async (key: any) => {
     // 安全地访问响应数据
     const message = response?.data?.message || '积分重置成功'
     ElMessage.success(message)
-  } catch (error: any) {
-    if (error === 'cancel') {
-      return
-    }
 
+    // 关闭弹窗
+    resetCreditsDialogVisible.value = false
+    resetCreditsKey.value = null
+  } catch (error: any) {
     console.error('重置积分失败:', error)
 
     // 改进错误处理
@@ -1266,6 +1323,8 @@ const resetCredits = async (key: any) => {
     }
 
     ElMessage.error(message)
+  } finally {
+    resettingCredits.value = false
   }
 }
 
@@ -1515,45 +1574,113 @@ onMounted(() => {
 <style scoped>
 .dashboard {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .sidebar {
-  background: white;
-  box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  box-shadow: 4px 0 20px rgba(0,0,0,0.1);
   min-height: 100vh;
   padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
 }
 
 .sidebar-content {
-  padding: 30px 20px;
+  padding: 40px 24px;
+  position: relative;
+  z-index: 1;
 }
-
 
 .sidebar-nav .nav-item {
   display: flex;
   align-items: center;
-  padding: 12px 15px;
+  padding: 14px 18px;
   margin-bottom: 8px;
-  color: #666;
+  color: #cbd5e1;
   text-decoration: none;
-  border-radius: 8px;
-  transition: all 0.3s;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid transparent;
+  position: relative;
+  overflow: hidden;
 }
 
-.sidebar-nav .nav-item:hover,
+.sidebar-nav .nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.sidebar-nav .nav-item:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+  border-color: rgba(59, 130, 246, 0.3);
+  transform: translateX(4px);
+}
+
+.sidebar-nav .nav-item:hover::before {
+  left: 100%;
+}
+
 .sidebar-nav .nav-item.active {
-  background: #409eff;
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  border-color: #3b82f6;
 }
 
 .sidebar-nav .nav-item .el-icon {
-  margin-right: 10px;
+  margin-right: 12px;
+  font-size: 18px;
+  transition: transform 0.3s ease;
 }
 
+.sidebar-nav .nav-item:hover .el-icon {
+  transform: scale(1.1);
+}
 
 .main-content {
-  padding: 30px;
+  padding: 40px;
+  background: transparent;
+}
+
+.main-content h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1e293b 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0;
+}
+
+.el-card {
+  border-radius: 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  backdrop-filter: blur(10px);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+}
+
+.el-card:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
 }
 
 
@@ -1578,7 +1705,20 @@ onMounted(() => {
 /* 新增样式 */
 .key-actions {
   display: flex;
-  gap: 8px;
+  gap: 12px;
+}
+
+.key-actions .btn {
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+.key-actions .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
 }
 
 /* 密钥统计内联样式 */
@@ -1586,23 +1726,26 @@ onMounted(() => {
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  gap: 16px;
 }
 
 .stat-badge {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  background: linear-gradient(135deg, #67c23a 0%, #85ce61 100%);
+  gap: 16px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
-  padding: 12px 20px;
-  border-radius: 25px;
-  box-shadow: 0 3px 12px rgba(103, 194, 58, 0.3);
-  transition: all 0.3s ease;
+  padding: 16px 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
 }
 
 .stat-badge:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(103, 194, 58, 0.4);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
 }
 
 .stat-icon {
@@ -1635,24 +1778,36 @@ onMounted(() => {
 }
 
 .key-stat-card {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   text-align: center;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.key-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
 }
 
 .key-stat-card .stat-number {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #409eff;
+  font-size: 2.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 8px;
 }
 
 .key-stat-card .stat-label {
-  color: #666;
-  font-size: 0.9rem;
+  color: #64748b;
+  font-size: 0.95rem;
+  font-weight: 600;
 }
 
 .filter-row {
@@ -1661,14 +1816,48 @@ onMounted(() => {
 
 .empty-keys {
   text-align: center;
-  padding: 60px 20px;
-  color: #7f8c8d;
+  padding: 80px 20px;
+  color: #64748b;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 20px;
+  border: 2px dashed #e2e8f0;
+  margin: 20px 0;
 }
 
 .empty-keys .empty-icon {
-  font-size: 64px;
-  color: #ddd;
-  margin-bottom: 16px;
+  font-size: 80px;
+  background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 20px;
+}
+
+.empty-keys h4 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #1e293b;
+}
+
+.empty-keys p {
+  font-size: 1.1rem;
+  margin-bottom: 24px;
+  color: #64748b;
+}
+
+.empty-keys .btn {
+  border-radius: 12px;
+  font-weight: 600;
+  padding: 12px 28px;
+  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.empty-keys .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
 }
 
 .key-name-cell {

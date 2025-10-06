@@ -566,62 +566,115 @@ const goToResourceCenter = () => {
 <style scoped>
 .dashboard {
   min-height: 100vh;
-  background-color: #f8f9fa;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .sidebar {
-  background: white;
-  box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  box-shadow: 4px 0 20px rgba(0,0,0,0.1);
   min-height: 100vh;
   padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
 }
 
 .sidebar-content {
-  padding: 30px 20px;
+  padding: 40px 24px;
+  position: relative;
+  z-index: 1;
 }
 
 .sidebar-nav .nav-item {
   display: flex;
   align-items: center;
-  padding: 12px 15px;
+  padding: 14px 18px;
   margin-bottom: 8px;
-  color: #666;
+  color: #cbd5e1;
   text-decoration: none;
-  border-radius: 8px;
-  transition: all 0.3s;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid transparent;
+  position: relative;
+  overflow: hidden;
 }
 
-.sidebar-nav .nav-item:hover,
+.sidebar-nav .nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.sidebar-nav .nav-item:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+  border-color: rgba(59, 130, 246, 0.3);
+  transform: translateX(4px);
+}
+
+.sidebar-nav .nav-item:hover::before {
+  left: 100%;
+}
+
 .sidebar-nav .nav-item.active {
-  background: #409eff;
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  border-color: #3b82f6;
 }
 
 .sidebar-nav .nav-item .el-icon {
-  margin-right: 10px;
+  margin-right: 12px;
+  font-size: 18px;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-nav .nav-item:hover .el-icon {
+  transform: scale(1.1);
 }
 
 .main-content {
-  padding: 30px;
+  padding: 40px;
+  background: transparent;
 }
 
 .breadcrumb {
   background: transparent;
   padding: 0;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 
 .breadcrumb-item a {
-  color: #007bff;
+  color: #3b82f6;
   text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
 .breadcrumb-item a:hover {
-  text-decoration: underline;
+  color: #1e40af;
+  text-decoration: none;
+  transform: translateY(-1px);
 }
 
 .breadcrumb-item.active {
-  color: #6c757d;
+  color: #64748b;
+  font-weight: 600;
 }
 
 .best-practices-content {
@@ -629,32 +682,36 @@ const goToResourceCenter = () => {
 }
 
 .best-practices-article {
-  padding: 30px;
+  padding: 40px;
   line-height: 1.8;
-  font-size: 15px;
-  color: #2c3e50;
+  font-size: 16px;
+  color: #334155;
 }
 
 .article-intro {
   margin-bottom: 40px;
   padding-bottom: 30px;
-  border-bottom: 2px solid #ecf0f1;
+  border-bottom: 2px solid #e2e8f0;
 }
 
 .article-intro h3 {
-  color: #2c3e50;
-  font-size: 28px;
-  font-weight: 700;
+  background: linear-gradient(135deg, #1e293b 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 32px;
+  font-weight: 800;
   margin-bottom: 20px;
   text-align: center;
 }
 
 .intro-text {
   font-size: 18px;
-  color: #34495e;
+  color: #475569;
   text-align: center;
   font-weight: 500;
   margin: 0;
+  line-height: 1.6;
 }
 
 .article-content section {
@@ -662,74 +719,92 @@ const goToResourceCenter = () => {
 }
 
 .article-content h4 {
-  color: #2980b9;
-  font-size: 22px;
-  font-weight: 600;
-  margin: 30px 0 20px 0;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #3498db;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 40px 0 24px 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e2e8f0;
 }
 
 .article-content h5 {
-  color: #34495e;
+  color: #334155;
   font-size: 18px;
   font-weight: 600;
-  margin: 25px 0 15px 0;
+  margin: 28px 0 16px 0;
 }
 
 .article-content p {
-  margin-bottom: 16px;
+  margin-bottom: 18px;
   text-align: justify;
+  color: #475569;
 }
 
 .article-content ul, .article-content ol {
-  margin: 16px 0;
-  padding-left: 25px;
+  margin: 18px 0;
+  padding-left: 28px;
 }
 
 .article-content li {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  color: #475569;
+  line-height: 1.6;
 }
 
 .code-example {
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  margin: 20px 0;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  margin: 24px 0;
   overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .code-example pre {
-  background: #2c3e50;
-  color: #ecf0f1;
-  padding: 20px;
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 24px;
   margin: 0;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
   font-size: 14px;
   line-height: 1.6;
   overflow-x: auto;
+  border-radius: 0 0 12px 12px;
 }
 
 .image-container {
   text-align: center;
-  margin: 30px 0;
+  margin: 32px 0;
 }
 
 .practice-image {
   max-width: 100%;
   height: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.practice-image:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
 }
 
 .empty-content {
   text-align: center;
-  padding: 60px 20px;
+  padding: 80px 20px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 20px;
+  border: 2px dashed #e2e8f0;
+  margin: 20px 0;
 }
 
 .empty-content .el-icon {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .tab-content {
@@ -737,7 +812,53 @@ const goToResourceCenter = () => {
 }
 
 h2 {
-  color: #2c3e50;
+  background: linear-gradient(135deg, #1e293b 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0;
+}
+
+/* 卡片样式 */
+.el-card {
+  border-radius: 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  backdrop-filter: blur(10px);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+}
+
+.el-card:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* 表格样式 */
+.code-example table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.code-example th {
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  color: white;
+  padding: 16px;
   font-weight: 600;
+  text-align: left;
+}
+
+.code-example td {
+  padding: 16px;
+  border-bottom: 1px solid #e2e8f0;
+  background: white;
+}
+
+.code-example tr:hover td {
+  background: #f8fafc;
 }
 </style>
