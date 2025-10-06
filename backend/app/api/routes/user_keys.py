@@ -336,7 +336,7 @@ async def download_api_key_config(
             )
 
         # 读取配置文件模板
-        template_path = os.path.join(os.path.dirname(__file__), "../../../config_template.json")
+        template_path = os.path.join(os.path.dirname(__file__), "../../../settings_template.json")
 
         if not os.path.exists(template_path):
             raise HTTPException(
@@ -363,7 +363,7 @@ async def download_api_key_config(
         return JSONResponse(
             content={
                 "config": json.loads(config_content),
-                "filename": "config.json"
+                "filename": "settings.json"
             }
         )
 

@@ -1,0 +1,10 @@
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "http://endpoint.agnets.app/api/",
+    "ANTHROPIC_API_KEY": "{{API_KEY}}"
+  },
+  "permissions": {
+    "allow": [],
+    "deny": []
+  }
+}
