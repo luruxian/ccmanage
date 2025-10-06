@@ -230,7 +230,6 @@
                 <ul class="requirements-list">
                   <li><strong>Node.js 18+</strong> （用于NPM安装方式）</li>
                   <li><strong>Git</strong> （推荐，用于版本控制功能）</li>
-                  <li><strong>稳定的网络连接</strong> （用于AI功能）</li>
                 </ul>
               </div>
             </ElCard>
@@ -682,7 +681,7 @@ claude
             <h2 class="mb-4">订阅一览</h2>
             <div class="packages-content">
               <div class="packages-header mb-4">
-                <p class="text-muted">选择最适合您的订阅计划，每日5400积分，支持每天重置一次</p>
+                <p class="text-muted">选择最适合您的订阅计划，每日10000积分，支持每天重置一次</p>
               </div>
 
               <div class="row">
@@ -690,7 +689,7 @@ claude
                   <ElCard class="package-card">
                     <template #header>
                       <div class="package-header">
-                        <h4>日卡</h4>
+                        <h4>一日体验卡</h4>
                         <div class="package-price">
                           <span class="price">¥9.8</span>
                           <span class="period">/日</span>
@@ -700,7 +699,7 @@ claude
                     <div class="package-content">
                       <ul class="package-features">
                         <li>✓ 24小时有效期</li>
-                        <li>✓ 每日5400积分</li>
+                        <li>✓ 每日10000积分</li>
                         <li>✓ 支持每天重置一次</li>
                         <li>✓ 即买即用</li>
                         <li>✓ 适合短期试用</li>
@@ -714,7 +713,7 @@ claude
                   <ElCard class="package-card">
                     <template #header>
                       <div class="package-header">
-                        <h4>周卡</h4>
+                        <h4>七日行</h4>
                         
                         <div class="package-price">
                           <span class="price">¥49.8</span>
@@ -725,7 +724,7 @@ claude
                     <div class="package-content">
                       <ul class="package-features">
                         <li>✓ 7天有效期 (168小时)</li>
-                        <li>✓ 每日5400积分</li>
+                        <li>✓ 每日10000积分</li>
                         <li>✓ 支持每天重置一次</li>
                         <li>✓ 性价比超值</li>
                         <li>✓ 适合中短期项目</li>
@@ -739,7 +738,7 @@ claude
                   <ElCard class="package-card featured">
                     <template #header>
                       <div class="package-header">
-                        <h4>月卡</h4>
+                        <h4>月享卡</h4>
                         <div class="package-badge">推荐</div>
                         <div class="package-price">
                           <span class="price">¥199</span>
@@ -750,7 +749,7 @@ claude
                     <div class="package-content">
                       <ul class="package-features">
                         <li>✓ 30天有效期 (720小时)</li>
-                        <li>✓ 每日5400积分</li>
+                        <li>✓ 每日10000积分</li>
                         <li>✓ 支持每天重置一次</li>
                         <li>✓ 最超值选择</li>
                         <li>✓ 适合长期使用</li>
@@ -770,7 +769,7 @@ claude
                       • 日卡：适合临时使用和功能体验<br>
                       • 周卡：适合短期项目开发和测试<br>
                       • 月卡：适合长期开发和持续使用<br>
-                      • 所有计划均提供每日5400积分，每天可重置一次<br>
+                      • 所有计划均提供每日10000积分，每天可重置一次<br>
                       • 购买后不生效，激活后才开始生效计时。
                     </p>
                   </div>
