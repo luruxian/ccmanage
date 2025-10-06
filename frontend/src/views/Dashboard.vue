@@ -635,7 +635,7 @@ cd /path/to/your/project
 # 2. 用 claude 命令启动 Claude Code
 claude
 
-# 3. 配置 API 密钥（从API密钥一览页面下载配置文件）
+# 3. 配置 API 密钥（配置文件可从API密钥一览页面下载，放到下面的指定路径以后，用/exit命令从cluade code退出，然后重新启动claude code）
 # 配置文件路径：~/.claude/settings.json</code></pre>
                 </div>
                 <div class="row">
