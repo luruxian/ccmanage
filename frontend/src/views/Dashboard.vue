@@ -584,6 +584,25 @@ sudo yum install -y nodejs</code></pre>
                 <h4>📚 快速使用指南</h4>
               </template>
               <div class="usage-guide">
+                <!-- 使用步骤 -->
+                <div class="usage-steps mt-2">
+                  <h5>🚀 开始使用步骤</h5>
+                  <p class="text-muted mb-2">按照以下步骤快速开始使用 Claude Code：</p>
+
+                  <div class="code-block">
+                    <div class="code-header">
+                      <span>完整使用流程</span>
+                      <ElButton size="small" @click="copyToClipboard('# 1. 导航到您的项目文件夹\ncd /path/to/your/project\n\n# 2. 用 claude 命令启动 Claude Code\nclaude\n\n# 3. 配置 API 密钥（从API密钥一览页面下载配置文件）\n# 配置文件路径：~/.claude/settings.json')">复制</ElButton>
+                    </div>
+                    <pre><code># 1. 导航到您的项目文件夹
+cd /path/to/your/project
+
+# 2. 用 claude 命令启动 Claude Code
+claude
+
+# 3. 配置 API 密钥（从API密钥一览页面下载配置文件）
+# 配置文件路径：~/.claude/settings.json</code></pre>
+                </div>
                 <div class="row">
                   <div class="col-md-6">
                     <h5>🎯 基本命令</h5>
@@ -616,6 +635,7 @@ sudo yum install -y nodejs</code></pre>
                       <li>在项目目录中运行获得最佳效果</li>
                     </ul>
                   </div>
+                </div>
                 </div>
               </div>
             </ElCard>
