@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElForm, ElFormItem, ElInput, ElButton, ElMessage } from 'element-plus'
 import { User as ElIconUser, Lock as ElIconLock } from '@element-plus/icons-vue'
@@ -77,6 +77,22 @@ const loginFormRef = ref()
 const loginForm = reactive({
   username: '',
   password: ''
+})
+
+// 回车键登录处理
+const handleKeyPress = (event: KeyboardEvent) => {
+  if (event.key === 'Enter' && !loading.value) {
+    handleLogin()
+  }
+}
+
+// 添加和移除键盘事件监听器
+onMounted(() => {
+  document.addEventListener('keydown', handleKeyPress)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeyPress)
 })
 
 const loginRules = {
