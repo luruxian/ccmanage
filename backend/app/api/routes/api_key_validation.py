@@ -124,7 +124,6 @@ async def validate_api_key_endpoint(request: APIKeyValidationRequest, db: Sessio
 
     返回包含验证结果和真实API密钥的响应
     """
-    logger.info(f"API密钥验证请求: {request.api_key[:10]}...")
 
     try:
         # 创建验证服务实例
