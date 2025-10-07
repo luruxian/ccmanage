@@ -613,57 +613,6 @@ sudo yum install -y nodejs</code></pre>
             </ElCard>
 
 
-            <!-- VS Code插件安装 -->
-            <ElCard class="mb-4">
-              <template #header>
-                <h4>🔌 VS Code插件安装</h4>
-              </template>
-              <div class="vscode-install-content">
-                <p class="text-muted mb-3">如果您使用Visual Studio Code，可以安装Claude Code插件获得更好的开发体验</p>
-
-                <div class="vscode-methods">
-                  <h5>方法一：通过VS Code扩展市场安装（推荐）</h5>
-                  <div class="install-steps">
-                    <ol>
-                      <li>打开Visual Studio Code</li>
-                      <li>点击左侧的扩展图标（或按 Ctrl+Shift+X）</li>
-                      <li>在搜索框中输入 "Claude Code"</li>
-                      <li>找到由 Anthropic 开发的 Claude Code 插件</li>
-                      <li>点击"安装"按钮</li>
-                    </ol>
-                  </div>
-
-                  <h5 class="mt-4">方法二：通过命令行安装</h5>
-                  <div class="code-block">
-                    <div class="code-header">
-                      <span>Terminal</span>
-                      <ElButton size="small" @click="copyToClipboard('code --install-extension anthropic.claude-code')">复制</ElButton>
-                    </div>
-                    <pre><code>code --install-extension anthropic.claude-code</code></pre>
-                  </div>
-
-                  <h5 class="mt-4">方法三：通过VS Code快速打开</h5>
-                  <div class="code-block">
-                    <div class="code-header">
-                      <span>Terminal</span>
-                      <ElButton size="small" @click="copyToClipboard('code --install-extension anthropic.claude-code')">复制</ElButton>
-                    </div>
-                    <pre><code>code --install-extension anthropic.claude-code</code></pre>
-                  </div>
-
-                  <div class="install-note">
-                    <p><strong>💡 VS Code 插件小贴士：</strong></p>
-                    <ul>
-                      <li>安装完成后需要重启 VS Code</li>
-                      <li>确保已安装 Claude Code CLI 工具</li>
-                      <li>在 VS Code 中按 Ctrl+Shift+P 打开命令面板，输入 "Claude" 查看可用命令</li>
-                      <li>插件会自动检测项目中的 Claude Code 配置</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </ElCard>
-
             <!-- 使用指南 -->
             <ElCard class="mb-4">
               <template #header>
@@ -757,6 +706,57 @@ claude
                       <code>"提交我的更改"</code>
                     </div>
                     <div class="example-desc">Git操作</div>
+                  </div>
+                </div>
+              </div>
+            </ElCard>
+
+            <!-- VS Code插件安装 -->
+            <ElCard class="mb-4">
+              <template #header>
+                <h4>🔌 VS Code插件安装</h4>
+              </template>
+              <div class="vscode-install-content">
+                <p class="text-muted mb-3">如果您使用Visual Studio Code，可以安装Claude Code插件获得更好的开发体验</p>
+
+                <div class="vscode-methods">
+                  <h5>方法一：通过VS Code扩展市场安装（推荐）</h5>
+                  <div class="install-steps">
+                    <ol>
+                      <li>打开Visual Studio Code</li>
+                      <li>点击左侧的扩展图标（或按 Ctrl+Shift+X）</li>
+                      <li>在搜索框中输入 "Claude Code"</li>
+                      <li>找到由 Anthropic 开发的 Claude Code 插件</li>
+                      <li>点击"安装"按钮</li>
+                    </ol>
+                  </div>
+
+                  <h5 class="mt-4">方法二：通过命令行安装</h5>
+                  <div class="code-block">
+                    <div class="code-header">
+                      <span>Terminal</span>
+                      <ElButton size="small" @click="copyToClipboard('code --install-extension anthropic.claude-code')">复制</ElButton>
+                    </div>
+                    <pre><code>code --install-extension anthropic.claude-code</code></pre>
+                  </div>
+
+                  <h5 class="mt-4">方法三：通过VS Code快速打开</h5>
+                  <div class="code-block">
+                    <div class="code-header">
+                      <span>Terminal</span>
+                      <ElButton size="small" @click="copyToClipboard('code --install-extension anthropic.claude-code')">复制</ElButton>
+                    </div>
+                    <pre><code>code --install-extension anthropic.claude-code</code></pre>
+                  </div>
+
+                  <div class="install-note">
+                    <p><strong>💡 VS Code 插件小贴士：</strong></p>
+                    <ul>
+                      <li>安装完成后需要重启 VS Code</li>
+                      <li>确保已安装 Claude Code CLI 工具</li>
+                      <li>在 VS Code 中按 Ctrl+Shift+P 打开命令面板，输入 "Claude" 查看可用命令</li>
+                      <li>插件会自动检测项目中的 Claude Code 配置</li>
+                    </ul>
                   </div>
                 </div>
               </div>
