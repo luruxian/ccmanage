@@ -613,6 +613,57 @@ sudo yum install -y nodejs</code></pre>
             </ElCard>
 
 
+            <!-- VS Code插件安装 -->
+            <ElCard class="mb-4">
+              <template #header>
+                <h4>🔌 VS Code插件安装</h4>
+              </template>
+              <div class="vscode-install-content">
+                <p class="text-muted mb-3">如果您使用Visual Studio Code，可以安装Claude Code插件获得更好的开发体验</p>
+
+                <div class="vscode-methods">
+                  <h5>方法一：通过VS Code扩展市场安装（推荐）</h5>
+                  <div class="install-steps">
+                    <ol>
+                      <li>打开Visual Studio Code</li>
+                      <li>点击左侧的扩展图标（或按 Ctrl+Shift+X）</li>
+                      <li>在搜索框中输入 "Claude Code"</li>
+                      <li>找到由 Anthropic 开发的 Claude Code 插件</li>
+                      <li>点击"安装"按钮</li>
+                    </ol>
+                  </div>
+
+                  <h5 class="mt-4">方法二：通过命令行安装</h5>
+                  <div class="code-block">
+                    <div class="code-header">
+                      <span>Terminal</span>
+                      <ElButton size="small" @click="copyToClipboard('code --install-extension anthropic.claude-code')">复制</ElButton>
+                    </div>
+                    <pre><code>code --install-extension anthropic.claude-code</code></pre>
+                  </div>
+
+                  <h5 class="mt-4">方法三：通过VS Code快速打开</h5>
+                  <div class="code-block">
+                    <div class="code-header">
+                      <span>Terminal</span>
+                      <ElButton size="small" @click="copyToClipboard('code --install-extension anthropic.claude-code')">复制</ElButton>
+                    </div>
+                    <pre><code>code --install-extension anthropic.claude-code</code></pre>
+                  </div>
+
+                  <div class="install-note">
+                    <p><strong>💡 VS Code 插件小贴士：</strong></p>
+                    <ul>
+                      <li>安装完成后需要重启 VS Code</li>
+                      <li>确保已安装 Claude Code CLI 工具</li>
+                      <li>在 VS Code 中按 Ctrl+Shift+P 打开命令面板，输入 "Claude" 查看可用命令</li>
+                      <li>插件会自动检测项目中的 Claude Code 配置</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </ElCard>
+
             <!-- 使用指南 -->
             <ElCard class="mb-4">
               <template #header>
@@ -635,8 +686,8 @@ cd /path/to/your/project
 # 2. 用 claude 命令启动 Claude Code
 claude
 
-# 3. 配置 API 密钥（配置文件可从API密钥一览页面下载，放到下面的指定路径以后，用/exit命令从cluade code退出，然后重新启动claude code）
-# 配置文件路径：~/.claude/settings.json</code></pre>
+# 3. 配置 API 密钥（配置文件可从API密钥一览页面下载，解压缩放到下面的指定路径以后，用/exit命令从cluade code退出，然后重新启动claude code）
+# 配置文件路径：~/.claude/settings.json,~/.claude/config.json</code></pre>
                 </div>
                 <div class="row">
                   <div class="col-md-6">
@@ -1078,6 +1129,7 @@ claude
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import JSZip from 'jszip'
 import {
   ElCard,
   ElTable,
@@ -1379,16 +1431,32 @@ const downloadConfig = async (key: any) => {
     console.log('下载配置响应:', response)
 
     if (response.config && response.filename) {
-      // 创建Blob对象
-      const blob = new Blob([JSON.stringify(response.config, null, 2)], {
+      // 创建 settings.json
+      const settingsBlob = new Blob([JSON.stringify(response.config, null, 2)], {
         type: 'application/json'
       })
 
+      // 创建 config.json - 基于 settings_template.json 的结构
+      const configData = {
+        primaryApiKey: key.api_key
+      }
+      const configBlob = new Blob([JSON.stringify(configData, null, 2)], {
+        type: 'application/json'
+      })
+
+      // 创建ZIP文件
+      const zip = new JSZip()
+      zip.file('settings.json', settingsBlob)
+      zip.file('config.json', configBlob)
+
+      // 生成ZIP文件
+      const zipBlob = await zip.generateAsync({type: 'blob'})
+
       // 创建下载链接
-      const url = URL.createObjectURL(blob)
+      const url = URL.createObjectURL(zipBlob)
       const a = document.createElement('a')
       a.href = url
-      a.download = response.filename
+      a.download = 'claude-code-config.zip'
       document.body.appendChild(a)
       a.click()
 
@@ -1396,7 +1464,7 @@ const downloadConfig = async (key: any) => {
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
 
-      ElMessage.success('设置文件下载成功')
+      ElMessage.success('配置文件下载成功，包含 settings.json 和 config.json')
     } else {
       ElMessage.error('下载失败：响应数据格式错误')
     }
