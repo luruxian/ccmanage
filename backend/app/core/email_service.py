@@ -6,6 +6,7 @@ from email.mime.multipart import MIMEMultipart
 from typing import List, Dict, Any
 from jinja2 import Environment, FileSystemLoader
 from pathlib import Path
+import asyncio
 from ..core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -37,14 +38,46 @@ class EmailService:
             html_part = MIMEText(html_content, "html", "utf-8")
             msg.attach(html_part)
 
+            # 在单独的线程中发送邮件以避免阻塞
+            loop = asyncio.get_event_loop()
+            result = await loop.run_in_executor(
+                None,
+                self._send_email_sync,
+                msg,
+                recipients
+            )
+
+            return result
+
+        except Exception as e:
+            logger.error(f"邮件发送失败: {recipients}, 错误: {str(e)}")
+            return False
+
+    def _send_email_sync(self, msg, recipients):
+        """同步发送邮件"""
+        try:
             # 发送邮件
             with smtplib.SMTP(settings.MAIL_SERVER, settings.MAIL_PORT) as server:
-                server.starttls()
+                server.ehlo()
+                server.starttls(context=ssl.create_default_context())
+                server.ehlo()
                 server.login(settings.MAIL_USERNAME, settings.MAIL_PASSWORD)
                 server.send_message(msg)
 
-            logger.info(f"邮件发送成功: {recipients}, 主题: {subject}")
+            logger.info(f"邮件发送成功: {recipients}, 主题: {msg['Subject']}")
             return True
+
+        except smtplib.SMTPAuthenticationError as e:
+            logger.error(f"SMTP认证失败: {str(e)}")
+            logger.error("请检查Gmail账户设置：")
+            logger.error("1. 确保已启用两步验证")
+            logger.error("2. 确保使用正确的应用密码")
+            logger.error("3. 访问 https://accounts.google.com/b/0/DisplayUnlockCaptcha 解锁账户")
+            return False
+
+        except smtplib.SMTPConnectError as e:
+            logger.error(f"SMTP连接失败: {str(e)}")
+            return False
 
         except Exception as e:
             logger.error(f"邮件发送失败: {recipients}, 错误: {str(e)}")
