@@ -705,6 +705,7 @@ onMounted(() => {
   display: flex;
   padding: 0 20px 20px;
   gap: 20px;
+  min-height: calc(100vh - 160px);
 }
 
 .admin-sidebar {
@@ -819,7 +820,7 @@ onMounted(() => {
   }
 
   .mobile-menu-toggle {
-    display: flex;
+    display: flex !important;
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -851,6 +852,7 @@ onMounted(() => {
     z-index: 1001;
     transition: left 0.3s ease;
     border-radius: 0;
+    display: block;
   }
 
   .admin-sidebar.mobile-open {
@@ -999,5 +1001,16 @@ onMounted(() => {
 
 .sidebar-header {
   display: none;
+}
+
+/* PC端侧边栏显示 */
+@media (min-width: 769px) {
+  .admin-sidebar {
+    display: block !important;
+    position: static !important;
+    width: 250px !important;
+    height: fit-content !important;
+    border-radius: 10px !important;
+  }
 }
 </style>
