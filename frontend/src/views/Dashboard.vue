@@ -988,7 +988,7 @@ claude
 
                 <div v-else>
                   <ElTable :data="usageRecords" style="width: 100%">
-                    <ElTableColumn prop="service" label="服务类型" width="150">
+                    <ElTableColumn prop="service" label="服务类型" width="200">
                       <template #default="scope">
                         <ElTag type="info" size="small">
                           {{ scope.row.service }}
@@ -1019,14 +1019,6 @@ claude
                     <ElTableColumn prop="request_timestamp" label="请求时间" width="180">
                       <template #default="scope">
                         {{ formatDate(scope.row.request_timestamp) }}
-                      </template>
-                    </ElTableColumn>
-                    <ElTableColumn prop="error_message" label="错误信息" min-width="200">
-                      <template #default="scope">
-                        <span v-if="scope.row.error_message" class="error-message">
-                          {{ scope.row.error_message }}
-                        </span>
-                        <span v-else class="text-muted">-</span>
                       </template>
                     </ElTableColumn>
                   </ElTable>
@@ -3108,10 +3100,6 @@ onMounted(() => {
 }
 
 
-.error-message {
-  color: #f56c6c;
-  font-size: 12px;
-}
 
 .d-flex {
   display: flex;
