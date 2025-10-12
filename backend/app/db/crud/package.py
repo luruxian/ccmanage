@@ -93,7 +93,7 @@ class PackageCRUD:
                 if hasattr(package, key):
                     setattr(package, key, value)
 
-            package.updated_at = datetime.utcnow()
+            package.updated_at = datetime.now()
             self.db.commit()
 
             logger.info(f"套餐更新成功: {package.package_code}")
@@ -112,7 +112,7 @@ class PackageCRUD:
                 return False
 
             package.is_active = not package.is_active
-            package.updated_at = datetime.utcnow()
+            package.updated_at = datetime.now()
             self.db.commit()
 
             logger.info(f"套餐状态切换成功: {package.package_code}, 新状态: {package.is_active}")
@@ -131,7 +131,7 @@ class PackageCRUD:
                 return False
 
             package.is_active = False
-            package.updated_at = datetime.utcnow()
+            package.updated_at = datetime.now()
             self.db.commit()
 
             logger.info(f"套餐删除成功: {package.package_code}")

@@ -62,11 +62,8 @@ class APIKeyCRUD:
             current_status = api_key.status or "inactive"
 
             if api_key.expire_date:
-                from datetime import datetime, timezone
-                now = datetime.now(timezone.utc)
+                now = datetime.now()
                 expire_date = api_key.expire_date
-                if expire_date.tzinfo is None:
-                    expire_date = expire_date.replace(tzinfo=timezone.utc)
 
                 delta = expire_date - now
                 remaining_days = max(0, delta.days)
@@ -257,8 +254,8 @@ class APIKeyCRUD:
             if not user:
                 return {"success": False, "message": "用户不存在，请先注册"}
 
-            # 计算过期时间
-            activation_date = datetime.utcnow()
+            # 计算过期时间（使用操作系统时区）
+            activation_date = datetime.now()
             expire_date = activation_date + timedelta(days=user_key_record.remaining_days) if user_key_record.remaining_days else None
 
             # 更新用户密钥信息
@@ -539,15 +536,11 @@ class APIKeyCRUD:
                 return {"success": False, "message": "该密钥没有设置总积分"}
 
             # 检查今天是否已经重置过
-            from datetime import datetime, timezone, timedelta
-            now = datetime.now(timezone.utc)
+            now = datetime.now()
             today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
 
             if api_key.last_reset_credits_at:
                 last_reset = api_key.last_reset_credits_at
-                if last_reset.tzinfo is None:
-                    last_reset = last_reset.replace(tzinfo=timezone.utc)
-
                 if last_reset >= today_start:
                     return {"success": False, "message": "今日已经重置过积分，每天只能重置一次"}
 
