@@ -19,18 +19,18 @@ def calculate_credits_used(total_tokens: int) -> int:
         int: 积分消耗数量（整数）
 
     计算规则：
-    - credits_used = total_tokens / 1000，向上取整
-    - total_tokens < 1000时，按1000计算
+    - credits_used = total_tokens / 2000，向上取整
+    - total_tokens < 2000时，按2000计算
     """
     if not total_tokens or total_tokens <= 0:
         return 0
 
-    # 如果token数小于1000，按1000计算
-    effective_tokens = max(total_tokens, 1000)
+    # 如果token数小于2000，按2000计算
+    effective_tokens = max(total_tokens, 2000)
 
-    # 除以1000并向上取整
+    # 除以2000并向上取整
     import math
-    credits_used = math.ceil(effective_tokens / 1000)
+    credits_used = math.ceil(effective_tokens / 2000)
 
     return credits_used
 
