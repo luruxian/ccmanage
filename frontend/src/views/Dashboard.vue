@@ -1000,6 +1000,15 @@ claude
                         {{ scope.row.credits_used || 0 }}
                       </template>
                     </ElTableColumn>
+                    <ElTableColumn prop="remaining_credits" label="剩余积分" width="120">
+                      <template #default="scope">
+                        <span v-if="scope.row.remaining_credits !== null && scope.row.remaining_credits !== undefined"
+                              :class="getUsageRecordRemainingCreditsClass(scope.row.remaining_credits)">
+                          {{ scope.row.remaining_credits }}
+                        </span>
+                        <span v-else class="text-muted">-</span>
+                      </template>
+                    </ElTableColumn>
                     <ElTableColumn prop="response_status" label="响应状态" width="100">
                       <template #default="scope">
                         <ElTag :type="scope.row.response_status === 'success' ? 'success' : 'danger'" size="small">
@@ -1341,6 +1350,13 @@ const getRemainingCreditsClass = (remainingCredits?: number, totalCredits?: numb
   } else if (percentage <= 30) {
     return 'text-warning fw-bold'
   }
+  return 'text-success'
+}
+
+// 获取使用记录剩余积分样式类（仅基于剩余积分值）
+const getUsageRecordRemainingCreditsClass = (remainingCredits: number) => {
+  if (remainingCredits <= 0) return 'text-danger'
+  if (remainingCredits <= 10) return 'text-warning'
   return 'text-success'
 }
 
@@ -3128,6 +3144,22 @@ onMounted(() => {
 
 .text-muted {
   color: #909399;
+}
+
+.text-danger {
+  color: #f56c6c;
+}
+
+.text-warning {
+  color: #e6a23c;
+}
+
+.text-success {
+  color: #67c23a;
+}
+
+.fw-bold {
+  font-weight: bold;
 }
 
 /* 移动端适配 */

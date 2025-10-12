@@ -117,6 +117,7 @@ async def get_usage_history(
                 service=record.service,
                 request_count=record.request_count,
                 credits_used=record.credits_used,
+                remaining_credits=record.remaining_credits,
                 input_tokens=record.input_tokens,
                 output_tokens=record.output_tokens,
                 total_tokens=record.total_tokens,

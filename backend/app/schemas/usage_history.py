@@ -23,6 +23,7 @@ class UsageRecordResponse(BaseModel):
     service: str
     request_count: int
     credits_used: int
+    remaining_credits: Optional[int] = Field(None, description="扣减后的剩余积分")
     input_tokens: Optional[int]
     output_tokens: Optional[int]
     total_tokens: Optional[int]

@@ -60,6 +60,8 @@ class UsageRecordCRUD:
                     # 扣减剩余积分
                     new_remaining = max(0, api_key.remaining_credits - credits_used)
                     api_key.remaining_credits = new_remaining
+                    # 记录扣减后的剩余积分到使用记录
+                    usage_data['remaining_credits'] = new_remaining
                     logger.info(f"API密钥 {api_key_id} 积分扣减: {api_key.remaining_credits + credits_used} -> {new_remaining} "
                                f"(消耗: {credits_used})")
 

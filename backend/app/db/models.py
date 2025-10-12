@@ -71,6 +71,7 @@ class UsageRecord(Base):
     service = Column(String(50), nullable=False, comment="服务类型")
     request_count = Column(Integer, default=1, nullable=False, comment="请求次数")
     credits_used = Column(Integer, default=0, nullable=False, comment="消耗积分")
+    remaining_credits = Column(Integer, nullable=True, comment="扣减后的剩余积分")
     input_tokens = Column(Integer, nullable=True, comment="输入token数量")
     output_tokens = Column(Integer, nullable=True, comment="输出token数量")
     total_tokens = Column(Integer, nullable=True, comment="总token数量")

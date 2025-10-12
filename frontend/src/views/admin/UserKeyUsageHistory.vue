@@ -210,6 +210,15 @@
                   {{ scope.row.credits_used || 0 }}
                 </template>
               </ElTableColumn>
+              <ElTableColumn prop="remaining_credits" label="剩余积分" width="120">
+                <template #default="scope">
+                  <span v-if="scope.row.remaining_credits !== null && scope.row.remaining_credits !== undefined"
+                        :class="getRemainingCreditsClass(scope.row.remaining_credits)">
+                    {{ scope.row.remaining_credits }}
+                  </span>
+                  <span v-else class="text-muted">-</span>
+                </template>
+              </ElTableColumn>
               <ElTableColumn prop="response_status" label="响应状态" width="100">
                 <template #default="scope">
                   <ElTag :type="scope.row.response_status === 'success' ? 'success' : 'danger'" size="small">
@@ -268,6 +277,7 @@ interface UsageRecord {
   service: string
   request_count: number
   credits_used: number
+  remaining_credits?: number
   input_tokens?: number
   output_tokens?: number
   total_tokens?: number
@@ -480,6 +490,13 @@ const getStatusText = (status: string) => {
   }
 }
 
+// 获取剩余积分样式类
+const getRemainingCreditsClass = (remainingCredits: number) => {
+  if (remainingCredits <= 0) return 'text-danger'
+  if (remainingCredits <= 10) return 'text-warning'
+  return 'text-success'
+}
+
 onMounted(() => {
   apiKey.value = route.params.apiKey as string
   if (apiKey.value) {
@@ -627,6 +644,22 @@ onMounted(() => {
 }
 
 .success-message {
+  color: #909399;
+}
+
+.text-danger {
+  color: #f56c6c;
+}
+
+.text-warning {
+  color: #e6a23c;
+}
+
+.text-success {
+  color: #67c23a;
+}
+
+.text-muted {
   color: #909399;
 }
 
