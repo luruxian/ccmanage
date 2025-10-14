@@ -1,6 +1,6 @@
 {
   "env": {
-    "ANTHROPIC_BASE_URL": "http://endpoint.agnets.app/api/",
+    "ANTHROPIC_BASE_URL": "https://agnets.app/anthropic/",
     "ANTHROPIC_AUTH_TOKEN": "{{API_KEY}}",
     "DISABLE_AUTOUPDATER":1,
     "DISABLE_TELEMETRY":1,
