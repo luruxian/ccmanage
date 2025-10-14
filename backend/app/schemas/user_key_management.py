@@ -27,6 +27,7 @@ class UserKeyRelationResponse(BaseModel):
     description: Optional[str]
     user_email: str  # 添加用户邮箱字段
     activation_date: Optional[datetime]  # 可能为空（未激活）
+    expire_date: Optional[datetime]  # 添加过期时间字段
     status: str
     remaining_days: Optional[int]  # 添加剩余天数
     remaining_credits: Optional[int]  # 添加剩余积分

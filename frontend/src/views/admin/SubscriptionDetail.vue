@@ -329,12 +329,11 @@ interface UserKey {
   key_name?: string
   description?: string
   user_email: string
-  activation_date: string
+  activation_date?: string | null
   status: string
   notes?: string
-  last_used_at?: string
-  start_date: string
-  expire_date: string
+  last_used_at?: string | null
+  expire_date?: string | null
   remaining_days: number
   remaining_credits: number
   total_credits: number
@@ -402,6 +401,7 @@ const loadUserKeys = async () => {
     }
 
     const response: any = await request.get(`/api/v1/packages/${packageId}/userkeys`, { params })
+
     userKeys.value = response.user_keys || []
     pagination.total = response.total || 0
   } catch (error) {

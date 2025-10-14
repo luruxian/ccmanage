@@ -16,7 +16,8 @@
       "WebFetch(domain:docs.claude.com)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:www.anthropic.com)"
+      "WebFetch(domain:www.anthropic.com)",
+      "Bash(npx vue-tsc --noEmit --extendedDiagnostics)"
     ],
     "deny": [],
     "ask": []

@@ -291,11 +291,11 @@ interface UsageStats {
 }
 
 interface KeyInfo {
-  user_email?: string
+  user_email?: string | null
   status: string
-  activation_date?: string
-  expire_date?: string
-  last_used_at?: string
+  activation_date?: string | null
+  expire_date?: string | null
+  last_used_at?: string | null
 }
 
 const route = useRoute()
@@ -324,24 +324,45 @@ const pagination = reactive({
   total: 0
 })
 
-// 获取API Key基本信息（这里需要从后端获取，暂时模拟）
+// 获取API Key基本信息
 const loadKeyInfo = async () => {
   try {
     loading.keyInfo = true
-    // 这里需要调用后端API获取key信息，暂时模拟
-    // const response = await request.get(`/api/v1/admin/api-keys/${apiKey.value}/info`)
-    // keyInfo.value = response
 
-    // 模拟数据
-    keyInfo.value = {
-      user_email: 'user@example.com',
-      status: 'active',
-      activation_date: '2024-01-01T00:00:00Z',
-      expire_date: '2024-12-31T23:59:59Z',
-      last_used_at: '2024-01-15T10:30:00Z'
+    // 尝试从用户密钥列表API获取信息
+    const response: any = await request.get('/api/v1/admin/user-keys', {
+      params: { api_key: apiKey.value }
+    })
+
+    if (response.user_keys && response.user_keys.length > 0) {
+      const keyData = response.user_keys[0]
+      keyInfo.value = {
+        user_email: keyData.user_email,
+        status: keyData.status,
+        activation_date: keyData.activation_date,
+        expire_date: keyData.expire_date,
+        last_used_at: keyData.last_used_at
+      }
+    } else {
+      // 如果找不到，使用默认值
+      keyInfo.value = {
+        user_email: '未激活',
+        status: 'inactive',
+        activation_date: null,
+        expire_date: null,
+        last_used_at: null
+      }
     }
   } catch (error) {
     console.error('加载Key信息失败:', error)
+    // 如果API调用失败，使用默认值
+    keyInfo.value = {
+      user_email: '加载失败',
+      status: 'unknown',
+      activation_date: null,
+      expire_date: null,
+      last_used_at: null
+    }
     ElMessage.error('加载Key信息失败')
   } finally {
     loading.keyInfo = false

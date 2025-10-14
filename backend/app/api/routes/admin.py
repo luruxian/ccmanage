@@ -33,7 +33,7 @@ from ...db.crud.admin_operation import AdminOperationCRUD
 from ...db.crud.package import PackageCRUD
 from ...db.crud.api_key import APIKeyCRUD
 # UserPlanCRUD已删除，使用APIKeyCRUD替代
-from ...db.models import UserRole, Admin
+from ...db.models import UserRole, Admin, APIKey, User
 from .user import get_current_user
 from datetime import datetime
 import logging
@@ -420,4 +420,81 @@ async def get_admin_statistics(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="获取统计数据失败"
+        )
+
+
+@router.get("/user-keys", response_model=dict)
+async def get_admin_user_keys(
+    api_key: Optional[str] = None,
+    user_id: Optional[str] = None,
+    status: Optional[str] = None,
+    page: int = 1,
+    page_size: int = 50,
+    current_admin = Depends(get_admin_user),
+    db: Session = Depends(get_db)
+):
+    """获取用户密钥列表（管理员）"""
+    try:
+        api_key_crud = APIKeyCRUD(db)
+
+        # 构建查询条件
+        query = db.query(APIKey)
+
+        if api_key:
+            query = query.filter(APIKey.api_key == api_key)
+
+        if user_id:
+            query = query.filter(APIKey.user_id == user_id)
+
+        if status:
+            query = query.filter(APIKey.status == status)
+
+        # 分页
+        offset = (page - 1) * page_size
+        query = query.order_by(APIKey.created_at.desc()).offset(offset).limit(page_size)
+
+        results = query.all()
+        total_count = query.count()
+
+        user_keys = []
+        for api_key_record in results:
+            # 获取用户邮箱
+            user_email = "未激活"
+            if api_key_record.user_id:
+                user = db.query(User).filter(User.user_id == api_key_record.user_id).first()
+                if user:
+                    user_email = user.email
+
+            user_keys.append({
+                "id": api_key_record.id,
+                "user_id": api_key_record.user_id,
+                "api_key": api_key_record.api_key,
+                "real_api_key": api_key_record.real_api_key,
+                "key_name": api_key_record.key_name,
+                "description": api_key_record.description,
+                "user_email": user_email,
+                "status": api_key_record.status,
+                "activation_date": api_key_record.activation_date,
+                "expire_date": api_key_record.expire_date,
+                "remaining_days": api_key_record.remaining_days,
+                "remaining_credits": api_key_record.remaining_credits,
+                "total_credits": api_key_record.total_credits,
+                "last_used_at": api_key_record.last_used_at,
+                "created_at": api_key_record.created_at,
+                "notes": api_key_record.notes
+            })
+
+        logger.info(f"管理员 {current_admin.user_id} 查看用户密钥列表")
+        return {
+            "user_keys": user_keys,
+            "total": total_count,
+            "page": page,
+            "page_size": page_size
+        }
+
+    except Exception as e:
+        logger.error(f"获取用户密钥列表失败: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="获取用户密钥列表失败"
         )

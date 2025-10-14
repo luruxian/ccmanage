@@ -82,10 +82,10 @@ class APIKeyCRUD:
                 "package_name": package.package_name if package else "未知套餐",
                 "description": api_key.description,
                 "is_active": api_key.is_active,
-                "last_used_at": api_key.last_used_at,
-                "created_at": api_key.created_at,
-                "activation_date": api_key.activation_date,
-                "expire_date": api_key.expire_date,
+                "last_used_at": api_key.last_used_at.isoformat() if api_key.last_used_at else None,  # 转为ISO字符串
+                "created_at": api_key.created_at.isoformat(),  # 转为ISO字符串
+                "activation_date": api_key.activation_date.isoformat() if api_key.activation_date else None,  # 转为ISO字符串
+                "expire_date": api_key.expire_date.isoformat() if api_key.expire_date else None,  # 转为ISO字符串
                 "remaining_days": remaining_days,
                 "status": current_status,
                 "total_credits": api_key.total_credits,
@@ -312,15 +312,20 @@ class APIKeyCRUD:
                     "description": api_key.description,
                     "user_email": user_email,
                     "status": api_key.status,
-                    "activation_date": api_key.activation_date,  # 保持datetime类型
-                    "expire_date": api_key.expire_date,
+                    "activation_date": api_key.activation_date.isoformat() if api_key.activation_date else None,  # 转为ISO字符串
+                    "expire_date": api_key.expire_date.isoformat() if api_key.expire_date else None,  # 转为ISO字符串
                     "remaining_days": api_key.remaining_days,
                     "remaining_credits": api_key.remaining_credits,
                     "total_credits": api_key.total_credits,
-                    "last_used_at": api_key.last_used_at,
-                    "created_at": api_key.created_at,
+                    "last_used_at": api_key.last_used_at.isoformat() if api_key.last_used_at else None,  # 转为ISO字符串
+                    "created_at": api_key.created_at.isoformat(),  # 转为ISO字符串
                     "notes": api_key.notes
                 })
+
+            # 添加日志输出，查看返回的数据
+            logger.info(f"获取订阅用户密钥列表成功，共 {len(user_keys)} 条记录")
+            for i, key in enumerate(user_keys):
+                logger.info(f"密钥 {i+1}: id={key['id']}, expire_date={key['expire_date']}, activation_date={key['activation_date']}")
 
             return user_keys
 
@@ -487,7 +492,7 @@ class APIKeyCRUD:
                 "total_credits": active_key.total_credits or 0,
                 "credits_used": (active_key.total_credits or 0) - (active_key.remaining_credits or 0),
                 "usage_percentage": round(usage_percentage, 2),
-                "expire_date": active_key.expire_date,
+                "expire_date": active_key.expire_date.isoformat() if active_key.expire_date else None,  # 转为ISO字符串
                 "days_remaining": max(0, days_remaining)
             }
 
