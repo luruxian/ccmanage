@@ -867,53 +867,11 @@ claude
 
 
           <!-- 推广计划 -->
-          <div v-if="activeTab === 'promotion'" class="tab-content">
-            <h2 class="mb-4">推广计划</h2>
-            <ElCard>
-              <div class="promotion-content">
-                <div class="promotion-header">
-                  <h3>邀请好友，共享收益</h3>
-                  <p class="text-muted">通过推广计划获得更多收益和优惠</p>
-                </div>
-
-                <div class="promotion-stats mt-4">
-                  <div class="row">
-                    <div class="col-md-4">
-                      <div class="promotion-stat-card">
-                        <div class="stat-number">0</div>
-                        <div class="stat-label">邀请人数</div>
-                      </div>
-                    </div>
-                    <div class="col-md-4">
-                      <div class="promotion-stat-card">
-                        <div class="stat-number">¥0</div>
-                        <div class="stat-label">累计收益</div>
-                      </div>
-                    </div>
-                    <div class="col-md-4">
-                      <div class="promotion-stat-card">
-                        <div class="stat-number">¥0</div>
-                        <div class="stat-label">本月收益</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="promotion-actions mt-4">
-                  <ElButton type="primary">获取推广链接</ElButton>
-                  <ElButton type="default">查看推广规则</ElButton>
-                </div>
-
-                <div class="promotion-notice mt-4">
-                  <p class="text-muted">
-                    <small>
-                      ⚠️ 推广计划功能即将上线，敬请期待！
-                    </small>
-                  </p>
-                </div>
-              </div>
-            </ElCard>
-          </div>
+          <PromotionPlan
+            v-if="activeTab === 'promotion'"
+            @get-promotion-link="handleGetPromotionLink"
+            @view-promotion-rules="handleViewPromotionRules"
+          />
 
           <!-- 使用履历 -->
           <div v-if="activeTab === 'usage-history'" class="tab-content">
@@ -1050,35 +1008,10 @@ claude
           />
 
           <!-- 资料中心 -->
-          <div v-if="activeTab === 'resources'" class="tab-content">
-            <h2 class="mb-4">资料中心</h2>
-            <div class="row">
-              <div class="col-md-12">
-                <ElCard class="resource-card">
-                  <template #header>
-                    <div class="resource-header">
-                      <h4>📖 Claude Code最佳实践</h4>
-                    </div>
-                  </template>
-                  <div class="resource-content">
-                    <p>本文档翻译自 Anthropic 官方博客文章。<ElButton type="text" @click="goToClaudeCodeBestPractices">Claude Code最佳实践（中文翻译）</ElButton></p>
-                    <p>官方原文： <a href="https://www.anthropic.com/engineering/claude-code-best-practices" target="_blank">Claude Code Best Practices（English）</a></p>
-                  </div>
-                </ElCard>
-              </div>
-            </div>
-
-            <div class="resource-notice mt-4">
-              <ElCard>
-                <div class="notice-content">
-                  <h5>📢 最新公告</h5>
-                  <p class="text-muted">
-                    欢迎使用Claude Code！我们正在不断完善产品功能，如有任何问题或建议，请随时联系我们。
-                  </p>
-                </div>
-              </ElCard>
-            </div>
-          </div>
+          <ResourcesCenter
+            v-if="activeTab === 'resources'"
+            @go-to-best-practices="goToClaudeCodeBestPractices"
+          />
         </div>
       </div>
     </div>
@@ -1106,6 +1039,8 @@ import {
   ElDescriptionsItem
 } from 'element-plus'
 import ResetCreditsDialog from '../components/ResetCreditsDialog.vue'
+import ResourcesCenter from '../components/ResourcesCenter.vue'
+import PromotionPlan from '../components/PromotionPlan.vue'
 import {
   Key as ElIconKey,
   Plus as ElIconPlus,
@@ -1385,6 +1320,16 @@ const confirmResetCredits = async () => {
 // 处理重置积分取消
 const handleResetCreditsCancel = () => {
   resetCreditsKey.value = null
+}
+
+// 处理获取推广链接
+const handleGetPromotionLink = () => {
+  ElMessage.info('推广计划功能即将上线，敬请期待！')
+}
+
+// 处理查看推广规则
+const handleViewPromotionRules = () => {
+  ElMessage.info('推广规则功能即将上线，敬请期待！')
 }
 
 // 下载设置文件
