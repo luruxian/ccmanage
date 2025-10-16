@@ -1041,55 +1041,13 @@ claude
           </div>
 
           <!-- 重置积分确认弹窗 -->
-          <ElDialog
+          <ResetCreditsDialog
             v-model="resetCreditsDialogVisible"
-            title="重置积分确认"
-            width="500px"
-            :close-on-click-modal="false"
-            :close-on-press-escape="false"
-            class="reset-credits-dialog"
-          >
-            <div class="dialog-content">
-              <div class="dialog-icon">
-                <div class="icon-wrapper">
-                  <i class="fas fa-sync-alt"></i>
-                </div>
-              </div>
-              <div class="dialog-text">
-                <h3 class="dialog-title">确认重置积分</h3>
-                <p class="dialog-subtitle">您即将重置以下订阅的积分</p>
-                <div class="key-info">
-                  <div class="info-item">
-                    <span class="label">订阅名称：</span>
-                    <span class="value">{{ resetCreditsKey?.package_name || '未知订阅' }}</span>
-                  </div>
-                  <div class="info-item">
-                    <span class="label">当前积分：</span>
-                    <span class="value">{{ resetCreditsKey?.remaining_credits || 0 }} / {{ resetCreditsKey?.total_credits || 0 }}</span>
-                  </div>
-                </div>
-                <div class="warning-note">
-                  <i class="fas fa-exclamation-triangle"></i>
-                  <span>重置后积分将恢复到总积分数量，每天只能重置一次！</span>
-                </div>
-              </div>
-            </div>
-            <template #footer>
-              <div class="dialog-footer">
-                <ElButton @click="resetCreditsDialogVisible = false" class="cancel-btn">
-                  取消
-                </ElButton>
-                <ElButton
-                  type="primary"
-                  @click="confirmResetCredits"
-                  :loading="resettingCredits"
-                  class="confirm-btn"
-                >
-                  {{ resettingCredits ? '重置中...' : '确认重置' }}
-                </ElButton>
-              </div>
-            </template>
-          </ElDialog>
+            :key-data="resetCreditsKey"
+            :loading="resettingCredits"
+            @confirm="confirmResetCredits"
+            @cancel="handleResetCreditsCancel"
+          />
 
           <!-- 资料中心 -->
           <div v-if="activeTab === 'resources'" class="tab-content">
@@ -1145,9 +1103,9 @@ import {
   ElTabs,
   ElTabPane,
   ElDescriptions,
-  ElDescriptionsItem,
-  ElDialog
+  ElDescriptionsItem
 } from 'element-plus'
+import ResetCreditsDialog from '../components/ResetCreditsDialog.vue'
 import {
   Key as ElIconKey,
   Plus as ElIconPlus,
@@ -1422,6 +1380,11 @@ const confirmResetCredits = async () => {
   } finally {
     resettingCredits.value = false
   }
+}
+
+// 处理重置积分取消
+const handleResetCreditsCancel = () => {
+  resetCreditsKey.value = null
 }
 
 // 下载设置文件

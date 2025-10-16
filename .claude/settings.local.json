@@ -17,7 +17,8 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:www.anthropic.com)",
-      "Bash(npx vue-tsc --noEmit --extendedDiagnostics)"
+      "Bash(npx vue-tsc --noEmit --extendedDiagnostics)",
+      "Bash(mkdir -p frontend/src/components/dashboard)"
     ],
     "deny": [],
     "ask": []
