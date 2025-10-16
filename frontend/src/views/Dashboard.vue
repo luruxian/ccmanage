@@ -1032,6 +1032,7 @@ import {
   ArrowLeft as ElIconArrowLeft
 } from '@element-plus/icons-vue'
 import request from '../utils/request'
+import '../styles/dashboard.css'
 
 const router = useRouter()
 
@@ -1595,39 +1596,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.dashboard {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-}
-
-
-.main-content {
-  padding: 40px;
-  background: transparent;
-}
-
-.main-content h2 {
-  font-size: 2rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #1e293b 0%, #3b82f6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 0;
-}
-
-.el-card {
-  border-radius: 16px !important;
-  border: 1px solid rgba(255, 255, 255, 0.8) !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
-  backdrop-filter: blur(10px);
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
-}
-
-.el-card:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
-}
 
 
 
@@ -2914,57 +2882,6 @@ onMounted(() => {
   margin-top: 1px;
 }
 
-
-
-.d-flex {
-  display: flex;
-}
-
-.justify-content-between {
-  justify-content: space-between;
-}
-
-.align-items-center {
-  align-items: center;
-}
-
-.mb-4 {
-  margin-bottom: 1.5rem;
-}
-
-.mb-3 {
-  margin-bottom: 1rem;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.py-4 {
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
-}
-
-.text-muted {
-  color: #909399;
-}
-
-.text-danger {
-  color: #f56c6c;
-}
-
-.text-warning {
-  color: #e6a23c;
-}
-
-.text-success {
-  color: #67c23a;
-}
-
-.fw-bold {
-  font-weight: bold;
-}
-
 /* 移动端适配 */
 @media (max-width: 768px) {
   .key-actions {
@@ -3025,61 +2942,6 @@ onMounted(() => {
   }
 }
 
-/* 移动端侧边栏样式 */
-.mobile-sidebar-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
-}
-
-.mobile-sidebar {
-  position: fixed;
-  top: 0;
-  left: -280px;
-  width: 280px;
-  height: 100%;
-  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-  z-index: 1000;
-  transition: left 0.3s ease;
-  overflow-y: auto;
-}
-
-.mobile-sidebar-open {
-  left: 0;
-}
-
-.mobile-sidebar-content {
-  padding: 80px 20px 20px;
-}
-
-.mobile-header {
-  display: flex;
-  align-items: center;
-  padding: 16px;
-  background: white;
-  border-bottom: 1px solid #e2e8f0;
-  margin: -40px -40px 20px -40px;
-}
-
-.mobile-menu-btn {
-  background: none;
-  border: none;
-  font-size: 18px;
-  color: #64748b;
-  padding: 8px;
-  margin-right: 12px;
-  cursor: pointer;
-}
-
-.mobile-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1e293b;
-}
 
 /* 移动端主内容区调整 */
 @media (max-width: 768px) {
