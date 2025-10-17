@@ -50,185 +50,16 @@
           </div>
 
           <!-- API密钥管理 -->
-          <div v-if="activeTab === 'keys'" class="tab-content">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-              <h2>API密钥一览</h2>
-              <div class="key-actions">
-                <router-link to="/key-activation" class="btn btn-primary me-2">
-                  <ElIcon><ElIconPlus /></ElIcon>
-                  激活新密钥
-                </router-link>
-                <ElButton @click="refreshKeys" :loading="loadingKeys">
-                  <ElIcon><ElIconRefresh /></ElIcon>
-                  刷新
-                </ElButton>
-              </div>
-            </div>
-
-            <!-- 密钥统计 -->
-            <div class="key-stats-inline mb-4">
-              <div class="stat-badge">
-                <div class="stat-icon">
-                  <ElIcon><ElIconKey /></ElIcon>
-                </div>
-                <div class="stat-content">
-                  <span class="stat-number">{{ keyStats.active }}</span>
-                  <span class="stat-label">激活密钥</span>
-                </div>
-              </div>
-            </div>
-
-
-            <!-- 密钥列表 -->
-            <ElCard>
-              <div v-if="loadingKeys" class="text-center py-4">
-                <ElSkeleton :rows="5" animated />
-              </div>
-              <div v-else-if="filteredKeys.length === 0" class="empty-keys">
-                <i class="fas fa-key empty-icon"></i>
-                <h4>暂无密钥</h4>
-                <p>您还没有创建任何API密钥</p>
-                <router-link to="/key-activation" class="btn btn-primary">
-                  立即激活密钥
-                </router-link>
-              </div>
-              <div v-else>
-                <div class="custom-table">
-                  <div class="table-header">
-                    <div class="header-row">
-                      <div class="col-subscription">订阅名称</div>
-                      <div class="col-api-key">API密钥</div>
-                      <div class="col-status">状态</div>
-                      <div class="col-activation">激活时间</div>
-                      <div class="col-expire">过期时间</div>
-                      <div class="col-days">剩余天数</div>
-                      <div class="col-actions">操作</div>
-                    </div>
-                  </div>
-                  <div class="table-body">
-                    <div v-for="key in filteredKeys" :key="key.user_key_id" class="key-item">
-                      <!-- 第一行：主要信息 -->
-                      <div class="main-row">
-                        <div class="col-subscription">
-                          <div class="key-name-cell">
-                            <strong>{{ key.package_name || '未知订阅' }}</strong>
-                          </div>
-                        </div>
-                        <div class="col-api-key">
-                          <div class="api-key-cell">
-                            <code class="api-key-text">{{ maskApiKey(key.api_key) }}</code>
-                            <ElButton size="small" text @click="copyApiKey(key.api_key)">
-                              <ElIcon><ElIconCopyDocument /></ElIcon>
-                            </ElButton>
-                          </div>
-                        </div>
-                        <div class="col-status">
-                          <ElTag :type="getStatusType(key.status)" size="small">
-                            {{ getStatusText(key.status) }}
-                          </ElTag>
-                        </div>
-                        <div class="col-activation">
-                          <span v-if="key.activation_date" class="date-text">
-                            {{ formatDateShort(key.activation_date) }}
-                          </span>
-                          <span v-else class="text-muted">未激活</span>
-                        </div>
-                        <div class="col-expire">
-                          <span v-if="key.expire_date" class="date-text">
-                            {{ formatDateShort(key.expire_date) }}
-                          </span>
-                          <span v-else class="text-muted">永久</span>
-                        </div>
-                        <div class="col-days">
-                          <span v-if="key.remaining_days !== null"
-                                :class="getRemainingDaysClass(key.remaining_days)">
-                            {{ key.remaining_days }}天
-                          </span>
-                          <span v-else class="text-muted">永久</span>
-                        </div>
-                        <div class="col-actions">
-                          <div class="action-buttons">
-                            <ElButton
-                              type="primary"
-                              size="small"
-                              @click="viewUsageHistory(key)"
-                            >
-                              履历
-                            </ElButton>
-                            <ElButton
-                              type="success"
-                              size="small"
-                              @click="resetCredits(key)"
-                              :disabled="!canResetCredits(key)"
-                              style="margin-left: 4px;"
-                            >
-                              重置积分
-                            </ElButton>
-                            <ElButton
-                              type="info"
-                              size="small"
-                              @click="downloadConfig(key)"
-                              style="margin-left: 4px;"
-                            >
-                              下载配置
-                            </ElButton>
-                          </div>
-                        </div>
-                      </div>
-                      <!-- 第二行：积分信息 -->
-                      <div class="credits-row">
-                        <div class="credits-content">
-                          <div class="credits-info-container">
-                            <div class="credits-basic">
-                              <div class="credit-item">
-                                <span class="credit-label">总积分：</span>
-                                <span v-if="key.total_credits !== null" class="credit-value">
-                                  {{ key.total_credits }}
-                                </span>
-                                <span v-else class="text-muted">-</span>
-                              </div>
-                              <div class="credit-item">
-                                <span class="credit-label">剩余积分：</span>
-                                <span v-if="key.remaining_credits !== null"
-                                      class="credit-value"
-                                      :class="getRemainingCreditsClass(key.remaining_credits, key.total_credits)">
-                                  {{ key.remaining_credits }}
-                                </span>
-                                <span v-else class="text-muted">-</span>
-                              </div>
-                            </div>
-                            <div v-if="key.total_credits && key.total_credits > 0" class="credits-progress">
-                              <div class="progress-with-label">
-                                <span class="progress-label">剩余积分</span>
-                                <ElProgress
-                                  :percentage="Math.round(((key.remaining_credits || 0) / key.total_credits) * 100)"
-                                  :color="getProgressColor(Math.round(((key.remaining_credits || 0) / key.total_credits) * 100))"
-                                  :stroke-width="6"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 分页 -->
-                <div v-if="filteredKeys.length > 0" class="pagination-wrapper">
-                  <ElPagination
-                    v-model:current-page="keyPagination.current"
-                    v-model:page-size="keyPagination.size"
-                    :page-sizes="[10, 20, 50]"
-                    :total="filteredKeys.length"
-                    layout="total, sizes, prev, pager, next, jumper"
-                    @size-change="handleKeySizeChange"
-                    @current-change="handleKeyPageChange"
-                  />
-                </div>
-              </div>
-            </ElCard>
-          </div>
+          <ApiKeysManagement
+            v-if="activeTab === 'keys'"
+            :api-keys="apiKeys"
+            :loading-keys="loadingKeys"
+            :key-stats="keyStats"
+            @refresh-keys="refreshKeys"
+            @view-usage-history="viewUsageHistory"
+            @reset-credits="resetCredits"
+            @download-config="downloadConfig"
+          />
 
           <!-- 安装Claude Code -->
           <div v-if="activeTab === 'getting-started'" class="tab-content">
@@ -742,106 +573,12 @@ claude
           </div>
 
           <!-- 订阅一览 -->
-          <div v-if="activeTab === 'packages'" class="tab-content">
-            <h2 class="mb-4">订阅一览</h2>
-            <div class="packages-content">
-              <div class="packages-header mb-4">
-                <p class="text-muted">选择最适合您的订阅计划，每日10000积分，支持每天重置一次</p>
-              </div>
-
-              <div class="row">
-                <div class="col-md-4">
-                  <ElCard class="package-card">
-                    <template #header>
-                      <div class="package-header">
-                        <h4>一日体验卡</h4>
-                        <div class="package-price">
-                          <span class="price">¥9.8</span>
-                          <span class="period">/日</span>
-                        </div>
-                      </div>
-                    </template>
-                    <div class="package-content">
-                      <ul class="package-features">
-                        <li>✓ 24小时有效期</li>
-                        <li>✓ 每日10000积分</li>
-                        <li>✓ 支持每天重置一次</li>
-                        <li>✓ 即买即用</li>
-                        <li>✓ 适合短期试用</li>
-                      </ul>
-                      <ElButton type="primary" class="package-btn" @click="handleDayCardClick">立即购买</ElButton>
-                    </div>
-                  </ElCard>
-                </div>
-
-                <div class="col-md-4">
-                  <ElCard class="package-card">
-                    <template #header>
-                      <div class="package-header">
-                        <h4>七日行</h4>
-                        
-                        <div class="package-price">
-                          <span class="price">¥49.8</span>
-                          <span class="period">/周</span>
-                        </div>
-                      </div>
-                    </template>
-                    <div class="package-content">
-                      <ul class="package-features">
-                        <li>✓ 7天有效期 (168小时)</li>
-                        <li>✓ 每日10000积分</li>
-                        <li>✓ 支持每天重置一次</li>
-                        <li>✓ 性价比超值</li>
-                        <li>✓ 适合中短期项目</li>
-                      </ul>
-                      <ElButton type="primary" class="package-btn" @click="handleWeekCardClick">立即购买</ElButton>
-                    </div>
-                  </ElCard>
-                </div>
-
-                <div class="col-md-4">
-                  <ElCard class="package-card featured">
-                    <template #header>
-                      <div class="package-header">
-                        <h4>月享卡</h4>
-                        <div class="package-badge">推荐</div>
-                        <div class="package-price">
-                          <span class="price">¥199</span>
-                          <span class="period">/月</span>
-                        </div>
-                      </div>
-                    </template>
-                    <div class="package-content">
-                      <ul class="package-features">
-                        <li>✓ 30天有效期 (720小时)</li>
-                        <li>✓ 每日10000积分</li>
-                        <li>✓ 支持每天重置一次</li>
-                        <li>✓ 最超值选择</li>
-                        <li>✓ 适合长期使用</li>
-                        <li>✓ 专属客服支持</li>
-                      </ul>
-                      <ElButton type="primary" class="package-btn" @click="handleMonthCardClick">立即购买</ElButton>
-                    </div>
-                  </ElCard>
-                </div>
-              </div>
-
-              <div class="packages-notice mt-4">
-                <ElCard>
-                  <div class="notice-content">
-                    <h5>💡 订阅说明</h5>
-                    <p class="text-muted">
-                      • 日卡：适合临时使用和功能体验<br>
-                      • 周卡：适合短期项目开发和测试<br>
-                      • 月卡：适合长期开发和持续使用<br>
-                      • 所有计划均提供每日10000积分，每天可重置一次<br>
-                      • 购买后不生效，激活后才开始生效计时。
-                    </p>
-                  </div>
-                </ElCard>
-              </div>
-            </div>
-          </div>
+          <SubscriptionPlans
+            v-if="activeTab === 'packages'"
+            @day-card-click="handleDayCardClick"
+            @week-card-click="handleWeekCardClick"
+            @month-card-click="handleMonthCardClick"
+          />
 
 
           <!-- 推广计划 -->
@@ -852,129 +589,18 @@ claude
           />
 
           <!-- 使用履历 -->
-          <div v-if="activeTab === 'usage-history'" class="tab-content">
-            <div class="usage-history-section">
-              <!-- 返回按钮 -->
-              <div class="usage-header mb-4">
-                <ElButton @click="activeTab = 'keys'" type="text" class="back-btn">
-                  <ElIcon><ElIconArrowLeft /></ElIcon>
-                  返回API密钥管理
-                </ElButton>
-                <h2>使用履历</h2>
-              </div>
-
-              <!-- API Key基本信息 -->
-              <ElCard class="mb-4" v-if="selectedApiKey">
-                <template #header>
-                  <h4>
-                    <ElIcon><ElIconKey /></ElIcon>
-                    API密钥信息
-                  </h4>
-                </template>
-                <ElDescriptions :column="2" border>
-                  <ElDescriptionsItem label="订阅名称">
-                    {{ selectedApiKey.package_name || '未知订阅' }}
-                  </ElDescriptionsItem>
-                  <ElDescriptionsItem label="API密钥">
-                    <code class="api-key-display">{{ maskApiKey(selectedApiKey.api_key) }}</code>
-                  </ElDescriptionsItem>
-                  <ElDescriptionsItem label="状态">
-                    <ElTag :type="selectedApiKey.is_active ? 'success' : 'danger'">
-                      {{ selectedApiKey.is_active ? '激活' : '禁用' }}
-                    </ElTag>
-                  </ElDescriptionsItem>
-                  <ElDescriptionsItem label="激活时间">
-                    {{ formatDate(selectedApiKey.activation_date) }}
-                  </ElDescriptionsItem>
-                </ElDescriptions>
-              </ElCard>
-
-              <!-- 使用记录 -->
-              <ElCard>
-                <template #header>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="records-header-info">
-                      <h4>
-                        <ElIcon><ElIconList /></ElIcon>
-                        使用记录
-                      </h4>
-                      <div class="total-requests-badge">
-                        <div class="badge-content">
-                          <span class="badge-icon">
-                            <ElIcon><ElIconTrendCharts /></ElIcon>
-                          </span>
-                          <div class="badge-text">
-                            <span class="badge-label">总请求次数</span>
-                            <span class="badge-value">{{ usageStats.total_requests || 0 }}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <ElButton @click="refreshUsageRecords" :loading="loadingUsageRecords">
-                      <ElIcon><ElIconRefresh /></ElIcon>
-                      刷新
-                    </ElButton>
-                  </div>
-                </template>
-
-
-                <div v-if="loadingUsageRecords" class="text-center py-4">
-                  <ElSkeleton :rows="5" animated />
-                </div>
-
-                <div v-else>
-                  <ElTable :data="usageRecords" style="width: 100%">
-                    <ElTableColumn prop="service" label="服务类型" width="200">
-                      <template #default="scope">
-                        <ElTag type="info" size="small">
-                          {{ scope.row.service }}
-                        </ElTag>
-                      </template>
-                    </ElTableColumn>
-                    <ElTableColumn prop="credits_used" label="积分消耗" width="100">
-                      <template #default="scope">
-                        {{ scope.row.credits_used || 0 }}
-                      </template>
-                    </ElTableColumn>
-                    <ElTableColumn prop="remaining_credits" label="剩余积分" width="120">
-                      <template #default="scope">
-                        <span v-if="scope.row.remaining_credits !== null && scope.row.remaining_credits !== undefined"
-                              :class="getUsageRecordRemainingCreditsClass(scope.row.remaining_credits)">
-                          {{ scope.row.remaining_credits }}
-                        </span>
-                        <span v-else class="text-muted">-</span>
-                      </template>
-                    </ElTableColumn>
-                    <ElTableColumn prop="response_status" label="响应状态" width="100">
-                      <template #default="scope">
-                        <ElTag :type="scope.row.response_status === 'success' ? 'success' : 'danger'" size="small">
-                          {{ scope.row.response_status === 'success' ? '成功' : '失败' }}
-                        </ElTag>
-                      </template>
-                    </ElTableColumn>
-                    <ElTableColumn prop="request_timestamp" label="请求时间" width="180">
-                      <template #default="scope">
-                        {{ formatDate(scope.row.request_timestamp) }}
-                      </template>
-                    </ElTableColumn>
-                  </ElTable>
-
-                  <!-- 分页 -->
-                  <div v-if="usageRecords.length > 0" class="pagination-wrapper">
-                    <ElPagination
-                      v-model:current-page="usagePagination.current"
-                      v-model:page-size="usagePagination.size"
-                      :page-sizes="[10, 20, 50]"
-                      :total="usagePagination.total"
-                      layout="total, sizes, prev, pager, next, jumper"
-                      @size-change="handleUsageSizeChange"
-                      @current-change="handleUsagePageChange"
-                    />
-                  </div>
-                </div>
-              </ElCard>
-            </div>
-          </div>
+          <UsageHistory
+            v-if="activeTab === 'usage-history'"
+            :selected-api-key="selectedApiKey"
+            :usage-stats="usageStats"
+            :usage-records="usageRecords"
+            :loading-usage-records="loadingUsageRecords"
+            :usage-pagination="usagePagination"
+            @back-to-keys="activeTab = 'keys'"
+            @refresh-usage-records="refreshUsageRecords"
+            @usage-size-change="handleUsageSizeChange"
+            @usage-page-change="handleUsagePageChange"
+          />
 
           <!-- 重置积分确认弹窗 -->
           <ResetCreditsDialog
@@ -1002,34 +628,24 @@ import { useRouter } from 'vue-router'
 import JSZip from 'jszip'
 import {
   ElCard,
-  ElTable,
-  ElTableColumn,
   ElButton,
-  ElTag,
   ElIcon,
-  ElProgress,
   ElMessage,
-  ElSkeleton,
-  ElPagination,
   ElTabs,
-  ElTabPane,
-  ElDescriptions,
-  ElDescriptionsItem
+  ElTabPane
 } from 'element-plus'
 import ResetCreditsDialog from '../components/ResetCreditsDialog.vue'
 import ResourcesCenter from '../components/ResourcesCenter.vue'
 import PromotionPlan from '../components/PromotionPlan.vue'
 import PCSidebar from '../components/dashboard/PCSidebar.vue'
+import ApiKeysManagement from '../components/dashboard/ApiKeysManagement.vue'
+import SubscriptionPlans from '../components/dashboard/SubscriptionPlans.vue'
+import UsageHistory from '../components/dashboard/UsageHistory.vue'
 import {
-  Key as ElIconKey,
-  Plus as ElIconPlus,
-  Refresh as ElIconRefresh,
-  CopyDocument as ElIconCopyDocument,
   VideoPlay as ElIconVideoPlay,
   List as ElIconList,
   TrendCharts as ElIconTrendCharts,
-  Reading as ElIconReading,
-  ArrowLeft as ElIconArrowLeft
+  Reading as ElIconReading
 } from '@element-plus/icons-vue'
 import request from '../utils/request'
 import '../styles/dashboard/index.css'
@@ -1071,10 +687,6 @@ const keyStats = reactive({
 })
 
 
-const keyPagination = reactive({
-  current: 1,
-  size: 10
-})
 
 const planInfo = reactive({
   has_active_plan: false,
@@ -1158,91 +770,6 @@ const loadPlanStatus = async () => {
 // }
 
 
-const getProgressColor = (percentage: number) => {
-  if (percentage > 50) return '#67c23a'  // 剩余积分多，绿色
-  if (percentage > 20) return '#e6a23c'  // 剩余积分中等，橙色
-  return '#f56c6c'  // 剩余积分少，红色
-}
-
-// 获取状态对应的标签类型
-const getStatusType = (status?: string) => {
-  switch (status) {
-    case 'active':
-      return 'success'
-    case 'expired':
-      return 'danger'
-    case 'inactive':
-    default:
-      return 'warning'
-  }
-}
-
-// 获取状态对应的文本
-const getStatusText = (status?: string) => {
-  switch (status) {
-    case 'active':
-      return '激活'
-    case 'expired':
-      return '过期'
-    case 'inactive':
-    default:
-      return '未激活'
-  }
-}
-
-// 获取剩余天数的样式类
-const getRemainingDaysClass = (days?: number) => {
-  if (days === undefined || days === null) return 'text-muted'
-  if (days <= 3) {
-    return 'text-danger fw-bold'
-  } else if (days <= 7) {
-    return 'text-warning fw-bold'
-  }
-  return 'text-success'
-}
-
-// 获取剩余积分的样式类
-const getRemainingCreditsClass = (remainingCredits?: number, totalCredits?: number) => {
-  if (remainingCredits === undefined || totalCredits === undefined) return 'text-muted'
-  if (!totalCredits || totalCredits <= 0) {
-    return 'text-muted'
-  }
-
-  const percentage = (remainingCredits / totalCredits) * 100
-
-  if (percentage <= 10) {
-    return 'text-danger fw-bold'
-  } else if (percentage <= 30) {
-    return 'text-warning fw-bold'
-  }
-  return 'text-success'
-}
-
-// 获取使用记录剩余积分样式类（仅基于剩余积分值）
-const getUsageRecordRemainingCreditsClass = (remainingCredits: number) => {
-  if (remainingCredits <= 0) return 'text-danger'
-  if (remainingCredits <= 10) return 'text-warning'
-  return 'text-success'
-}
-
-
-
-// 检查是否可以重置积分
-const canResetCredits = (key: any) => {
-  // 检查是否有总积分设置
-  if (!key.total_credits || key.total_credits <= 0) {
-    return false
-  }
-
-  // 检查状态是否为激活
-  if (key.status !== 'active') {
-    return false
-  }
-
-  // 这里可以添加更多检查逻辑，比如今天是否已重置过
-  // 但由于前端无法准确判断，主要依赖后端验证
-  return true
-}
 
 // 重置积分 - 打开确认弹窗
 const resetCredits = (key: any) => {
@@ -1407,20 +934,6 @@ const handleMonthCardClick = () => {
 }
 
 
-const maskApiKey = (apiKey: string) => {
-  if (!apiKey) return '-'
-  if (apiKey.length <= 8) return apiKey
-  return apiKey.substring(0, 4) + '****' + apiKey.substring(apiKey.length - 4)
-}
-
-const copyApiKey = async (apiKey: string) => {
-  try {
-    await navigator.clipboard.writeText(apiKey)
-    ElMessage.success('API密钥已复制到剪贴板')
-  } catch (error) {
-    ElMessage.error('复制失败，请手动复制')
-  }
-}
 
 const viewUsageHistory = (key: any) => {
   // 在同一页面切换到使用履历标签
@@ -1453,25 +966,6 @@ const viewUsageHistory = (key: any) => {
 //   )
 // }
 
-const formatDate = (dateStr?: string) => {
-  if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleString('zh-CN')
-}
-
-const formatDateShort = (dateStr?: string) => {
-  if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleDateString('zh-CN')
-}
-
-
-const handleKeyPageChange = (page: number) => {
-  keyPagination.current = page
-}
-
-const handleKeySizeChange = (size: number) => {
-  keyPagination.size = size
-  keyPagination.current = 1
-}
 
 const copyToClipboard = async (text: string) => {
   try {
