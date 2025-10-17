@@ -67,12 +67,12 @@
 }
 
 .nav-item:hover {
-  background: #f5f5f5;
+  color: #1890ff;
 }
 
 .nav-item.active {
-  background: #e6f7ff;
-  color: #1890ff;
+  background: #1890ff;
+  color: white;
 }
 
 /* 移动端顶部栏 */
