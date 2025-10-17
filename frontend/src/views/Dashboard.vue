@@ -47,8 +47,18 @@
             <!-- 系统要求 -->
             <SystemRequirements />
 
-            <!-- Node.js安装指南 -->
-            <NodeJsInstallation />
+            <!-- 开发工具安装指南（可折叠） -->
+            <ElCollapse v-model="activeCollapseItems" class="mb-4">
+              <!-- Node.js安装指南 -->
+              <ElCollapseItem name="nodejs" title="📦 Node.js 安装指南">
+                <NodeJsInstallation />
+              </ElCollapseItem>
+
+              <!-- Git安装指南 -->
+              <ElCollapseItem name="git" title="🔧 Git 安装指南">
+                <GitInstallation />
+              </ElCollapseItem>
+            </ElCollapse>
 
             <!-- Claude Code安装方法 -->
             <ClaudeCodeInstallation />
@@ -119,7 +129,9 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import JSZip from 'jszip'
 import {
-  ElMessage
+  ElMessage,
+  ElCollapse,
+  ElCollapseItem
 } from 'element-plus'
 import ResetCreditsDialog from '../components/ResetCreditsDialog.vue'
 import ResourcesCenter from '../components/ResourcesCenter.vue'
@@ -135,10 +147,14 @@ import ClaudeCodeInstallation from '../components/dashboard/ClaudeCodeInstallati
 import InstallationVerification from '../components/dashboard/InstallationVerification.vue'
 import UsageGuide from '../components/dashboard/UsageGuide.vue'
 import VSCodeExtension from '../components/dashboard/VSCodeExtension.vue'
+import GitInstallation from '../components/dashboard/GitInstallation.vue'
 import request from '../utils/request'
 import '../styles/dashboard/index.css'
 
 const router = useRouter()
+
+// 控制折叠面板的展开项
+const activeCollapseItems = ref<string[]>([])
 
 interface ApiKey {
   id?: string
