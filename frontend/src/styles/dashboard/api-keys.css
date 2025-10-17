@@ -341,3 +341,203 @@
   display: flex;
   justify-content: center;
 }
+
+/* 移动端响应式设计 */
+@media (max-width: 768px) {
+  .key-actions {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .key-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .key-stats-inline {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .stat-badge {
+    padding: 12px 16px;
+    border-radius: 12px;
+  }
+
+  .stat-content .stat-number {
+    font-size: 18px;
+  }
+
+  .stat-content .stat-label {
+    font-size: 11px;
+  }
+
+  /* 移动端表格重设计 */
+  .custom-table {
+    border: none;
+    border-radius: 0;
+  }
+
+  .table-header {
+    display: none;
+  }
+
+  .key-item {
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: white;
+  }
+
+  .key-item:last-child {
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .main-row {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .col-subscription,
+  .col-api-key,
+  .col-status,
+  .col-activation,
+  .col-expire,
+  .col-days,
+  .col-actions {
+    flex: none;
+    min-width: auto;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+  }
+
+  .col-subscription::before {
+    content: "订阅名称：";
+    font-weight: 500;
+    color: #666;
+  }
+
+  .col-api-key::before {
+    content: "API密钥：";
+    font-weight: 500;
+    color: #666;
+  }
+
+  .col-status::before {
+    content: "状态：";
+    font-weight: 500;
+    color: #666;
+  }
+
+  .col-activation::before {
+    content: "激活时间：";
+    font-weight: 500;
+    color: #666;
+  }
+
+  .col-expire::before {
+    content: "过期时间：";
+    font-weight: 500;
+    color: #666;
+  }
+
+  .col-days::before {
+    content: "剩余天数：";
+    font-weight: 500;
+    color: #666;
+  }
+
+  .col-actions::before {
+    content: "操作：";
+    font-weight: 500;
+    color: #666;
+  }
+
+  .api-key-cell {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .action-buttons .el-button {
+    width: 100%;
+    justify-content: center;
+    margin-left: 0 !important;
+  }
+
+  .credits-row {
+    border-top: 1px solid #e9ecef;
+  }
+
+  .credits-content {
+    padding: 12px 16px;
+  }
+
+  .credits-info-container {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .credits-basic {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .credit-item {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .credits-progress {
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  .progress-with-label {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .progress-with-label .progress-label {
+    min-width: auto;
+  }
+
+  .empty-keys {
+    padding: 40px 16px;
+    border-radius: 12px;
+  }
+
+  .empty-keys .empty-icon {
+    font-size: 60px;
+  }
+
+  .empty-keys h4 {
+    font-size: 1.25rem;
+  }
+
+  .empty-keys p {
+    font-size: 1rem;
+  }
+
+  .pagination-wrapper {
+    margin-top: 16px;
+  }
+
+  .pagination-wrapper .el-pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
