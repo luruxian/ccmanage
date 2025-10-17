@@ -70,11 +70,9 @@
 
         <div v-else>
           <ElTable :data="usageRecords" style="width: 100%">
-            <ElTableColumn prop="service" label="服务类型" width="200">
+            <ElTableColumn prop="request_timestamp" label="请求时间" width="180">
               <template #default="scope">
-                <ElTag type="info" size="small">
-                  {{ scope.row.service }}
-                </ElTag>
+                {{ formatDate(scope.row.request_timestamp) }}
               </template>
             </ElTableColumn>
             <ElTableColumn prop="credits_used" label="积分消耗" width="100">
@@ -98,9 +96,11 @@
                 </ElTag>
               </template>
             </ElTableColumn>
-            <ElTableColumn prop="request_timestamp" label="请求时间" width="180">
+            <ElTableColumn prop="service" label="服务类型" width="200">
               <template #default="scope">
-                {{ formatDate(scope.row.request_timestamp) }}
+                <ElTag type="info" size="small">
+                  {{ scope.row.service }}
+                </ElTag>
               </template>
             </ElTableColumn>
           </ElTable>

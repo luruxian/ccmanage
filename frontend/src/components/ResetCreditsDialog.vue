@@ -2,9 +2,10 @@
   <ElDialog
     v-model="visible"
     title="重置积分确认"
-    width="500px"
+    :width="dialogWidth"
     :close-on-click-modal="false"
     :close-on-press-escape="false"
+    :custom-class="dialogClass"
     class="reset-credits-dialog"
   >
     <div class="dialog-content">
@@ -51,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { ElDialog, ElButton } from 'element-plus'
 
 interface ApiKey {
@@ -83,6 +84,17 @@ const emit = defineEmits<Emits>()
 
 const visible = ref(props.modelValue)
 
+// 响应式对话框宽度
+const dialogWidth = computed(() => {
+  // 移动端使用自适应宽度，桌面端使用500px
+  return window.innerWidth < 768 ? undefined : '500px'
+})
+
+// 响应式对话框类名
+const dialogClass = computed(() => {
+  return window.innerWidth < 768 ? 'mobile-dialog' : 'desktop-dialog'
+})
+
 // 监听外部visible变化
 watch(() => props.modelValue, (newVal) => {
   visible.value = newVal
@@ -106,6 +118,96 @@ const handleCancel = () => {
 <style scoped>
 .reset-credits-dialog {
   border-radius: 16px;
+}
+
+/* 移动端对话框样式 */
+:deep(.mobile-dialog) {
+  .el-dialog {
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    border-radius: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  .el-dialog__header {
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .el-dialog__body {
+    padding: 16px 20px;
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .el-dialog__footer {
+    padding: 12px 20px 16px;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  /* 移动端内容优化 */
+  .dialog-content {
+    padding: 10px 0;
+  }
+
+  .icon-wrapper {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+
+  .dialog-title {
+    font-size: 18px;
+  }
+
+  .dialog-subtitle {
+    font-size: 13px;
+  }
+
+  .key-info {
+    padding: 12px;
+  }
+
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .info-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .info-item .label {
+    margin-bottom: 4px;
+    font-size: 13px;
+  }
+
+  .info-item .value {
+    font-size: 14px;
+  }
+
+  .warning-note {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .dialog-footer {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .cancel-btn,
+  .confirm-btn {
+    width: 100%;
+    margin: 0;
+  }
 }
 
 .dialog-content {
@@ -199,6 +301,66 @@ const handleCancel = () => {
   justify-content: flex-end;
   gap: 12px;
   padding-top: 20px;
+}
+
+/* 移动端响应式适配 */
+@media (max-width: 768px) {
+  .dialog-content {
+    padding: 15px 0;
+  }
+
+  .icon-wrapper {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+
+  .dialog-title {
+    font-size: 18px;
+  }
+
+  .dialog-subtitle {
+    font-size: 13px;
+  }
+
+  .key-info {
+    padding: 12px;
+  }
+
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .info-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .info-item .label {
+    margin-bottom: 4px;
+    font-size: 13px;
+  }
+
+  .info-item .value {
+    font-size: 14px;
+  }
+
+  .warning-note {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .dialog-footer {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .cancel-btn,
+  .confirm-btn {
+    width: 100%;
+    margin: 0;
+  }
 }
 
 .cancel-btn {

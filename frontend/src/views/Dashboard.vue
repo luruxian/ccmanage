@@ -105,13 +105,24 @@
           />
 
           <!-- 重置积分确认弹窗 -->
-          <ResetCreditsDialog
-            v-model="resetCreditsDialogVisible"
-            :key-data="resetCreditsKey"
-            :loading="resettingCredits"
-            @confirm="confirmResetCredits"
-            @cancel="handleResetCreditsCancel"
-          />
+          <template v-if="!isMobile">
+            <ResetCreditsDialog
+              v-model="resetCreditsDialogVisible"
+              :key-data="resetCreditsKey"
+              :loading="resettingCredits"
+              @confirm="confirmResetCredits"
+              @cancel="handleResetCreditsCancel"
+            />
+          </template>
+          <template v-else>
+            <MobileResetCreditsDialog
+              v-model="resetCreditsDialogVisible"
+              :key-data="resetCreditsKey"
+              :loading="resettingCredits"
+              @confirm="confirmResetCredits"
+              @cancel="handleResetCreditsCancel"
+            />
+          </template>
 
           <!-- 资料中心 -->
           <ResourcesCenter
@@ -125,7 +136,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import JSZip from 'jszip'
 import {
@@ -134,6 +145,7 @@ import {
   ElCollapseItem
 } from 'element-plus'
 import ResetCreditsDialog from '../components/ResetCreditsDialog.vue'
+import MobileResetCreditsDialog from '../components/MobileResetCreditsDialog.vue'
 import ResourcesCenter from '../components/ResourcesCenter.vue'
 import PromotionPlan from '../components/PromotionPlan.vue'
 import PCSidebar from '../components/dashboard/PCSidebar.vue'
@@ -185,6 +197,14 @@ const showMobileSidebar = ref(false)
 const resetCreditsDialogVisible = ref(false)
 const resettingCredits = ref(false)
 const resetCreditsKey = ref<ApiKey | null>(null)
+
+// 移动端检测
+const isMobile = ref(false)
+
+// 检测设备类型
+const checkDeviceType = () => {
+  isMobile.value = window.innerWidth < 768
+}
 
 const keyStats = reactive({
   active: 0
@@ -574,12 +594,23 @@ onMounted(() => {
   loadUserKeys()
   loadPlanStatus()
 
+  // 初始化设备检测
+  checkDeviceType()
+
+  // 监听窗口大小变化
+  window.addEventListener('resize', checkDeviceType)
+
   // 检查URL参数中的tab参数
   const urlParams = new URLSearchParams(window.location.search)
   const tabParam = urlParams.get('tab')
   if (tabParam && ['keys', 'getting-started', 'packages', 'promotion', 'resources'].includes(tabParam)) {
     activeTab.value = tabParam
   }
+})
+
+// 组件卸载时清理事件监听器
+onUnmounted(() => {
+  window.removeEventListener('resize', checkDeviceType)
 })
 </script>
 
