@@ -1,33 +1,12 @@
 <template>
   <div class="dashboard">
-    <!-- 移动端侧边栏抽屉 -->
-    <div class="mobile-sidebar-overlay" v-if="showMobileSidebar" @click="showMobileSidebar = false"></div>
-    <div class="mobile-sidebar" :class="{ 'mobile-sidebar-open': showMobileSidebar }">
-      <div class="mobile-sidebar-content">
-        <nav class="sidebar-nav">
-          <a href="#" :class="['nav-item', { active: activeTab === 'getting-started' }]" @click="setActiveTab('getting-started')">
-            <ElIcon><ElIconVideoPlay /></ElIcon>
-            安装Claude Code
-          </a>
-          <a href="#" :class="['nav-item', { active: activeTab === 'keys' || activeTab === 'usage-history' }]" @click="setActiveTab('keys')">
-            <ElIcon><ElIconKey /></ElIcon>
-            API密钥
-          </a>
-          <a href="#" :class="['nav-item', { active: activeTab === 'packages' }]" @click="setActiveTab('packages')">
-            <ElIcon><ElIconList /></ElIcon>
-            订阅一览
-          </a>
-          <a href="#" :class="['nav-item', { active: activeTab === 'promotion' }]" @click="setActiveTab('promotion')">
-            <ElIcon><ElIconTrendCharts /></ElIcon>
-            推广计划
-          </a>
-          <a href="#" :class="['nav-item', { active: activeTab === 'resources' }]" @click="setActiveTab('resources')">
-            <ElIcon><ElIconReading /></ElIcon>
-            资料中心
-          </a>
-        </nav>
-      </div>
-    </div>
+    <!-- 移动端侧边栏 -->
+    <MobileSidebar
+      :show-mobile-sidebar="showMobileSidebar"
+      :active-tab="activeTab"
+      @close="showMobileSidebar = false"
+      @tab-change="setActiveTab"
+    />
 
     <div class="container-fluid">
       <div class="row">
@@ -629,7 +608,6 @@ import JSZip from 'jszip'
 import {
   ElCard,
   ElButton,
-  ElIcon,
   ElMessage,
   ElTabs,
   ElTabPane
@@ -638,15 +616,10 @@ import ResetCreditsDialog from '../components/ResetCreditsDialog.vue'
 import ResourcesCenter from '../components/ResourcesCenter.vue'
 import PromotionPlan from '../components/PromotionPlan.vue'
 import PCSidebar from '../components/dashboard/PCSidebar.vue'
+import MobileSidebar from '../components/dashboard/MobileSidebar.vue'
 import ApiKeysManagement from '../components/dashboard/ApiKeysManagement.vue'
 import SubscriptionPlans from '../components/dashboard/SubscriptionPlans.vue'
 import UsageHistory from '../components/dashboard/UsageHistory.vue'
-import {
-  VideoPlay as ElIconVideoPlay,
-  List as ElIconList,
-  TrendCharts as ElIconTrendCharts,
-  Reading as ElIconReading
-} from '@element-plus/icons-vue'
 import request from '../utils/request'
 import '../styles/dashboard/index.css'
 
