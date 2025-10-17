@@ -95,7 +95,7 @@ const copyToClipboard = async (text: string) => {
 }
 
 .code-block {
-  background: #f8f9fa;
+  background: #1e1e1e;
   border-radius: 6px;
   overflow: hidden;
   margin-bottom: 10px;
@@ -106,13 +106,13 @@ const copyToClipboard = async (text: string) => {
   justify-content: space-between;
   align-items: center;
   padding: 8px 12px;
-  background: #e9ecef;
-  border-bottom: 1px solid #dee2e6;
+  background: #2d2d2d;
+  border-bottom: 1px solid #404040;
 }
 
 .code-header span {
   font-size: 0.8rem;
-  color: #6c757d;
+  color: #cccccc;
 }
 
 .code-block pre {
@@ -121,6 +121,7 @@ const copyToClipboard = async (text: string) => {
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
   font-size: 0.9rem;
   line-height: 1.4;
+  color: #ffffff;
 }
 
 .expected-output {
@@ -169,7 +170,8 @@ const copyToClipboard = async (text: string) => {
 }
 
 .troubleshooting-item code {
-  background: #f1f3f4;
+  background: #2d2d2d;
+  color: #ffffff;
   padding: 2px 6px;
   border-radius: 3px;
   font-size: 0.85rem;

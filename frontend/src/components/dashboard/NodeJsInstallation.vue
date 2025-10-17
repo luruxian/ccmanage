@@ -209,36 +209,6 @@ const copyToClipboard = async (text: string) => {
   margin-bottom: 10px;
 }
 
-.code-block {
-  background: #1e1e1e;
-  border-radius: 6px;
-  overflow: hidden;
-  margin-bottom: 10px;
-  border: 1px solid #333;
-}
-
-.code-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px;
-  background: #2d2d2d;
-  border-bottom: 1px solid #444;
-}
-
-.code-header span {
-  font-size: 0.8rem;
-  color: #ccc;
-}
-
-.code-block pre {
-  margin: 0;
-  padding: 12px;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  color: #e6e6e6;
-}
 
 .nodejs-verification {
   border-top: 1px solid #e9ecef;

@@ -7,7 +7,7 @@
       <p class="text-muted mb-3">在开始安装之前，请确保您的系统满足以下要求：</p>
       <ul class="requirements-list">
         <li><strong>Node.js 18+</strong> （用于NPM安装方式）</li>
-        <li><strong>Git</strong> （推荐，用于版本控制功能）</li>
+        <li><strong>Git</strong> （用于版本控制功能）</li>
       </ul>
     </div>
   </ElCard>
