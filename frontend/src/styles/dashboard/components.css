@@ -1,0 +1,116 @@
+/* 通用组件样式 */
+
+/* 展开行样式 */
+.expand-content {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-left: 4px solid #007bff;
+}
+
+.credits-info {
+  max-width: 600px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.info-label {
+  font-weight: 500;
+  color: #666;
+  min-width: 80px;
+}
+
+.info-value {
+  font-weight: 600;
+}
+
+.progress-section {
+  margin-top: 16px;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progress-label {
+  font-weight: 500;
+  color: #333;
+}
+
+.progress-text {
+  font-weight: 600;
+  color: #666;
+}
+
+/* 表格列宽定义 */
+.col-subscription {
+  flex: 2;
+  min-width: 150px;
+}
+
+.col-api-key {
+  flex: 3;
+  min-width: 200px;
+}
+
+.col-status {
+  flex: 1;
+  min-width: 80px;
+}
+
+.col-activation {
+  flex: 1;
+  min-width: 120px;
+}
+
+.col-expire {
+  flex: 1;
+  min-width: 120px;
+}
+
+.col-days {
+  flex: 1;
+  min-width: 80px;
+}
+
+.col-actions {
+  flex: 2;
+  min-width: 200px;
+}
+
+/* 文本样式类 */
+.text-danger {
+  color: #f56c6c !important;
+}
+
+.text-warning {
+  color: #e6a23c !important;
+}
+
+.text-success {
+  color: #67c23a !important;
+}
+
+.text-muted {
+  color: #909399 !important;
+}
+
+.fw-bold {
+  font-weight: 700 !important;
+}
+
+/* 响应式设计辅助类 */
+@media (max-width: 768px) {
+  .mobile-hidden {
+    display: none !important;
+  }
+
+  .mobile-full-width {
+    width: 100% !important;
+  }
+}

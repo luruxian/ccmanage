@@ -1,24 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python:*)",
-      "Bash(dir:*)",
-      "Bash(findstr:*)",
-      "Bash(npm install:*)",
-      "Bash(npm run build:*)",
-      "Bash(npm run dev:*)",
-      "Bash(pip show:*)",
-      "Bash(netstat:*)",
-      "Bash(taskkill:*)",
-      "Bash(curl:*)",
-      "Bash(npm --version)",
-      "WebFetch(domain:gaccode.com)",
-      "WebFetch(domain:docs.claude.com)",
-      "WebFetch(domain:github.com)",
-      "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:www.anthropic.com)",
-      "Bash(npx vue-tsc --noEmit --extendedDiagnostics)",
-      "Bash(mkdir -p frontend/src/components/dashboard)"
+      "Bash(npm run build)",
+      "Bash(npm run dev)"
     ],
     "deny": [],
     "ask": []

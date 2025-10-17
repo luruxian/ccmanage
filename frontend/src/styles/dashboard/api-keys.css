@@ -1,0 +1,343 @@
+/* API密钥管理相关样式 */
+
+.key-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.key-actions .btn {
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+.key-actions .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+}
+
+/* 密钥统计内联样式 */
+.key-stats-inline {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 16px;
+}
+
+.stat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.stat-badge:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+.stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  font-size: 14px;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.stat-content .stat-number {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.stat-content .stat-label {
+  font-size: 12px;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+.key-stat-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  text-align: center;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.key-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+}
+
+.key-stat-card .stat-number {
+  font-size: 2.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.key-stat-card .stat-label {
+  color: #64748b;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.filter-row {
+  align-items: center;
+}
+
+.empty-keys {
+  text-align: center;
+  padding: 80px 20px;
+  color: #64748b;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 20px;
+  border: 2px dashed #e2e8f0;
+  margin: 20px 0;
+}
+
+.empty-keys .empty-icon {
+  font-size: 80px;
+  background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 20px;
+}
+
+.empty-keys h4 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #1e293b;
+}
+
+.empty-keys p {
+  font-size: 1.1rem;
+  margin-bottom: 24px;
+  color: #64748b;
+}
+
+.empty-keys .btn {
+  border-radius: 12px;
+  font-weight: 600;
+  padding: 12px 28px;
+  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.empty-keys .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.key-name-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.key-id {
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+.api-key-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.api-key-text {
+  background: #f5f7fa;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+}
+
+.usage-count {
+  font-weight: 600;
+  color: #409eff;
+}
+
+.last-used {
+  color: #67c23a;
+  font-size: 0.9rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.action-buttons .el-button {
+  font-size: 0.8rem;
+  padding: 4px 8px;
+}
+
+/* 自定义表格样式 */
+.custom-table {
+  border: 1px solid #e4e7ed;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.table-header {
+  background-color: #f5f7fa;
+  border-bottom: 1px solid #e4e7ed;
+}
+
+.header-row {
+  display: flex;
+  padding: 12px 16px;
+  font-weight: 600;
+  color: #909399;
+  font-size: 14px;
+}
+
+.table-body {
+  background-color: #fff;
+}
+
+.key-item {
+  border-bottom: 2px solid #e9ecef;
+  background-color: #ffffff;
+}
+
+.key-item:last-child {
+  border-bottom: none;
+}
+
+.key-item:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.key-item:nth-child(even) .main-row,
+.key-item:nth-child(even) .credits-row {
+  background-color: #f8f9fa;
+}
+
+.key-item:nth-child(odd) .main-row,
+.key-item:nth-child(odd) .credits-row {
+  background-color: #ffffff;
+}
+
+.main-row {
+  display: flex;
+  padding: 12px 16px;
+  align-items: center;
+  min-height: 60px;
+}
+
+.credits-row {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.credits-content {
+  padding: 12px 16px;
+}
+
+.credits-info-container {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.credits-basic {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.credit-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.credit-label {
+  font-weight: 500;
+  color: #666;
+  font-size: 14px;
+}
+
+.credit-value {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.credits-progress {
+  flex: 1;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.progress-with-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress-with-label .progress-label {
+  font-size: 13px;
+  color: #666;
+  white-space: nowrap;
+  min-width: 60px;
+}
+
+.progress-with-label .el-progress {
+  flex: 1;
+}
+
+.credits-progress .progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.credits-progress .progress-label {
+  font-size: 13px;
+  color: #666;
+}
+
+.credits-progress .progress-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* 分页样式 */
+.pagination-wrapper {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}

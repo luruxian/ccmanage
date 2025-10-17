@@ -1,0 +1,168 @@
+/* 订阅一览相关样式 */
+
+.packages-content {
+  padding: 16px 0;
+}
+
+.packages-header {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.packages-header p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 0;
+}
+
+.package-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  height: 100%;
+}
+
+.package-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.package-card.featured {
+  border: 2px solid #409eff;
+  position: relative;
+}
+
+.package-header {
+  text-align: center;
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.package-header h4 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.package-price {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+}
+
+.package-price .price {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #409eff;
+  line-height: 1;
+}
+
+.package-price .period {
+  font-size: 1rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.package-badge {
+  position: absolute;
+  top: -8px;
+  right: 20px;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+.package-content {
+  padding: 24px 20px;
+  text-align: center;
+}
+
+.package-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px 0;
+  text-align: left;
+}
+
+.package-features li {
+  padding: 8px 0;
+  font-size: 14px;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.package-features li:before {
+  content: "✓";
+  color: #28a745;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.package-btn {
+  width: 100%;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 600;
+  font-size: 16px;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+}
+
+.package-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.packages-notice {
+  margin-top: 32px;
+}
+
+.notice-content {
+  padding: 20px;
+}
+
+.notice-content h5 {
+  color: #333;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.notice-content p {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .package-card {
+    margin-bottom: 20px;
+  }
+
+  .package-header {
+    padding: 20px 16px 16px;
+  }
+
+  .package-header h4 {
+    font-size: 1.3rem;
+  }
+
+  .package-price .price {
+    font-size: 1.7rem;
+  }
+
+  .package-content {
+    padding: 20px 16px;
+  }
+}
