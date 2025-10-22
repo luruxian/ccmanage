@@ -179,8 +179,7 @@ class AdminOperation(Base):
     __tablename__ = "admin_operations"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    admin_id = Column(Integer, nullable=False, comment="管理员ID")
-    admin_user_id = Column(String(50), nullable=True, comment="旧的管理员用户ID（兼容性）")
+    admin_user_id = Column(String(50), nullable=False, comment="管理员用户ID")
     operation_type = Column(String(50), nullable=False, comment="操作类型")
     target_resource = Column(String(100), nullable=True, comment="目标资源")
     target_id = Column(String(50), nullable=True, comment="目标ID")
@@ -205,4 +204,3 @@ Index('idx_login_history', LoginHistory.user_id, LoginHistory.login_time)
 Index('idx_admin_operations', AdminOperation.admin_user_id, AdminOperation.operation_type, AdminOperation.created_at)
 Index('idx_package_active', Package.is_active, Package.sort_order)
 Index('idx_admin_username', Admin.username, Admin.is_deleted, Admin.is_active)
-Index('idx_admin_operations_new', AdminOperation.admin_id, AdminOperation.operation_type, AdminOperation.created_at)

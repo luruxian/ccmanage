@@ -4,7 +4,7 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime
 import json
 
-from ..models import Admin, AdminOperation, UserRole
+from ..models import Admin, UserRole
 from ...core.auth_service import auth_service
 
 
@@ -227,54 +227,6 @@ class AdminCRUD:
         offset = (page - 1) * page_size
         return query.offset(offset).limit(page_size).all()
 
-    def create_operation_record(
-        self,
-        admin_id: int,
-        operation_type: str,
-        target_resource: str = None,
-        target_id: str = None,
-        operation_description: str = None,
-        operation_data: Dict[str, Any] = None,
-        ip_address: str = None
-    ) -> AdminOperation:
-        """创建管理员操作记录"""
-        operation = AdminOperation(
-            admin_id=admin_id,
-            operation_type=operation_type,
-            target_resource=target_resource,
-            target_id=target_id,
-            operation_description=operation_description,
-            operation_data=json.dumps(operation_data) if operation_data else None,
-            ip_address=ip_address
-        )
-
-        self.db.add(operation)
-        self.db.commit()
-        self.db.refresh(operation)
-        return operation
-
-    def get_admin_operations(
-        self,
-        admin_id: int = None,
-        operation_type: str = None,
-        page: int = 1,
-        page_size: int = 20
-    ) -> List[AdminOperation]:
-        """获取管理员操作记录"""
-        query = self.db.query(AdminOperation)
-
-        if admin_id:
-            query = query.filter(AdminOperation.admin_id == admin_id)
-
-        if operation_type:
-            query = query.filter(AdminOperation.operation_type == operation_type)
-
-        # 按时间倒序
-        query = query.order_by(AdminOperation.created_at.desc())
-
-        # 分页
-        offset = (page - 1) * page_size
-        return query.offset(offset).limit(page_size).all()
 
     def get_admin_statistics(self) -> Dict[str, Any]:
         """获取管理员统计信息"""

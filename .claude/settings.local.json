@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(npm run build)",
-      "Bash(npm run dev)"
+      "Bash(npm run dev)",
+      "Bash(python -c \"from app.db.database import engine; from sqlalchemy import inspect; inspector = inspect(engine); print('数据库表列表:'); [print(f'  - {table}') for table in inspector.get_table_names()]\")"
     ],
     "deny": [],
     "ask": []

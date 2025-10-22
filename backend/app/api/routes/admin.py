@@ -29,7 +29,7 @@ from ...db.database import get_db
 from ...db.crud.user import UserCRUD
 from ...db.crud.admin import AdminCRUD
 from ...db.crud.login_history import LoginHistoryCRUD
-from ...db.crud.admin_operation import AdminOperationCRUD
+# 管理员操作记录功能已禁用
 from ...db.crud.package import PackageCRUD
 from ...db.crud.api_key import APIKeyCRUD
 # UserPlanCRUD已删除，使用APIKeyCRUD替代
@@ -67,35 +67,6 @@ async def get_super_admin_user(current_user = Depends(get_current_user)):
     return current_user
 
 
-async def log_admin_operation(
-    admin_user_id: str,
-    operation_type: str,
-    target_resource: Optional[str] = None,
-    target_id: Optional[str] = None,
-    operation_description: Optional[str] = None,
-    operation_data: Optional[Dict[str, Any]] = None,
-    request: Optional[Request] = None,
-    db: Session = Depends(get_db)
-):
-    """记录管理员操作"""
-    try:
-        admin_op_crud = AdminOperationCRUD(db)
-        ip_address = None
-
-        if request:
-            ip_address = request.client.host if request.client else None
-
-        admin_op_crud.create_operation_record(
-            admin_user_id=admin_user_id,
-            operation_type=operation_type,
-            target_resource=target_resource,
-            target_id=target_id,
-            operation_description=operation_description,
-            operation_data=operation_data,
-            ip_address=ip_address
-        )
-    except Exception as e:
-        logger.error(f"记录管理员操作失败: {str(e)}")
 
 
 @router.post("/login", response_model=AdminLoginResponse)
@@ -375,7 +346,7 @@ async def get_admin_statistics(
         package_crud = PackageCRUD(db)
         api_key_crud = APIKeyCRUD(db)
         login_history_crud = LoginHistoryCRUD(db)
-        admin_op_crud = AdminOperationCRUD(db)
+        # 管理员操作记录功能已禁用
 
         # 用户统计
         all_users = user_crud.get_all_users()
@@ -399,8 +370,14 @@ async def get_admin_statistics(
         # 登录统计
         login_stats = login_history_crud.get_login_statistics()
 
-        # 操作统计
-        operation_stats = admin_op_crud.get_operation_statistics()
+        # 操作统计（已禁用）
+        operation_stats = {
+            "total_operations": 0,
+            "operation_types": [],
+            "target_resources": [],
+            "active_admins": 0,
+            "daily_stats": []
+        }
 
         return AdminStatisticsResponse(
             total_users=total_users,
