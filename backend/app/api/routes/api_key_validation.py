@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, BackgroundTasks
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
+from datetime import datetime
 
 from ...schemas.api_key import (
     APIKeyValidationRequest,
@@ -12,8 +13,6 @@ from ...schemas.api_key import (
 from ...schemas.common import ErrorCodes
 from ...db.database import get_db
 from ...db.crud.api_key import APIKeyCRUD
-from ...db.crud.user import UserCRUD
-# UserPlanCRUD已删除，使用APIKeyCRUD替代
 import logging
 
 logger = logging.getLogger(__name__)
@@ -26,38 +25,37 @@ class APIKeyValidationService:
     def __init__(self, db: Session):
         self.db = db
         self.api_key_crud = APIKeyCRUD(db)
-        self.user_crud = UserCRUD(db)
-        # user_plan_crud功能已合并到api_key_crud
 
     def validate_api_key(self, api_key: str, service: str = "llm_proxy"):
         """验证API密钥"""
         try:
-            # 1. 检查API密钥是否存在且有效
+            # 1. 一次性获取API密钥所有信息
             db_api_key = self.api_key_crud.get_api_key_by_key(api_key)
-            if not db_api_key or not db_api_key.is_active:
+
+            # 2. 基础验证
+            if not db_api_key:
                 return self._create_error_response(
                     ErrorCodes.INVALID_API_KEY,
                     "Invalid API key",
                     "INVALID_KEY"
                 )
 
-            # 2. 检查用户状态
-            user = self.user_crud.get_user_by_id(db_api_key.user_id)
-            if not user:
+            if not db_api_key.is_active:
                 return self._create_error_response(
                     ErrorCodes.INVALID_API_KEY,
-                    "User not found",
-                    "USER_NOT_FOUND"
+                    "API key is inactive",
+                    "INACTIVE_KEY"
                 )
 
-            if not user.is_active or user.is_banned:
+            # 3. 有效期验证
+            if db_api_key.expire_date and db_api_key.expire_date < datetime.now():
                 return self._create_error_response(
-                    ErrorCodes.ACCOUNT_BANNED,
-                    "Account is banned or inactive",
-                    "ACCOUNT_BANNED"
+                    ErrorCodes.PLAN_EXPIRED,
+                    "API key has expired",
+                    "EXPIRED_KEY"
                 )
 
-            # 3. 检查API密钥的剩余积分
+            # 4. 积分验证
             if db_api_key.remaining_credits is not None and db_api_key.remaining_credits <= 0:
                 return self._create_error_response(
                     ErrorCodes.CREDITS_EXHAUSTED,
@@ -65,25 +63,12 @@ class APIKeyValidationService:
                     "INSUFFICIENT_CREDITS"
                 )
 
-            # 4. 检查用户套餐
-            plan_stats = self.api_key_crud.get_plan_usage_stats(user.user_id)
-            if not plan_stats["has_active_plan"]:
-                return self._create_error_response(
-                    ErrorCodes.PLAN_EXPIRED,
-                    "No active plan",
-                    "PLAN_EXPIRED"
-                )
-
-            # 5. 更新API密钥最后使用时间
-            self.api_key_crud.update_last_used(api_key)
-
-            # 6. 返回成功响应
+            # 5. 返回成功响应
             return APIKeyValidationSuccessResponse(
                 data=APIKeyValidationSuccessData(
                     valid=True,
                     real_api_key=db_api_key.real_api_key,
-                    user_id=user.user_id,
-                    plan_type=plan_stats["plan_type"]
+                    user_id=db_api_key.user_id
                 )
             )
 
@@ -107,6 +92,16 @@ class APIKeyValidationService:
         )
 
 
+async def update_last_used_async(api_key: str, db: Session):
+    """异步更新API密钥最后使用时间"""
+    try:
+        api_key_crud = APIKeyCRUD(db)
+        api_key_crud.update_last_used(api_key)
+        logger.info(f"异步更新API密钥最后使用时间: {api_key[:10]}...")
+    except Exception as e:
+        logger.error(f"异步更新最后使用时间失败: {str(e)}")
+
+
 @router.post("/validate-api-key",
             response_model=APIKeyValidationSuccessResponse,
             responses={
@@ -114,7 +109,11 @@ class APIKeyValidationService:
                 401: {"model": APIKeyValidationErrorResponse},
                 403: {"model": APIKeyValidationErrorResponse}
             })
-async def validate_api_key_endpoint(request: APIKeyValidationRequest, db: Session = Depends(get_db)):
+async def validate_api_key_endpoint(
+    request: APIKeyValidationRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+):
     """
     自定义API密钥校验端点
 
@@ -138,6 +137,8 @@ async def validate_api_key_endpoint(request: APIKeyValidationRequest, db: Sessio
         # 根据结果类型返回相应的HTTP状态码
         if isinstance(result, APIKeyValidationSuccessResponse):
             logger.info(f"API密钥验证成功: {request.api_key[:10]}...")
+            # 异步更新最后使用时间，不阻塞主流程
+            background_tasks.add_task(update_last_used_async, request.api_key, db)
             return result
         else:
             # 错误响应

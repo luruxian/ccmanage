@@ -15,7 +15,6 @@ class APIKeyValidationSuccessData(BaseModel):
     valid: bool = True
     real_api_key: str
     user_id: str
-    plan_type: str
 
 
 class APIKeyValidationErrorData(BaseModel):
