@@ -4,7 +4,8 @@
       "Bash(python:*)",
       "Bash(source:*)",
       "Bash(venv/Scripts/activate)",
-      "Bash(venv/Scripts/python.exe:*)"
+      "Bash(venv/Scripts/python.exe:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

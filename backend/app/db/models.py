@@ -204,3 +204,13 @@ Index('idx_login_history', LoginHistory.user_id, LoginHistory.login_time)
 Index('idx_admin_operations', AdminOperation.admin_user_id, AdminOperation.operation_type, AdminOperation.created_at)
 Index('idx_package_active', Package.is_active, Package.sort_order)
 Index('idx_admin_username', Admin.username, Admin.is_deleted, Admin.is_active)
+
+# 新增复合索引优化高频查询
+# 优化用户API密钥查询
+Index('idx_api_key_status_active', APIKey.user_id, APIKey.status, APIKey.is_active, APIKey.expire_date)
+
+# 优化使用记录查询
+Index('idx_usage_record_stats', UsageRecord.api_key_id, UsageRecord.service, UsageRecord.request_timestamp)
+
+# 优化套餐关联查询
+Index('idx_api_key_package_status', APIKey.package_id, APIKey.status, APIKey.created_at)

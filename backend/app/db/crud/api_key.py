@@ -42,21 +42,21 @@ class APIKeyCRUD:
 
     def get_user_api_keys_with_package_info(self, user_id: str, active_only: bool = True) -> List[Dict[str, Any]]:
         """获取用户的所有API密钥（包含套餐信息） - 专门为普通用户前端使用"""
-        query = self.db.query(APIKey).filter(APIKey.user_id == user_id)
+        # 使用JOIN一次性获取所有数据，避免N+1查询
+        query = (
+            self.db.query(APIKey, Package)
+            .outerjoin(Package, APIKey.package_id == Package.id)
+            .filter(APIKey.user_id == user_id)
+        )
 
         if active_only:
             query = query.filter(APIKey.is_active == True)
 
         # 获取所有记录
-        api_keys = query.all()
+        results = query.all()
 
         result = []
-        for api_key in api_keys:
-            # 获取套餐信息
-            package = None
-            if api_key.package_id:
-                package = self.db.query(Package).filter(Package.id == api_key.package_id).first()
-
+        for api_key, package in results:
             # 计算剩余天数
             remaining_days = None
             current_status = api_key.status or "inactive"
@@ -282,8 +282,12 @@ class APIKeyCRUD:
     def get_package_user_keys(self, package_id: int, page: int = 1, page_size: int = 50, status_filter: Optional[str] = None) -> List[Dict[str, Any]]:
         """获取订阅关联的用户密钥列表（支持分页）"""
         try:
-            # 直接查询APIKey表
-            query = self.db.query(APIKey).filter(APIKey.package_id == package_id)
+            # 使用JOIN一次性获取所有数据，避免N+1查询
+            query = (
+                self.db.query(APIKey, User)
+                .outerjoin(User, APIKey.user_id == User.user_id)
+                .filter(APIKey.package_id == package_id)
+            )
 
             if status_filter:
                 query = query.filter(APIKey.status == status_filter)
@@ -294,13 +298,9 @@ class APIKeyCRUD:
             results = query.all()
 
             user_keys = []
-            for api_key in results:
+            for api_key, user in results:
                 # 获取用户邮箱（如果已激活）
-                user_email = "未激活"
-                if api_key.user_id:
-                    user = self.db.query(User).filter(User.user_id == api_key.user_id).first()
-                    if user:
-                        user_email = user.email
+                user_email = user.email if user else "未激活"
 
                 user_keys.append({
                     "id": api_key.id,
@@ -393,15 +393,17 @@ class APIKeyCRUD:
     def get_user_keys_by_user_id(self, user_id: str) -> List[Dict[str, Any]]:
         """获取用户的所有密钥"""
         try:
-            api_keys = self.db.query(APIKey).filter(APIKey.user_id == user_id).all()
+            # 使用JOIN一次性获取所有数据，避免N+1查询
+            query = (
+                self.db.query(APIKey, Package)
+                .outerjoin(Package, APIKey.package_id == Package.id)
+                .filter(APIKey.user_id == user_id)
+            )
+
+            results = query.all()
 
             result = []
-            for api_key in api_keys:
-                # 获取套餐信息
-                package = None
-                if api_key.package_id:
-                    package = self.db.query(Package).filter(Package.id == api_key.package_id).first()
-
+            for api_key, package in results:
                 result.append({
                     "id": api_key.id,
                     "api_key": api_key.api_key,
@@ -451,14 +453,19 @@ class APIKeyCRUD:
     def get_plan_usage_stats(self, user_id: str) -> Dict[str, Any]:
         """获取用户套餐使用统计（替代UserPlanCRUD的功能）"""
         try:
-            # 查找用户的激活套餐
-            active_key = self.db.query(APIKey).filter(
-                APIKey.user_id == user_id,
-                APIKey.status == "active",
-                APIKey.expire_date > datetime.now()
-            ).first()
+            # 使用JOIN一次性获取所有数据，避免N+1查询
+            active_key_result = (
+                self.db.query(APIKey, Package)
+                .outerjoin(Package, APIKey.package_id == Package.id)
+                .filter(
+                    APIKey.user_id == user_id,
+                    APIKey.status == "active",
+                    APIKey.expire_date > datetime.now()
+                )
+                .first()
+            )
 
-            if not active_key:
+            if not active_key_result:
                 return {
                     "has_active_plan": False,
                     "plan_type": None,
@@ -468,6 +475,8 @@ class APIKeyCRUD:
                     "days_remaining": 0,
                     "usage_percentage": 0
                 }
+
+            active_key, package = active_key_result
 
             # 计算剩余天数
             days_remaining = (active_key.expire_date - datetime.now()).days if active_key.expire_date else 0
@@ -479,11 +488,7 @@ class APIKeyCRUD:
                 usage_percentage = (used_credits / active_key.total_credits) * 100
 
             # 获取套餐信息
-            package = None
-            plan_type = "unknown"
-            if active_key.package_id:
-                package = self.db.query(Package).filter(Package.id == active_key.package_id).first()
-                plan_type = package.package_code if package else "unknown"
+            plan_type = package.package_code if package else "unknown"
 
             return {
                 "has_active_plan": True,

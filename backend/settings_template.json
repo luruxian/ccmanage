@@ -2,9 +2,10 @@
   "env": {
     "ANTHROPIC_BASE_URL": "https://endpoint.agnets.app/",
     "ANTHROPIC_AUTH_TOKEN": "{{API_KEY}}",
-    "DISABLE_AUTOUPDATER":1,
+    "DISABLE_AUTOUPDATER":0,
     "DISABLE_TELEMETRY":1,
-    "API_TIMEOUT_MS":600000
+    "API_TIMEOUT_MS":600000,
+    "CLAUDE_CODE_MAX_OUTPUT_TOKENS":"30000"
   },
   "permissions": {
     "allow": [],
