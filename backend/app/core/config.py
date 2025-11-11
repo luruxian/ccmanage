@@ -99,5 +99,8 @@ class Settings:
     # 后端配置
     BACKEND_URL: str = os.getenv("BACKEND_URL", "http://localhost:8001")
 
+    # 积分重置API配置
+    CREDITS_RESET_API_BASE_URL: str = os.getenv("CREDITS_RESET_API_BASE_URL", "http://localhost:8000")
+
 # 创建设置实例
 settings = Settings()

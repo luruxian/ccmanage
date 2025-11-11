@@ -20,6 +20,7 @@ from ...db.crud.api_key import APIKeyCRUD
 # UserPlanCRUD已删除，使用APIKeyCRUD替代
 # UserKeyCRUD已合并到APIKeyCRUD
 from .user import get_current_user
+from ...services.credits_reset_client import credits_reset_client
 import logging
 
 logger = logging.getLogger(__name__)
@@ -303,6 +304,28 @@ async def reset_api_key_credits(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=result["message"]
             )
+
+        # 数据库重置成功后，调用外部API同步Redis数据
+        try:
+            # 获取重置后的API密钥信息
+            api_key = api_key_crud.get_api_key_by_id(key_id)
+            if api_key:
+                # 调用外部积分重置API
+                external_result = credits_reset_client.reset_credits(
+                    api_key=api_key.api_key,
+                    remaining_credits=api_key.remaining_credits,
+                    last_reset_credits_at=api_key.last_reset_credits_at.isoformat() if api_key.last_reset_credits_at else None
+                )
+
+                if not external_result["success"]:
+                    logger.warning(f"外部积分重置API调用失败: {external_result['message']}")
+                    # 外部API调用失败不影响主要功能，继续返回成功
+                else:
+                    logger.info(f"外部积分重置API调用成功: {api_key.api_key[:10]}...")
+
+        except Exception as e:
+            logger.error(f"调用外部积分重置API时发生异常: {str(e)}")
+            # 外部API调用异常不影响主要功能，继续返回成功
 
         logger.info(f"积分重置成功: {current_user.user_id}, {key_id}")
         return MessageResponse(message=result["message"])

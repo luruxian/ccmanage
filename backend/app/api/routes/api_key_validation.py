@@ -26,7 +26,7 @@ class APIKeyValidationService:
         self.db = db
         self.api_key_crud = APIKeyCRUD(db)
 
-    def validate_api_key(self, api_key: str, service: str = "llm_proxy"):
+    def validate_api_key(self, api_key: str):
         """验证API密钥"""
         try:
             # 1. 一次性获取API密钥所有信息
@@ -68,7 +68,11 @@ class APIKeyValidationService:
                 data=APIKeyValidationSuccessData(
                     valid=True,
                     real_api_key=db_api_key.real_api_key,
-                    user_id=db_api_key.user_id
+                    user_id=db_api_key.user_id,
+                    last_reset_credits_at=db_api_key.last_reset_credits_at,
+                    activation_date=db_api_key.activation_date,
+                    expire_date=db_api_key.expire_date,
+                    remaining_credits=db_api_key.remaining_credits
                 )
             )
 
@@ -118,8 +122,6 @@ async def validate_api_key_endpoint(
     自定义API密钥校验端点
 
     - **api_key**: 要验证的API密钥
-    - **timestamp**: 请求时间戳
-    - **service**: 服务类型 (默认: llm_proxy)
 
     返回包含验证结果和真实API密钥的响应
     """
@@ -129,10 +131,7 @@ async def validate_api_key_endpoint(
         validation_service = APIKeyValidationService(db)
 
         # 执行验证
-        result = validation_service.validate_api_key(
-            request.api_key,
-            request.service
-        )
+        result = validation_service.validate_api_key(request.api_key)
 
         # 根据结果类型返回相应的HTTP状态码
         if isinstance(result, APIKeyValidationSuccessResponse):
