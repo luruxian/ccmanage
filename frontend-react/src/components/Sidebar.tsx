@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { Play, Key, List, TrendingUp, Book } from 'lucide-react'
 
 interface SidebarProps {
@@ -8,11 +9,11 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
   const items = [
-    { id: 'getting-started', name: '安装Claude Code', icon: Play },
-    { id: 'keys', name: 'API密钥', icon: Key },
-    { id: 'packages', name: '订阅一览', icon: List },
-    { id: 'promotion', name: '推广计划', icon: TrendingUp },
-    { id: 'resources', name: '资料中心', icon: Book },
+    { id: 'getting-started', name: '安装Claude Code', icon: Play, path: '/app' },
+    { id: 'keys', name: 'API密钥', icon: Key, path: '/app' },
+    { id: 'packages', name: '订阅一览', icon: List, path: '/app/packages' },
+    { id: 'promotion', name: '推广计划', icon: TrendingUp, path: '/app' },
+    { id: 'resources', name: '资料中心', icon: Book, path: '/app/resources' },
   ]
 
   const isActive = (id: string) => {
@@ -29,8 +30,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
             {items.map((it) => {
               const Icon = it.icon
               return (
-                <button
+                <Link
                   key={it.id}
+                  to={it.path}
                   onClick={() => onTabChange(it.id)}
                   className={`nav-item flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all ${
                     isActive(it.id)
@@ -40,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
                 >
                   <Icon className="mr-3 w-5 h-5" />
                   <span>{it.name}</span>
-                </button>
+                </Link>
               )
             })}
           </nav>

@@ -17,6 +17,7 @@ import SubscriptionDetail from '@/pages/admin/SubscriptionDetail'
 import UserKeyUsageHistory from '@/pages/admin/UserKeyUsageHistory'
 import KeyActivation from '@/pages/KeyActivation'
 import ClaudeCodeBestPractices from '@/pages/ClaudeCodeBestPractices'
+import ResourcesCenter from '@/pages/ResourcesCenter'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
 function App() {
@@ -50,7 +51,6 @@ function App() {
         <Route path="/verify-error" element={<VerifyError />} />
         <Route path="/verify-result" element={<VerifyResult />} />
         <Route path="/key-activation" element={<KeyActivation />} />
-        <Route path="/claude-code-best-practices" element={<ClaudeCodeBestPractices />} />
 
         {/* 受保护的路由 */}
         <Route path="/app" element={
@@ -61,6 +61,8 @@ function App() {
           <Route index element={<Home />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="packages" element={<Packages />} />
+          <Route path="resources" element={<ResourcesCenter />} />
+          <Route path="best-practices" element={<ClaudeCodeBestPractices />} />
           {/* 其他受保护页面路由将在这里添加 */}
         </Route>
       </Routes>
