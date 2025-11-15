@@ -11,8 +11,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
   const items = [
     { id: 'getting-started', name: '安装Claude Code', icon: Play, path: '/app' },
     { id: 'keys', name: 'API密钥', icon: Key, path: '/app' },
-    { id: 'packages', name: '订阅一览', icon: List, path: '/app/packages' },
-    { id: 'promotion', name: '推广计划', icon: TrendingUp, path: '/app' },
+    { id: 'packages', name: '订阅一览', icon: List, path: '/app' },
     { id: 'resources', name: '资料中心', icon: Book, path: '/app/resources' },
   ]
 

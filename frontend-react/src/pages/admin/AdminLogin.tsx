@@ -124,11 +124,10 @@ const AdminLogin: React.FC = () => {
         id: response.admin.id.toString(),
         name: response.admin.display_name || response.admin.username,
         email: response.admin.username, // 使用用户名作为email字段
+        role: response.admin.role, // 传递角色信息
         token: response.tokens.access_token,
         refreshToken: response.tokens.refresh_token
       })
-      // 更新用户角色
-      updateUser({ role: response.admin.role })
 
       // 跳转到管理员控制台
       console.log('管理员登录成功，立即跳转到管理员控制台')

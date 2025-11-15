@@ -17,7 +17,7 @@ interface UserState {
   isAdmin: boolean
 
   // Actions
-  login: (userData: { id: string; name: string; email: string; token: string; refreshToken: string }) => void
+  login: (userData: { id: string; name: string; email: string; role?: string; token: string; refreshToken: string }) => void
   logout: () => void
   updateUser: (userData: Partial<User>) => void
   hasActiveApiKeys: () => Promise<boolean>
@@ -38,11 +38,12 @@ export const useUserStore = create<UserState>()(
             id: userData.id,
             name: userData.name,
             email: userData.email,
+            role: userData.role, // 添加角色字段
           },
           token: userData.token,
           refreshToken: userData.refreshToken,
           isLoggedIn: true,
-          isAdmin: userData.email.includes('admin') || false, // 简化逻辑，实际应该从API获取
+          isAdmin: ['admin', 'super_admin'].includes(userData.role || ''), // 根据角色判断是否为管理员
         })
       },
 
