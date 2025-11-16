@@ -3,7 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination'
 import { ArrowLeft } from 'lucide-react'
 import request from '@/utils/request'
 
@@ -41,6 +48,12 @@ const UsageHistory: React.FC = () => {
   const [selectedApiKey, setSelectedApiKey] = useState<ApiKey | null>(null)
   const [usageRecords, setUsageRecords] = useState<UsageRecord[]>([])
   const [loadingUsageRecords, setLoadingUsageRecords] = useState(false)
+  const [pagination, setPagination] = useState({
+    current: 1,
+    size: 20,
+    total: 0,
+    totalPages: 0
+  })
 
   // 加载API密钥信息
   const loadApiKeyInfo = async () => {
@@ -70,12 +83,17 @@ const UsageHistory: React.FC = () => {
       const response: any = await request.get('/usage/history', {
         params: {
           api_key: apiKey,
-          page: 1,
-          page_size: 20
+          page: pagination.current,
+          page_size: pagination.size
         }
       })
 
       setUsageRecords(response.records || [])
+      setPagination(prev => ({
+        ...prev,
+        total: response.total || 0,
+        totalPages: Math.ceil((response.total || 0) / pagination.size)
+      }))
     } catch (error) {
       console.error('获取使用记录失败:', error)
       setUsageRecords([])
@@ -84,11 +102,25 @@ const UsageHistory: React.FC = () => {
     }
   }
 
+  // 分页事件处理
+  const handlePageChange = (page: number) => {
+    setPagination(prev => ({ ...prev, current: page }))
+  }
+
+  const handleSizeChange = (size: number) => {
+    setPagination(prev => ({
+      ...prev,
+      size,
+      current: 1,
+      totalPages: Math.ceil(prev.total / size)
+    }))
+  }
+
   useEffect(() => {
     loadApiKeyInfo()
     loadUsageRecords()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [apiKey])
+  }, [apiKey, pagination.current, pagination.size])
 
   const getStatusClass = (status?: string) => {
     switch (status) {
@@ -236,52 +268,101 @@ const UsageHistory: React.FC = () => {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-48">请求时间</TableHead>
-                    <TableHead className="w-24">积分消耗</TableHead>
-                    <TableHead className="w-32">剩余积分</TableHead>
-                    <TableHead className="w-24">响应状态</TableHead>
-                    <TableHead className="w-1/3">服务类型</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {usageRecords.map((record, index) => (
-                    <TableRow key={index}>
-                      <TableCell>
-                        {record.request_timestamp ? new Date(record.request_timestamp).toLocaleString('zh-CN') : '-'}
-                      </TableCell>
-                      <TableCell>
-                        {record.credits_used || 0}
-                      </TableCell>
-                      <TableCell>
-                        {record.remaining_credits !== null && record.remaining_credits !== undefined ? (
-                          <span className={getRemainingCreditsClass(record.remaining_credits, selectedApiKey?.total_credits)}>
-                            {record.remaining_credits}
-                          </span>
-                        ) : (
-                          <span className="text-muted-foreground">-</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          record.response_status === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
-                          {record.response_status === 'success' ? '成功' : '失败'}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/20 text-primary">
-                          {record.service}
-                        </span>
-                      </TableCell>
+            <>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-48">请求时间</TableHead>
+                      <TableHead className="w-24">积分消耗</TableHead>
+                      <TableHead className="w-32">剩余积分</TableHead>
+                      <TableHead className="w-24">响应状态</TableHead>
+                      <TableHead className="w-1/3">服务类型</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {usageRecords.map((record, index) => (
+                      <TableRow key={index}>
+                        <TableCell>
+                          {record.request_timestamp ? new Date(record.request_timestamp).toLocaleString('zh-CN') : '-'}
+                        </TableCell>
+                        <TableCell>
+                          {record.credits_used || 0}
+                        </TableCell>
+                        <TableCell>
+                          {record.remaining_credits !== null && record.remaining_credits !== undefined ? (
+                            <span className={getRemainingCreditsClass(record.remaining_credits, selectedApiKey?.total_credits)}>
+                              {record.remaining_credits}
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            record.response_status === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          }`}>
+                            {record.response_status === 'success' ? '成功' : '失败'}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/20 text-primary">
+                            {record.service}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* 分页组件 */}
+              <div className="flex items-center justify-between mt-6">
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-muted-foreground">每页显示</span>
+                  <select
+                    value={pagination.size}
+                    onChange={(e) => handleSizeChange(Number(e.target.value))}
+                    className="w-20 border rounded px-2 py-1 text-sm"
+                  >
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                  </select>
+                  <span className="text-sm text-muted-foreground">条记录</span>
+                </div>
+
+                <div className="flex items-center space-x-4">
+                  <span className="text-sm text-muted-foreground">
+                    共 {pagination.total} 条记录
+                  </span>
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          onClick={() => handlePageChange(pagination.current - 1)}
+                          className={pagination.current === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                        />
+                      </PaginationItem>
+                      <PaginationItem>
+                        <PaginationLink
+                          isActive
+                          className="cursor-pointer"
+                        >
+                          {pagination.current}
+                        </PaginationLink>
+                      </PaginationItem>
+                      <PaginationItem>
+                        <PaginationNext
+                          onClick={() => handlePageChange(pagination.current + 1)}
+                          className={pagination.current === pagination.totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
