@@ -5,7 +5,8 @@ import {
   StatCard,
   FeatureCard,
   InfoCard,
-  ProgressCard
+  ProgressCard,
+  ApiKeysManagement
 } from '@/components/dashboard'
 import {
   Key,
@@ -17,6 +18,34 @@ import {
   Bell,
   Circle
 } from 'lucide-react'
+import request from '@/utils/request'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+
+interface ApiKey {
+  id?: string;
+  user_key_id: string;
+  key_name: string;
+  api_key: string;
+  is_active: boolean;
+  usage_count?: number;
+  last_used_at?: string;
+  created_at: string;
+  package_name?: string;
+  activation_date?: string;
+  expire_date?: string;
+  remaining_days?: number;
+  status?: string;
+  total_credits?: number;
+  remaining_credits?: number;
+}
 
 interface DashboardStats {
   activeKeys: number
@@ -38,9 +67,16 @@ const NewDashboard: React.FC = () => {
     usagePercentage: 0
   })
   const [loading, setLoading] = useState(true)
+  const [apiKeys, setApiKeys] = useState<ApiKey[]>([])
+  const [loadingKeys, setLoadingKeys] = useState(false)
+  const [keyStats, setKeyStats] = useState({ active: 0 })
+  const [resetCreditsDialogVisible, setResetCreditsDialogVisible] = useState(false)
+  const [resettingCredits, setResettingCredits] = useState(false)
+  const [resetCreditsKey, setResetCreditsKey] = useState<ApiKey | null>(null)
 
   useEffect(() => {
     loadDashboardData()
+    loadUserKeys()
   }, [])
 
   const loadDashboardData = async () => {
@@ -60,6 +96,152 @@ const NewDashboard: React.FC = () => {
       console.error('加载dashboard数据失败:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  // 加载用户密钥
+  const loadUserKeys = async () => {
+    try {
+      setLoadingKeys(true)
+      const response: any = await request.get('/keys/')
+      setApiKeys(response.keys || [])
+
+      // 更新统计数据
+      const activeCount = (response.keys || []).filter((k: ApiKey) => k.status === 'active').length
+      setKeyStats({ active: activeCount })
+    } catch (error) {
+      console.error('获取密钥列表失败:', error)
+    } finally {
+      setLoadingKeys(false)
+    }
+  }
+
+  // 重置积分相关函数
+  const resetCredits = (key: ApiKey) => {
+    setResetCreditsKey(key)
+    setResetCreditsDialogVisible(true)
+  }
+
+  // 确认重置积分
+  const confirmResetCredits = async () => {
+    if (!resetCreditsKey) return
+
+    try {
+      setResettingCredits(true)
+
+      // 检查key对象是否有有效的ID
+      const keyId = resetCreditsKey.id || resetCreditsKey.user_key_id
+      if (!keyId) {
+        alert('密钥ID无效，无法重置积分')
+        return
+      }
+
+      console.log('重置积分请求 - 密钥ID:', keyId)
+      const response = await request.put(`/keys/${keyId}/reset-credits`)
+      console.log('重置积分响应:', response)
+
+      // 重新加载密钥列表以更新显示
+      await loadUserKeys()
+
+      // 安全地访问响应数据
+      const message = response?.data?.message || '积分重置成功'
+      alert(message)
+
+      // 关闭弹窗
+      setResetCreditsDialogVisible(false)
+      setResetCreditsKey(null)
+    } catch (error: any) {
+      console.error('重置积分失败:', error)
+
+      // 改进错误处理
+      let message = '重置失败'
+      if (error?.response?.data?.detail) {
+        message = error.response.data.detail
+      } else if (error?.response?.data?.message) {
+        message = error.response.data.message
+      } else if (error?.message) {
+        message = error.message
+      }
+
+      alert(message)
+    } finally {
+      setResettingCredits(false)
+    }
+  }
+
+  // 处理重置积分取消
+  const handleResetCreditsCancel = () => {
+    setResetCreditsKey(null)
+    setResetCreditsDialogVisible(false)
+  }
+
+  // 下载配置函数
+  const downloadConfig = async (key: ApiKey) => {
+    try {
+      // 检查key对象是否有有效的ID
+      const keyId = key.id || key.user_key_id
+      if (!keyId) {
+        alert('密钥ID无效，无法下载配置')
+        return
+      }
+
+      console.log('下载配置请求 - 密钥ID:', keyId)
+      const response: any = await request.get(`/keys/${keyId}/download-config`)
+      console.log('下载配置响应:', response)
+
+      if (response.config && response.filename) {
+        // 创建 settings.json
+        const settingsBlob = new Blob([JSON.stringify(response.config, null, 2)], {
+          type: 'application/json'
+        })
+
+        // 创建 config.json - 基于 settings_template.json 的结构
+        const configData = {
+          primaryApiKey: key.api_key
+        }
+        const configBlob = new Blob([JSON.stringify(configData, null, 2)], {
+          type: 'application/json'
+        })
+
+        // 创建ZIP文件
+        const JSZip = await import('jszip')
+        const zip = new JSZip.default()
+        zip.file('settings.json', settingsBlob)
+        zip.file('config.json', configBlob)
+
+        // 生成ZIP文件
+        const zipBlob = await zip.generateAsync({type: 'blob'})
+
+        // 创建下载链接
+        const url = URL.createObjectURL(zipBlob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'claude-code-config.zip'
+        document.body.appendChild(a)
+        a.click()
+
+        // 清理
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+
+        alert('配置文件下载成功，包含 settings.json 和 config.json')
+      } else {
+        alert('下载失败：响应数据格式错误')
+      }
+    } catch (error: any) {
+      console.error('下载配置失败:', error)
+
+      // 改进错误处理
+      let message = '下载设置文件失败'
+      if (error?.response?.data?.detail) {
+        message = error.response.data.detail
+      } else if (error?.response?.data?.message) {
+        message = error.response.data.message
+      } else if (error?.message) {
+        message = error.message
+      }
+
+      alert(message)
     }
   }
 
@@ -172,6 +354,21 @@ const NewDashboard: React.FC = () => {
               variant="primary"
             />
 
+            {/* API密钥管理 */}
+            <ApiKeysManagement
+              apiKeys={apiKeys}
+              loadingKeys={loadingKeys}
+              keyStats={keyStats}
+              onRefreshKeys={loadUserKeys}
+              onViewUsageHistory={(key) => {
+                // 这里可以导航到使用历史页面
+                console.log('查看使用历史:', key)
+                alert('使用历史功能暂未实现')
+              }}
+              onResetCredits={resetCredits}
+              onDownloadConfig={downloadConfig}
+            />
+
             {/* 功能卡片 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FeatureCard
@@ -257,6 +454,41 @@ const NewDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* 重置积分确认对话框 */}
+      <Dialog open={resetCreditsDialogVisible} onOpenChange={setResetCreditsDialogVisible}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>确认重置积分</DialogTitle>
+            <DialogDescription>
+              您确定要重置此API密钥的积分吗？此操作将把积分恢复为初始值，无法撤销。
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            {resetCreditsKey && (
+              <div className="text-sm text-muted-foreground">
+                <p><strong>订阅名称:</strong> {resetCreditsKey.package_name || '未知订阅'}</p>
+                <p><strong>API密钥:</strong> {resetCreditsKey.api_key.substring(0, 4) + '****' + resetCreditsKey.api_key.substring(resetCreditsKey.api_key.length - 4)}</p>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={handleResetCreditsCancel}
+              disabled={resettingCredits}
+            >
+              取消
+            </Button>
+            <Button
+              onClick={confirmResetCredits}
+              disabled={resettingCredits}
+            >
+              {resettingCredits ? '重置中...' : '确认重置'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
