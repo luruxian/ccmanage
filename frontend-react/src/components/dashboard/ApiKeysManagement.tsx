@@ -158,17 +158,19 @@ const ApiKeysManagement: React.FC<ApiKeysManagementProps> = ({
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[200px]">订阅名称</TableHead>
-                    <TableHead className="w-[200px]">API密钥</TableHead>
-                    <TableHead className="w-[100px]">状态</TableHead>
-                    <TableHead className="w-[120px]">激活时间</TableHead>
-                    <TableHead className="w-[120px]">过期时间</TableHead>
-                    <TableHead className="w-[100px]">剩余天数</TableHead>
-                    <TableHead className="w-[200px]">操作</TableHead>
+                    <TableHead className="w-[180px]">订阅名称</TableHead>
+                    <TableHead className="w-[180px]">API密钥</TableHead>
+                    <TableHead className="w-[80px]">状态</TableHead>
+                    <TableHead className="w-[100px]">激活时间</TableHead>
+                    <TableHead className="w-[100px]">过期时间</TableHead>
+                    <TableHead className="w-[80px]">剩余天数</TableHead>
+                    <TableHead className="w-[160px]">操作</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {apiKeys.map((key) => (
+                  {apiKeys
+                    .filter((key) => key.status === 'active') // 只显示激活状态的密钥
+                    .map((key) => (
                     <React.Fragment key={key.user_key_id}>
                       {/* 第一行：主要信息 */}
                       <TableRow>
@@ -224,14 +226,14 @@ const ApiKeysManagement: React.FC<ApiKeysManagementProps> = ({
                               size="sm"
                               onClick={() => onResetCredits(key)}
                             >
-                              重置积分
+                              重置
                             </Button>
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => onDownloadConfig(key)}
                             >
-                              下载配置
+                              下载
                             </Button>
                           </div>
                         </TableCell>
@@ -255,7 +257,7 @@ const ApiKeysManagement: React.FC<ApiKeysManagementProps> = ({
                               </div>
                             </div>
                             {key.total_credits && key.total_credits > 0 && (
-                              <div className="w-48">
+                              <div className="w-40">
                                 <div className="flex justify-between text-sm mb-1">
                                   <span className="text-muted-foreground">剩余积分</span>
                                   <span>
