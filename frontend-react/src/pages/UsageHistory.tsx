@@ -11,6 +11,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { ArrowLeft } from 'lucide-react'
 import request from '@/utils/request'
 
@@ -258,11 +265,11 @@ const UsageHistory: React.FC = () => {
           ) : usageRecords.length === 0 ? (
             <div className="text-center py-8">
               <div className="text-muted-foreground mb-4">
-                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="mx-auto h-12 w-12 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">暂无使用记录</h3>
+              <h3 className="text-lg font-medium text-foreground mb-2">暂无使用记录</h3>
               <p className="text-sm text-muted-foreground">
                 该API密钥暂无使用记录
               </p>
@@ -320,15 +327,19 @@ const UsageHistory: React.FC = () => {
               <div className="flex items-center justify-between mt-6">
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-muted-foreground">每页显示</span>
-                  <select
-                    value={pagination.size}
-                    onChange={(e) => handleSizeChange(Number(e.target.value))}
-                    className="w-20 border rounded px-2 py-1 text-sm"
+                  <Select
+                    value={pagination.size.toString()}
+                    onValueChange={(value) => handleSizeChange(Number(value))}
                   >
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                    <option value="50">50</option>
-                  </select>
+                    <SelectTrigger className="w-20">
+                      <SelectValue placeholder="选择数量" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="10">10</SelectItem>
+                      <SelectItem value="20">20</SelectItem>
+                      <SelectItem value="50">50</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <span className="text-sm text-muted-foreground">条记录</span>
                 </div>
 
