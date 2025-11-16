@@ -355,8 +355,8 @@ const Dashboard: React.FC = () => {
 
       {/* 密钥统计 */}
       <div className="flex space-x-4">
-        <div className="flex items-center space-x-2 p-3 bg-blue-50 rounded-lg">
-          <div className="text-blue-600">🔑</div>
+        <div className="flex items-center space-x-2 p-3 bg-primary/10 rounded-lg">
+          <div className="text-primary">🔑</div>
           <div>
             <div className="text-lg font-bold">{keyStats.active}</div>
             <div className="text-sm text-muted-foreground">激活密钥</div>
@@ -667,7 +667,7 @@ const Dashboard: React.FC = () => {
                         </span>
                       </TableCell>
                       <TableCell>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/20 text-primary">
                           {record.service}
                         </span>
                       </TableCell>

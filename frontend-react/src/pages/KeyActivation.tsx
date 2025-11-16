@@ -130,7 +130,7 @@ const KeyActivation: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary/10 to-primary/20 py-12 px-4">
       {/* Toast 通知 */}
       {toastMessage && (
         <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg flex items-center gap-3 animate-in fade-in slide-in-from-top-2 ${
@@ -168,7 +168,7 @@ const KeyActivation: React.FC = () => {
                   placeholder="请输入要激活的用户Key"
                   value={formData.userKey}
                   onChange={handleInputChange}
-                  className="h-12 text-base border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                  className="h-12 text-base border-gray-200 focus:border-primary focus:ring-primary"
                 />
                 <div className="text-sm text-gray-500 mt-1">
                   输入您获得的用户Key，格式如：sk-xxxxxxxx...
@@ -177,7 +177,7 @@ const KeyActivation: React.FC = () => {
 
               <Button
                 type="submit"
-                className="w-full h-12 text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+                className="w-full h-12 text-base font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary hover:to-primary/90 border-0 shadow-lg hover:shadow-xl transition-all duration-300"
                 disabled={loading}
               >
                 {loading ? '激活中...' : '激活用户Key'}
@@ -188,7 +188,7 @@ const KeyActivation: React.FC = () => {
               <Button
                 variant="outline"
                 onClick={() => navigate('/app/dashboard')}
-                className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
+                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
               >
                 返回控制台
               </Button>
@@ -239,7 +239,7 @@ const KeyActivation: React.FC = () => {
             <Button
               type="button"
               onClick={goToDashboard}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+              className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary hover:to-primary/90"
             >
               前往管理
             </Button>

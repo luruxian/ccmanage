@@ -1,29 +1,15 @@
 /**
- * 设计令牌系统 - agnets.app AI工具管理平台
+ * 设计令牌系统 - 
  *
- * 这个文件定义了项目的所有设计令牌，确保UI设计的一致性
+ * 采用现代简洁的紫色主题
  * 所有颜色、间距、字体等都必须使用这里定义的令牌
  */
 
 // ==================== 色彩系统 ====================
 
 export const colors = {
-  // 主色调 - 科技蓝紫渐变
+  // 主色调 - 紫色系 
   primary: {
-    50: '#f0f9ff',
-    100: '#e0f2fe',
-    200: '#bae6fd',
-    300: '#7dd3fc',
-    400: '#38bdf8',
-    500: '#0ea5e9',
-    600: '#0284c7',
-    700: '#0369a1',
-    800: '#075985',
-    900: '#0c4a6e',
-  },
-
-  // 辅助色 - 紫色系
-  secondary: {
     50: '#faf5ff',
     100: '#f3e8ff',
     200: '#e9d5ff',
@@ -34,6 +20,20 @@ export const colors = {
     700: '#7c3aed',
     800: '#6b21a8',
     900: '#581c87',
+  },
+
+  // 强调色 - 橙色系 
+  accent: {
+    50: '#fff7ed',
+    100: '#ffedd5',
+    200: '#fed7aa',
+    300: '#fdba74',
+    400: '#fb923c',
+    500: '#f97316',
+    600: '#ea580c',
+    700: '#c2410c',
+    800: '#9a3412',
+    900: '#7c2d12',
   },
 
   // 语义色 - 成功
@@ -78,7 +78,7 @@ export const colors = {
     900: '#7f1d1d',
   },
 
-  // 中性色
+  // 中性色 
   gray: {
     50: '#f8fafc',
     100: '#f1f5f9',
@@ -109,7 +109,7 @@ export const spacing = {
 
 export const typography = {
   fontFamily: {
-    sans: ['Inter', 'system-ui', 'sans-serif'],
+    sans: ['system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'],
     mono: ['JetBrains Mono', 'monospace'],
   },
 
