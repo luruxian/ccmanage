@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import {
   Pagination,
@@ -18,7 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ArrowLeft } from 'lucide-react'
+import { StatCard, FeatureCard } from '@/components/dashboard'
+import { ArrowLeft, History, BarChart3, Calendar, CreditCard } from 'lucide-react'
 import request from '@/utils/request'
 
 interface ApiKey {
@@ -49,12 +49,25 @@ interface UsageRecord {
   error_message?: string
 }
 
+interface UsageStats {
+  totalRequests: number
+  totalCreditsUsed: number
+  successRate: number
+  uniqueServices: number
+}
+
 const UsageHistory: React.FC = () => {
   const { apiKey } = useParams<{ apiKey: string }>()
   const navigate = useNavigate()
   const [selectedApiKey, setSelectedApiKey] = useState<ApiKey | null>(null)
   const [usageRecords, setUsageRecords] = useState<UsageRecord[]>([])
   const [loadingUsageRecords, setLoadingUsageRecords] = useState(false)
+  const [usageStats, setUsageStats] = useState<UsageStats>({
+    totalRequests: 0,
+    totalCreditsUsed: 0,
+    successRate: 0,
+    uniqueServices: 0
+  })
   const [pagination, setPagination] = useState({
     current: 1,
     size: 20,
@@ -95,12 +108,27 @@ const UsageHistory: React.FC = () => {
         }
       })
 
-      setUsageRecords(response.records || [])
+      const records = response.records || []
+      setUsageRecords(records)
       setPagination(prev => ({
         ...prev,
         total: response.total || 0,
         totalPages: Math.ceil((response.total || 0) / pagination.size)
       }))
+
+      // 计算使用统计数据
+      const totalRequests = response.total || 0
+      const totalCreditsUsed = records.reduce((sum: number, record: UsageRecord) => sum + (record.credits_used || 0), 0)
+      const successCount = records.filter((record: UsageRecord) => record.response_status === 'success').length
+      const successRate = records.length > 0 ? Math.round((successCount / records.length) * 100) : 0
+      const uniqueServices = new Set(records.map((record: UsageRecord) => record.service)).size
+
+      setUsageStats({
+        totalRequests,
+        totalCreditsUsed,
+        successRate,
+        uniqueServices
+      })
     } catch (error) {
       console.error('获取使用记录失败:', error)
       setUsageRecords([])
@@ -176,90 +204,128 @@ const UsageHistory: React.FC = () => {
   }
 
   return (
-    <div className="p-6">
-      {/* 返回按钮和标题 */}
-      <div className="flex items-center space-x-4 mb-6">
-        <Button
-          variant="outline"
-          onClick={() => navigate('/app/dashboard')}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          返回仪表盘
-        </Button>
-        <h2 className="text-2xl font-bold">使用历史</h2>
-      </div>
-
-      {/* API密钥基本信息 */}
-      {selectedApiKey && (
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <span>🔑</span>
-              <span>API密钥信息</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="font-medium text-muted-foreground">订阅名称:</span>
-                <div className="mt-1">{selectedApiKey.package_name || '未知订阅'}</div>
-              </div>
-              <div>
-                <span className="font-medium text-muted-foreground">API密钥:</span>
-                <div className="mt-1">
-                  <code className="bg-muted px-2 py-1 rounded text-sm">
-                    {maskApiKey(selectedApiKey.api_key)}
-                  </code>
-                </div>
-              </div>
-              <div>
-                <span className="font-medium text-muted-foreground">状态:</span>
-                <div className="mt-1">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusClass(selectedApiKey.status)}`}>
-                    {getStatusText(selectedApiKey.status)}
-                  </span>
-                </div>
-              </div>
-              <div>
-                <span className="font-medium text-muted-foreground">激活时间:</span>
-                <div className="mt-1">
-                  {selectedApiKey.activation_date ? new Date(selectedApiKey.activation_date).toLocaleString('zh-CN') : '未激活'}
-                </div>
-              </div>
-              <div>
-                <span className="font-medium text-muted-foreground">剩余积分:</span>
-                <div className="mt-1">
-                  <span className={getRemainingCreditsClass(selectedApiKey.remaining_credits, selectedApiKey.total_credits)}>
-                    {selectedApiKey.remaining_credits !== null ? selectedApiKey.remaining_credits : '-'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* 使用记录表格 */}
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle className="flex items-center space-x-2">
-              <span>📊</span>
-              <span>使用记录</span>
-            </CardTitle>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* 返回按钮和标题 */}
+        <div className="mb-8">
+          <div className="flex items-center space-x-4 mb-4">
             <Button
               variant="outline"
-              onClick={loadUsageRecords}
-              disabled={loadingUsageRecords}
+              onClick={() => navigate('/app/dashboard')}
             >
-              刷新
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              返回仪表盘
             </Button>
           </div>
-        </CardHeader>
-        <CardContent>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">使用历史</h1>
+          <p className="text-lg text-gray-600">
+            查看API密钥的详细使用记录和统计信息
+          </p>
+        </div>
+
+        {/* API密钥基本信息卡片 */}
+        {selectedApiKey && (
+          <div className="mb-8">
+            <FeatureCard
+              title="API密钥信息"
+              description="当前查看的API密钥详细信息"
+              icon={CreditCard}
+              variant="gradient"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="font-medium text-muted-foreground">订阅名称:</span>
+                  <div className="mt-1 font-medium">{selectedApiKey.package_name || '未知订阅'}</div>
+                </div>
+                <div>
+                  <span className="font-medium text-muted-foreground">API密钥:</span>
+                  <div className="mt-1">
+                    <code className="bg-muted px-2 py-1 rounded text-sm font-mono">
+                      {maskApiKey(selectedApiKey.api_key)}
+                    </code>
+                  </div>
+                </div>
+                <div>
+                  <span className="font-medium text-muted-foreground">状态:</span>
+                  <div className="mt-1">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusClass(selectedApiKey.status)}`}>
+                      {getStatusText(selectedApiKey.status)}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <span className="font-medium text-muted-foreground">激活时间:</span>
+                  <div className="mt-1 font-medium">
+                    {selectedApiKey.activation_date ? new Date(selectedApiKey.activation_date).toLocaleString('zh-CN') : '未激活'}
+                  </div>
+                </div>
+                <div>
+                  <span className="font-medium text-muted-foreground">剩余积分:</span>
+                  <div className="mt-1">
+                    <span className={`font-medium ${getRemainingCreditsClass(selectedApiKey.remaining_credits, selectedApiKey.total_credits)}`}>
+                      {selectedApiKey.remaining_credits !== null ? selectedApiKey.remaining_credits : '-'}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <span className="font-medium text-muted-foreground">总积分:</span>
+                  <div className="mt-1 font-medium">
+                    {selectedApiKey.total_credits !== null ? selectedApiKey.total_credits : '-'}
+                  </div>
+                </div>
+              </div>
+            </FeatureCard>
+          </div>
+        )}
+
+        {/* 使用统计卡片 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <StatCard
+            title="总请求次数"
+            value={usageStats.totalRequests}
+            description="所有时间内的请求总数"
+            icon={History}
+            variant="gradient"
+          />
+          <StatCard
+            title="积分消耗"
+            value={usageStats.totalCreditsUsed}
+            description="累计消耗的积分数量"
+            icon={BarChart3}
+            variant="gradient"
+          />
+          <StatCard
+            title="成功率"
+            value={`${usageStats.successRate}%`}
+            description="成功请求的比例"
+            icon={Calendar}
+            variant="gradient"
+          />
+          <StatCard
+            title="服务类型"
+            value={usageStats.uniqueServices}
+            description="使用的不同服务数量"
+            icon={CreditCard}
+            variant="gradient"
+          />
+        </div>
+
+        {/* 使用记录卡片 */}
+        <FeatureCard
+          title="使用记录"
+          description="详细的API调用记录和统计信息"
+          icon={History}
+          actions={[
+            {
+              label: '刷新',
+              onClick: loadUsageRecords,
+              variant: 'outline'
+            }
+          ]}
+        >
           {loadingUsageRecords ? (
             <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
               <p className="mt-2 text-sm text-muted-foreground">加载中...</p>
             </div>
           ) : usageRecords.length === 0 ? (
@@ -276,55 +342,62 @@ const UsageHistory: React.FC = () => {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-48">请求时间</TableHead>
-                      <TableHead className="w-24">积分消耗</TableHead>
-                      <TableHead className="w-32">剩余积分</TableHead>
-                      <TableHead className="w-24">响应状态</TableHead>
-                      <TableHead className="w-1/3">服务类型</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {usageRecords.map((record, index) => (
-                      <TableRow key={index}>
-                        <TableCell>
-                          {record.request_timestamp ? new Date(record.request_timestamp).toLocaleString('zh-CN') : '-'}
-                        </TableCell>
-                        <TableCell>
-                          {record.credits_used || 0}
-                        </TableCell>
-                        <TableCell>
-                          {record.remaining_credits !== null && record.remaining_credits !== undefined ? (
-                            <span className={getRemainingCreditsClass(record.remaining_credits, selectedApiKey?.total_credits)}>
-                              {record.remaining_credits}
+              {/* 记录卡片网格 */}
+              <div className="space-y-4 mb-6">
+                {usageRecords.map((record, index) => (
+                  <Card key={index} className="border-l-4 border-primary/50 hover:shadow-md transition-all duration-300">
+                    <CardContent className="p-4">
+                      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm">
+                        <div>
+                          <span className="font-medium text-muted-foreground">请求时间</span>
+                          <div className="mt-1 font-medium">
+                            {record.request_timestamp ? new Date(record.request_timestamp).toLocaleString('zh-CN') : '-'}
+                          </div>
+                        </div>
+                        <div>
+                          <span className="font-medium text-muted-foreground">积分消耗</span>
+                          <div className="mt-1 font-medium text-orange-600">
+                            {record.credits_used || 0}
+                          </div>
+                        </div>
+                        <div>
+                          <span className="font-medium text-muted-foreground">剩余积分</span>
+                          <div className="mt-1">
+                            {record.remaining_credits !== null && record.remaining_credits !== undefined ? (
+                              <span className={`font-medium ${getRemainingCreditsClass(record.remaining_credits, selectedApiKey?.total_credits)}`}>
+                                {record.remaining_credits}
+                              </span>
+                            ) : (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </div>
+                        </div>
+                        <div>
+                          <span className="font-medium text-muted-foreground">响应状态</span>
+                          <div className="mt-1">
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              record.response_status === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                            }`}>
+                              {record.response_status === 'success' ? '成功' : '失败'}
                             </span>
-                          ) : (
-                            <span className="text-muted-foreground">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            record.response_status === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                          }`}>
-                            {record.response_status === 'success' ? '成功' : '失败'}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/20 text-primary">
-                            {record.service}
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                          </div>
+                        </div>
+                        <div>
+                          <span className="font-medium text-muted-foreground">服务类型</span>
+                          <div className="mt-1">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/20 text-primary">
+                              {record.service}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
 
               {/* 分页组件 */}
-              <div className="flex items-center justify-between mt-6">
+              <div className="flex items-center justify-between mt-6 pt-4 border-t">
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-muted-foreground">每页显示</span>
                   <Select
@@ -375,8 +448,8 @@ const UsageHistory: React.FC = () => {
               </div>
             </>
           )}
-        </CardContent>
-      </Card>
+        </FeatureCard>
+      </div>
     </div>
   )
 }
