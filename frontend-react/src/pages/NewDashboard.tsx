@@ -361,9 +361,8 @@ const NewDashboard: React.FC = () => {
               keyStats={keyStats}
               onRefreshKeys={loadUserKeys}
               onViewUsageHistory={(key) => {
-                // 这里可以导航到使用历史页面
-                console.log('查看使用历史:', key)
-                alert('使用历史功能暂未实现')
+                // 导航到使用历史页面
+                navigate(`/app/usage-history/${encodeURIComponent(key.api_key)}`)
               }}
               onResetCredits={resetCredits}
               onDownloadConfig={downloadConfig}

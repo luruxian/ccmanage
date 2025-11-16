@@ -36,7 +36,7 @@ class APIKeyCRUD:
         query = self.db.query(APIKey).filter(APIKey.user_id == user_id)
 
         if active_only:
-            query = query.filter(APIKey.is_active == True)
+            query = query.filter(APIKey.status == 'active')  # 使用status字段过滤，只返回激活状态的密钥
 
         return query.all()
 
@@ -50,7 +50,7 @@ class APIKeyCRUD:
         )
 
         if active_only:
-            query = query.filter(APIKey.is_active == True)
+            query = query.filter(APIKey.status == 'active')
 
         # 获取所有记录
         results = query.all()
@@ -398,6 +398,7 @@ class APIKeyCRUD:
                 self.db.query(APIKey, Package)
                 .outerjoin(Package, APIKey.package_id == Package.id)
                 .filter(APIKey.user_id == user_id)
+                .filter(APIKey.status == 'active')  # 只返回激活状态的密钥
             )
 
             results = query.all()

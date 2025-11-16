@@ -18,6 +18,7 @@ import UserKeyUsageHistory from '@/pages/admin/UserKeyUsageHistory'
 import KeyActivation from '@/pages/KeyActivation'
 import ClaudeCodeBestPractices from '@/pages/ClaudeCodeBestPractices'
 import ResourcesCenter from '@/pages/ResourcesCenter'
+import UsageHistory from '@/pages/UsageHistory'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
 function App() {
@@ -63,6 +64,7 @@ function App() {
           <Route path="packages" element={<Packages />} />
           <Route path="resources" element={<ResourcesCenter />} />
           <Route path="best-practices" element={<ClaudeCodeBestPractices />} />
+          <Route path="usage-history/:apiKey" element={<UsageHistory />} />
           {/* 其他受保护页面路由将在这里添加 */}
         </Route>
       </Routes>
