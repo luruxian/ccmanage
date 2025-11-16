@@ -15,9 +15,9 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
   const items = [
-    { id: 'getting-started', name: '安装Claude Code', icon: Play, path: '/app' },
     { id: 'keys', name: 'API密钥', icon: Key, path: '/app' },
-    { id: 'packages', name: '订阅一览', icon: List, path: '/app' },
+    { id: 'getting-started', name: '安装Claude Code', icon: Play, path: '/app/best-practices' },
+    { id: 'packages', name: '订阅一览', icon: List, path: '/app/packages' },
     { id: 'resources', name: '资料中心', icon: Book, path: '/app/resources' },
   ]
 
@@ -41,14 +41,14 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
                       <Link
                         to={it.path}
                         onClick={() => onTabChange(it.id)}
-                        className={`flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all w-full ${
+                        className={`flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all w-full whitespace-nowrap ${
                           isActive(it.id)
                             ? 'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-md'
                             : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                         }`}
                       >
-                        <Icon className="mr-3 w-5 h-5" />
-                        <span>{it.name}</span>
+                        <Icon className="mr-3 w-5 h-5 flex-shrink-0" />
+                        <span className="truncate">{it.name}</span>
                       </Link>
                     </NavigationMenuLink>
                   </NavigationMenuItem>

@@ -103,6 +103,8 @@ export const spacing = {
   xl: '2rem',      // 32px
   '2xl': '3rem',   // 48px
   '3xl': '4rem',   // 64px
+  '4xl': '6rem',   // 96px
+  '5xl': '8rem',   // 128px
 } as const
 
 // ==================== 字体系统 ====================
@@ -123,19 +125,28 @@ export const typography = {
     '3xl': '1.875rem', // 30px
     '4xl': '2.25rem',  // 36px
     '5xl': '3rem',     // 48px
+    '6xl': '3.75rem',  // 60px
+    '7xl': '4.5rem',   // 72px
   },
 
   fontWeight: {
+    thin: '100',
+    extralight: '200',
+    light: '300',
     normal: '400',
     medium: '500',
     semibold: '600',
     bold: '700',
+    extrabold: '800',
+    black: '900',
   },
 
   lineHeight: {
+    none: '1',
     tight: '1.25',
     normal: '1.5',
     relaxed: '1.75',
+    loose: '2',
   },
 } as const
 
@@ -149,17 +160,22 @@ export const borderRadius = {
   lg: '0.5rem',     // 8px
   xl: '0.75rem',    // 12px
   '2xl': '1rem',    // 16px
+  '3xl': '1.5rem',  // 24px
   full: '9999px',
 } as const
 
 // ==================== 阴影系统 ====================
 
 export const shadows = {
-  sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
-  base: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
-  md: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-  lg: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
-  xl: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+  none: '0 0 #0000',
+  xs: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+  sm: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+  base: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+  md: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+  lg: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+  xl: '0 25px 50px -12px rgb(0 0 0 / 0.25)',
+  '2xl': '0 50px 100px -12px rgb(0 0 0 / 0.25)',
+  inner: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)',
 } as const
 
 // ==================== 动画系统 ====================
@@ -207,6 +223,22 @@ export const semanticColors = {
     inactive: colors.gray[400],
     pending: colors.warning[500],
     error: colors.error[500],
+  },
+
+  // 卡片颜色映射
+  card: {
+    background: colors.gray[50],
+    border: colors.gray[200],
+    shadow: 'rgba(0, 0, 0, 0.1)',
+  },
+
+  // 渐变颜色映射
+  gradient: {
+    primary: `linear-gradient(135deg, ${colors.primary[500]}, ${colors.primary[600]})`,
+    secondary: `linear-gradient(135deg, ${colors.accent[500]}, ${colors.accent[600]})`,
+    success: `linear-gradient(135deg, ${colors.success[500]}, ${colors.success[600]})`,
+    warning: `linear-gradient(135deg, ${colors.warning[500]}, ${colors.warning[600]})`,
+    error: `linear-gradient(135deg, ${colors.error[500]}, ${colors.error[600]})`,
   },
 } as const
 

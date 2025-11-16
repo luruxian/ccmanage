@@ -1,5 +1,4 @@
 import React from 'react';
-import Layout from '@/components/Layout';
 import SubscriptionPlans from '@/components/dashboard/SubscriptionPlans';
 
 const Packages: React.FC = () => {
@@ -22,15 +21,13 @@ const Packages: React.FC = () => {
   };
 
   return (
-    <Layout>
-      <div className="container mx-auto py-6">
-        <SubscriptionPlans
-          onDayCardClick={handleDayCardClick}
-          onWeekCardClick={handleWeekCardClick}
-          onMonthCardClick={handleMonthCardClick}
-        />
-      </div>
-    </Layout>
+    <div className="container mx-auto py-6">
+      <SubscriptionPlans
+        onDayCardClick={handleDayCardClick}
+        onWeekCardClick={handleWeekCardClick}
+        onMonthCardClick={handleMonthCardClick}
+      />
+    </div>
   );
 };
 
