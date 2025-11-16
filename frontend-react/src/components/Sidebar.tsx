@@ -1,6 +1,12 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Play, Key, List, TrendingUp, Book } from 'lucide-react'
+import { Play, Key, List, Book } from 'lucide-react'
+import {
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuLink,
+} from '@/components/ui/navigation-menu'
 
 interface SidebarProps {
   activeTab: string
@@ -23,28 +29,33 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
 
   return (
     <aside className="hidden md:block w-64">
-      <div className="sidebar bg-gradient-to-b from-slate-800 to-slate-900 min-h-screen p-10">
+      <div className="sidebar bg-gradient-to-b from-background to-muted min-h-screen p-10">
         <div className="sidebar-content">
-          <nav className="sidebar-nav flex flex-col space-y-2">
-            {items.map((it) => {
-              const Icon = it.icon
-              return (
-                <Link
-                  key={it.id}
-                  to={it.path}
-                  onClick={() => onTabChange(it.id)}
-                  className={`nav-item flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all ${
-                    isActive(it.id)
-                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md'
-                      : 'text-slate-300 hover:bg-slate-700 hover:text-white'
-                  }`}
-                >
-                  <Icon className="mr-3 w-5 h-5" />
-                  <span>{it.name}</span>
-                </Link>
-              )
-            })}
-          </nav>
+          <NavigationMenu orientation="vertical" className="w-full">
+            <NavigationMenuList className="flex flex-col space-y-2">
+              {items.map((it) => {
+                const Icon = it.icon
+                return (
+                  <NavigationMenuItem key={it.id} className="w-full">
+                    <NavigationMenuLink asChild>
+                      <Link
+                        to={it.path}
+                        onClick={() => onTabChange(it.id)}
+                        className={`flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all w-full ${
+                          isActive(it.id)
+                            ? 'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-md'
+                            : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                        }`}
+                      >
+                        <Icon className="mr-3 w-5 h-5" />
+                        <span>{it.name}</span>
+                      </Link>
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                )
+              })}
+            </NavigationMenuList>
+          </NavigationMenu>
         </div>
       </div>
     </aside>

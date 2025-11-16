@@ -181,8 +181,8 @@ const Register: React.FC = () => {
                     id="agreement"
                     name="agreement"
                     checked={formData.agreement}
-                    onCheckedChange={(checked) =>
-                      setFormData(prev => ({ ...prev, agreement: checked as boolean }))
+                    onCheckedChange={(checked: boolean) =>
+                      setFormData(prev => ({ ...prev, agreement: checked }))
                     }
                   />
                   <Label htmlFor="agreement" className="text-sm">

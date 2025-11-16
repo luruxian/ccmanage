@@ -5,8 +5,8 @@ import { useUserStore } from '@/store/user';
 import SubscriptionPlans from '@/components/dashboard/SubscriptionPlans';
 
 const Packages: React.FC = () => {
-  const navigate = useNavigate();
-  const { isLoggedIn } = useUserStore();
+  // const navigate = useNavigate();
+  // const { isLoggedIn } = useUserStore();
 
   const handleDayCardClick = () => {
     // TODO: 实现一日体验卡购买逻辑

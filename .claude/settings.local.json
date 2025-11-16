@@ -6,16 +6,13 @@
       "Bash(venv/Scripts/activate)",
       "Bash(venv/Scripts/python.exe:*)",
       "Bash(where:*)",
-      "Bash(venvScriptspython.exe:*)",
       "Bash(dir:*)",
-      "Bash(\"venv\\Scripts\\python.exe\":*)",
       "Bash(echo:*)",
       "Bash(set:*)",
       "Bash(%PATH%)",
       "Bash(cmd /c \"set PATH=venv\\Scripts;%PATH% && python --version\")",
       "Bash(cmd:*)",
       "Bash(cat:*)",
-      "Bash(timeout 30 npm install:*)",
       "Bash(npm run build)",
       "WebFetch(domain:ui.nuxt.com)",
       "mcp__shadcn__search_items_in_registries",
@@ -36,7 +33,9 @@
       "mcp__chrome-devtools__take_screenshot",
       "Bash(mkdir:*)",
       "mcp__shadcn__get_project_registries",
-      "mcp__shadcn__get_audit_checklist"
+      "mcp__shadcn__get_audit_checklist",
+      "mcp__shadcn__get_item_examples_from_registries",
+      "mcp__shadcn__list_items_in_registries"
     ],
     "deny": [],
     "ask": []

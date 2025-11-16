@@ -35,13 +35,13 @@ interface ApiKey {
   remaining_credits?: number;
 }
 
-interface PlanInfo {
-  has_active_plan: boolean;
-  plan_type: string;
-  credits_remaining: number;
-  total_credits: number;
-  usage_percentage: number;
-}
+// interface PlanInfo {
+//   has_active_plan: boolean;
+//   plan_type: string;
+//   credits_remaining: number;
+//   total_credits: number;
+//   usage_percentage: number;
+// }
 
 interface DashboardContext {
   activeTab: string;

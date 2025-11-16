@@ -12,7 +12,7 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Header />
       <div className="flex">
         <Sidebar activeTab={activeTab} onTabChange={handleTabChange} />

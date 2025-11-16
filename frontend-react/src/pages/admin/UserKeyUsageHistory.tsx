@@ -6,7 +6,23 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { ArrowLeft } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationPrevious,
+  PaginationNext,
+} from '@/components/ui/pagination'
+import { ArrowLeft, Home } from 'lucide-react'
 import request from '@/utils/request'
 
 interface KeyInfo {
@@ -259,29 +275,49 @@ const UserKeyUsageHistory: React.FC = () => {
     }
   }
 
-  const getStatusType = (status: string) => {
+  const getStatusVariant = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800'
-      case 'inactive': return 'bg-yellow-100 text-yellow-800'
-      case 'expired': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'active': return 'default'
+      case 'inactive': return 'secondary'
+      case 'expired': return 'destructive'
+      default: return 'outline'
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-background p-6">
       {/* 面包屑导航 */}
-      <div className="mb-6 flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate('/admin/dashboard')}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft size={18} />
-          返回管理
-        </Button>
-        <h1 className="text-2xl font-bold text-gray-900">User Key使用履历</h1>
+      <div className="mb-6 space-y-4">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/admin/dashboard" className="flex items-center gap-2">
+                <Home className="h-4 w-4" />
+                管理面板
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/admin/dashboard">用户密钥</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink>使用履历</BreadcrumbLink>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/admin/dashboard')}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft size={18} />
+            返回管理
+          </Button>
+          <h1 className="text-2xl font-bold text-foreground">User Key使用履历</h1>
+        </div>
       </div>
 
       {/* User Key基本信息 */}
@@ -293,57 +329,54 @@ const UserKeyUsageHistory: React.FC = () => {
         </CardHeader>
         <CardContent>
           {errors.keyInfo && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-4">
-              <div className="flex items-center">
-                <div className="text-red-500 mr-2">⚠️</div>
-                <div className="text-red-700">{errors.keyInfo}</div>
-              </div>
-            </div>
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>{errors.keyInfo}</AlertDescription>
+            </Alert>
           )}
-          {loading.keyInfo && <div className="text-center py-8 text-gray-500">加载中...</div>}
+          {loading.keyInfo && <div className="text-center py-8 text-muted-foreground">加载中...</div>}
           {!loading.keyInfo && keyInfo ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div>
-                <label className="text-sm text-gray-600">User Key</label>
-                <div className="text-sm font-mono bg-gray-100 px-2 py-1 rounded mt-1">
+                <label className="text-sm text-muted-foreground">User Key</label>
+                <div className="text-sm font-mono bg-muted px-2 py-1 rounded mt-1">
                   {apiKey}
                 </div>
               </div>
               <div>
-                <label className="text-sm text-gray-600">所属用户</label>
-                <div className="text-lg font-semibold text-gray-900">
+                <label className="text-sm text-muted-foreground">所属用户</label>
+                <div className="text-lg font-semibold text-foreground">
                   {keyInfo.user_email || '未激活'}
                 </div>
               </div>
               <div>
-                <label className="text-sm text-gray-600">状态</label>
+                <label className="text-sm text-muted-foreground">状态</label>
                 <div className="mt-1">
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusType(keyInfo.status)}`}>
+                  <Badge variant={getStatusVariant(keyInfo.status)}>
                     {getStatusText(keyInfo.status)}
-                  </span>
+                  </Badge>
                 </div>
               </div>
               <div>
-                <label className="text-sm text-gray-600">激活时间</label>
-                <div className="text-sm text-gray-700">
+                <label className="text-sm text-muted-foreground">激活时间</label>
+                <div className="text-sm text-foreground">
                   {keyInfo.activation_date ? formatDate(keyInfo.activation_date) : '未激活'}
                 </div>
               </div>
               <div>
-                <label className="text-sm text-gray-600">过期时间</label>
-                <div className="text-sm text-gray-700">
+                <label className="text-sm text-muted-foreground">过期时间</label>
+                <div className="text-sm text-foreground">
                   {keyInfo.expire_date ? formatDate(keyInfo.expire_date) : '-'}
                 </div>
               </div>
               <div>
-                <label className="text-sm text-gray-600">最后使用</label>
-                <div className="text-sm text-gray-700">
+                <label className="text-sm text-muted-foreground">最后使用</label>
+                <div className="text-sm text-foreground">
                   {keyInfo.last_used_at ? formatDate(keyInfo.last_used_at) : '未使用'}
                 </div>
               </div>
             </div>
           ) : (
-            !loading.keyInfo && <div className="text-center py-8 text-gray-500">加载失败</div>
+            !loading.keyInfo && <div className="text-center py-8 text-muted-foreground">加载失败</div>
           )}
         </CardContent>
       </Card>
@@ -367,43 +400,48 @@ const UserKeyUsageHistory: React.FC = () => {
         </CardHeader>
         <CardContent>
           {errors.stats && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-4">
-              <div className="flex items-center">
-                <div className="text-red-500 mr-2">⚠️</div>
-                <div className="text-red-700">{errors.stats}</div>
-              </div>
-            </div>
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>{errors.stats}</AlertDescription>
+            </Alert>
           )}
-          {loading.stats && <div className="text-center py-8 text-gray-500">加载中...</div>}
+          {loading.stats && <div className="text-center py-8 text-muted-foreground">加载中...</div>}
           {!loading.stats && usageStats ? (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
-                <div className="text-2xl font-bold text-blue-600">
-                  {usageStats.total_requests || 0}
-                </div>
-                <div className="text-sm text-gray-600">总请求次数</div>
-              </div>
-              <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded">
-                <div className="text-2xl font-bold text-yellow-600">
-                  {formatNumber(usageStats.total_tokens) || 0}
-                </div>
-                <div className="text-sm text-gray-600">总Token数</div>
-              </div>
-              <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-                <div className="text-2xl font-bold text-red-600">
-                  {usageStats.total_credits_used || 0}
-                </div>
-                <div className="text-sm text-gray-600">总积分消耗</div>
-              </div>
-              <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
-                <div className="text-2xl font-bold text-green-600">
-                  {usageStats.unique_services || 0}
-                </div>
-                <div className="text-sm text-gray-600">服务类型数</div>
-              </div>
+              <Card className="border-l-4 border-blue-500">
+                <CardContent className="p-4">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {usageStats.total_requests || 0}
+                  </div>
+                  <div className="text-sm text-muted-foreground">总请求次数</div>
+                </CardContent>
+              </Card>
+              <Card className="border-l-4 border-yellow-500">
+                <CardContent className="p-4">
+                  <div className="text-2xl font-bold text-yellow-600">
+                    {formatNumber(usageStats.total_tokens) || 0}
+                  </div>
+                  <div className="text-sm text-muted-foreground">总Token数</div>
+                </CardContent>
+              </Card>
+              <Card className="border-l-4 border-red-500">
+                <CardContent className="p-4">
+                  <div className="text-2xl font-bold text-red-600">
+                    {usageStats.total_credits_used || 0}
+                  </div>
+                  <div className="text-sm text-muted-foreground">总积分消耗</div>
+                </CardContent>
+              </Card>
+              <Card className="border-l-4 border-green-500">
+                <CardContent className="p-4">
+                  <div className="text-2xl font-bold text-green-600">
+                    {usageStats.unique_services || 0}
+                  </div>
+                  <div className="text-sm text-muted-foreground">服务类型数</div>
+                </CardContent>
+              </Card>
             </div>
           ) : (
-            !loading.stats && <div className="text-center py-8 text-gray-500">暂无数据</div>
+            !loading.stats && <div className="text-center py-8 text-muted-foreground">暂无数据</div>
           )}
         </CardContent>
       </Card>
@@ -428,15 +466,12 @@ const UserKeyUsageHistory: React.FC = () => {
         <CardContent>
           {/* 错误显示 */}
           {(errors.records || errors.services) && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-4">
-              <div className="flex items-center">
-                <div className="text-red-500 mr-2">⚠️</div>
-                <div className="text-red-700">
-                  {errors.records && <div>{errors.records}</div>}
-                  {errors.services && <div>{errors.services}</div>}
-                </div>
-              </div>
-            </div>
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>
+                {errors.records && <div>{errors.records}</div>}
+                {errors.services && <div>{errors.services}</div>}
+              </AlertDescription>
+            </Alert>
           )}
 
           {/* 筛选器 */}
@@ -446,7 +481,7 @@ const UserKeyUsageHistory: React.FC = () => {
                 <Label htmlFor="service-filter">服务类型</Label>
                 <Select
                   value={filters.service}
-                  onValueChange={(value) => setFilters(prev => ({ ...prev, service: value }))}
+                  onValueChange={(value: string) => setFilters(prev => ({ ...prev, service: value }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="全部服务类型" />
@@ -487,9 +522,9 @@ const UserKeyUsageHistory: React.FC = () => {
             </div>
           </div>
 
-          {loading.records && <div className="text-center py-8 text-gray-500">加载中...</div>}
+          {loading.records && <div className="text-center py-8 text-muted-foreground">加载中...</div>}
           {!loading.records && usageRecords.length === 0 && (
-            <div className="text-center py-8 text-gray-500">暂无记录</div>
+            <div className="text-center py-8 text-muted-foreground">暂无记录</div>
           )}
           {!loading.records && usageRecords.length > 0 && (
             <div>
@@ -510,31 +545,32 @@ const UserKeyUsageHistory: React.FC = () => {
                   {usageRecords.map((record) => (
                     <TableRow key={record.id}>
                       <TableCell>
-                        <span className="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded">
-                          {record.service}
-                        </span>
-                      </TableCell>
+                      <Badge variant="outline" className="text-xs">
+                        {record.service}
+                      </Badge>
+                    </TableCell>
                       <TableCell>{formatNumber(record.input_tokens || 0) || '-'}</TableCell>
                       <TableCell>{formatNumber(record.output_tokens || 0) || '-'}</TableCell>
                       <TableCell>{formatNumber(record.total_tokens || 0) || '-'}</TableCell>
                       <TableCell>{record.credits_used || 0}</TableCell>
                       <TableCell>
                         {record.remaining_credits !== null && record.remaining_credits !== undefined ? (
-                          <span className={record.remaining_credits <= 0 ? 'text-red-600 font-semibold' :
+                          <span className={record.remaining_credits <= 0 ? 'text-destructive font-semibold' :
                                            record.remaining_credits <= 10 ? 'text-orange-600 font-semibold' :
                                            'text-green-600'}>
                             {record.remaining_credits}
                           </span>
                         ) : (
-                          <span className="text-gray-500">-</span>
+                          <span className="text-muted-foreground">-</span>
                         )}
                       </TableCell>
                       <TableCell>
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${
-                          record.response_status === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
+                        <Badge
+                          variant={record.response_status === 'success' ? 'default' : 'destructive'}
+                          className="text-xs"
+                        >
                           {record.response_status === 'success' ? '成功' : '失败'}
-                        </span>
+                        </Badge>
                       </TableCell>
                       <TableCell className="text-sm">
                         {formatDate(record.request_timestamp)}
@@ -546,44 +582,48 @@ const UserKeyUsageHistory: React.FC = () => {
 
               {/* 分页 */}
               <div className="mt-6 flex items-center justify-between">
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-muted-foreground">
                   共 {pagination.total} 条记录
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">每页</span>
-                    <select
+                    <span className="text-sm text-muted-foreground">每页</span>
+                    <Select
                       value={pagination.size.toString()}
-                      onChange={(e) => handleSizeChange(Number(e.target.value))}
-                      className="w-20 h-10 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm"
+                      onValueChange={(value: string) => handleSizeChange(Number(value))}
                     >
-                      <option value="20">20</option>
-                      <option value="50">50</option>
-                      <option value="100">100</option>
-                    </select>
-                    <span className="text-sm text-gray-600">条</span>
+                      <SelectTrigger className="w-20">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="20">20</SelectItem>
+                        <SelectItem value="50">50</SelectItem>
+                        <SelectItem value="100">100</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <span className="text-sm text-muted-foreground">条</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={pagination.page <= 1}
-                      onClick={() => handlePageChange(pagination.page - 1)}
-                    >
-                      上一页
-                    </Button>
-                    <span className="text-sm text-gray-600">
-                      第 {pagination.page} 页
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={pagination.page * pagination.size >= pagination.total}
-                      onClick={() => handlePageChange(pagination.page + 1)}
-                    >
-                      下一页
-                    </Button>
-                  </div>
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          onClick={() => handlePageChange(pagination.page - 1)}
+                          className={pagination.page <= 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                        />
+                      </PaginationItem>
+                      <PaginationItem>
+                        <span className="text-sm text-muted-foreground px-4">
+                          第 {pagination.page} 页
+                        </span>
+                      </PaginationItem>
+                      <PaginationItem>
+                        <PaginationNext
+                          onClick={() => handlePageChange(pagination.page + 1)}
+                          className={pagination.page * pagination.size >= pagination.total ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
                 </div>
               </div>
             </div>
