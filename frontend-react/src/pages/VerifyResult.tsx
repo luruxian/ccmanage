@@ -56,15 +56,15 @@ const VerifyResult: React.FC = () => {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-8">
+      <div className="min-h-screen bg-background flex flex-col justify-center items-center p-8">
         <div className="w-full max-w-md">
           <Card className="border-0 shadow-lg">
             <CardContent className="pt-6 text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
               </div>
-              <h2 className="text-xl font-bold text-gray-900 mb-2">正在验证</h2>
-              <p className="text-gray-600">
+              <h2 className="text-xl font-bold text-foreground mb-2">正在验证</h2>
+              <p className="text-muted-foreground">
                 正在验证您的邮箱，请稍候...
               </p>
             </CardContent>
@@ -75,19 +75,19 @@ const VerifyResult: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-8">
+    <div className="min-h-screen bg-background flex flex-col justify-center items-center p-8">
       <div className="w-full max-w-md">
         <Card className="border-0 shadow-lg">
           <CardContent className="pt-6 text-center">
             {status === 'success' ? (
               <>
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <div className="w-16 h-16 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-success" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <h2 className="text-xl font-bold text-gray-900 mb-2">验证成功</h2>
-                <p className="text-gray-600 mb-6">
+                <h2 className="text-xl font-bold text-foreground mb-2">验证成功</h2>
+                <p className="text-muted-foreground mb-6">
                   {message}
                 </p>
                 <Button onClick={handleNavigateToLogin} className="w-full">
@@ -96,13 +96,13 @@ const VerifyResult: React.FC = () => {
               </>
             ) : (
               <>
-                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                <div className="w-16 h-16 bg-destructive/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-destructive" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <h2 className="text-xl font-bold text-gray-900 mb-2">验证失败</h2>
-                <p className="text-gray-600 mb-6">
+                <h2 className="text-xl font-bold text-foreground mb-2">验证失败</h2>
+                <p className="text-muted-foreground mb-6">
                   {message}
                 </p>
                 <Button onClick={handleNavigateToLogin} className="w-full">

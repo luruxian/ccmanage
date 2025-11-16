@@ -60,7 +60,7 @@ const ForgotPassword: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-background flex">
       {/* 左侧品牌展示区 (桌面端70%) */}
       <div className="hidden lg:flex lg:flex-1 lg:flex-col lg:justify-center lg:items-center bg-slate-900 text-white p-12">
         <div className="max-w-md text-center">
@@ -81,7 +81,7 @@ const ForgotPassword: React.FC = () => {
       </div>
 
       {/* 右侧表单区 (桌面端30%) */}
-      <div className="flex-1 flex flex-col justify-center items-center p-8 bg-white">
+      <div className="flex-1 flex flex-col justify-center items-center p-8 bg-card">
         <div className="w-full max-w-sm">
           <Card className="border-0 shadow-none lg:shadow-lg">
             <CardHeader className="text-center pb-6">
@@ -93,13 +93,13 @@ const ForgotPassword: React.FC = () => {
             <CardContent>
               {success ? (
                 <div className="text-center space-y-4">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="w-16 h-16 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-success" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900">重置链接已发送</h3>
-                  <p className="text-gray-600">
+                  <h3 className="text-lg font-semibold text-foreground">重置链接已发送</h3>
+                  <p className="text-muted-foreground">
                     我们已向 <span className="font-medium">{email}</span> 发送了密码重置链接，请检查您的邮箱。
                   </p>
                   <div className="pt-4">

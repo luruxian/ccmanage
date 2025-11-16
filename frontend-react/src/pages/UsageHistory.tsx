@@ -240,11 +240,11 @@ const UsageHistory: React.FC = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[180px]">请求时间</TableHead>
-                    <TableHead className="w-[100px]">积分消耗</TableHead>
-                    <TableHead className="w-[120px]">剩余积分</TableHead>
-                    <TableHead className="w-[100px]">响应状态</TableHead>
-                    <TableHead className="w-[200px]">服务类型</TableHead>
+                    <TableHead className="w-48">请求时间</TableHead>
+                    <TableHead className="w-24">积分消耗</TableHead>
+                    <TableHead className="w-32">剩余积分</TableHead>
+                    <TableHead className="w-24">响应状态</TableHead>
+                    <TableHead className="w-1/3">服务类型</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

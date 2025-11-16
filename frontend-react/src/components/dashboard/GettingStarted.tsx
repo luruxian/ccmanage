@@ -896,33 +896,33 @@ claude
                     🎯 基本命令
                   </h3>
                   <div className="space-y-3">
-                    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                      <code className="bg-gray-200 px-3 py-1 rounded text-sm whitespace-nowrap mr-3 min-w-[120px]">claude</code>
-                      <span className="text-gray-600">启动交互式会话</span>
+                    <div className="flex items-center p-3 bg-muted rounded-lg">
+                      <code className="bg-secondary px-3 py-1 rounded text-sm whitespace-nowrap mr-3 min-w-[120px]">claude</code>
+                      <span className="text-muted-foreground">启动交互式会话</span>
                     </div>
-                    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                      <code className="bg-gray-200 px-3 py-1 rounded text-sm whitespace-nowrap mr-3 min-w-[120px]">claude "任务描述"</code>
-                      <span className="text-gray-600">执行一次性任务</span>
+                    <div className="flex items-center p-3 bg-muted rounded-lg">
+                      <code className="bg-secondary px-3 py-1 rounded text-sm whitespace-nowrap mr-3 min-w-[120px]">claude "任务描述"</code>
+                      <span className="text-muted-foreground">执行一次性任务</span>
                     </div>
-                    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                      <code className="bg-gray-200 px-3 py-1 rounded text-sm whitespace-nowrap mr-3 min-w-[120px]">claude commit</code>
-                      <span className="text-gray-600">创建Git提交</span>
+                    <div className="flex items-center p-3 bg-muted rounded-lg">
+                      <code className="bg-secondary px-3 py-1 rounded text-sm whitespace-nowrap mr-3 min-w-[120px]">claude commit</code>
+                      <span className="text-muted-foreground">创建Git提交</span>
                     </div>
-                    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                      <code className="bg-gray-200 px-3 py-1 rounded text-sm whitespace-nowrap mr-3 min-w-[120px]">claude explain</code>
-                      <span className="text-gray-600">解释代码功能和工作原理</span>
+                    <div className="flex items-center p-3 bg-muted rounded-lg">
+                      <code className="bg-secondary px-3 py-1 rounded text-sm whitespace-nowrap mr-3 min-w-[120px]">claude explain</code>
+                      <span className="text-muted-foreground">解释代码功能和工作原理</span>
                     </div>
-                    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                      <code className="bg-gray-200 px-3 py-1 rounded text-sm whitespace-nowrap mr-3 min-w-[120px]">claude refactor</code>
-                      <span className="text-gray-600">优化和重构代码</span>
+                    <div className="flex items-center p-3 bg-muted rounded-lg">
+                      <code className="bg-secondary px-3 py-1 rounded text-sm whitespace-nowrap mr-3 min-w-[120px]">claude refactor</code>
+                      <span className="text-muted-foreground">优化和重构代码</span>
                     </div>
-                    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                      <code className="bg-gray-200 px-3 py-1 rounded text-sm whitespace-nowrap mr-3 min-w-[120px]">claude test</code>
-                      <span className="text-gray-600">为代码生成测试用例</span>
+                    <div className="flex items-center p-3 bg-muted rounded-lg">
+                      <code className="bg-secondary px-3 py-1 rounded text-sm whitespace-nowrap mr-3 min-w-[120px]">claude test</code>
+                      <span className="text-muted-foreground">为代码生成测试用例</span>
                     </div>
-                    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                      <code className="bg-gray-200 px-3 py-1 rounded text-sm whitespace-nowrap mr-3 min-w-[120px]">/help</code>
-                      <span className="text-gray-600">显示帮助信息</span>
+                    <div className="flex items-center p-3 bg-muted rounded-lg">
+                      <code className="bg-secondary px-3 py-1 rounded text-sm whitespace-nowrap mr-3 min-w-[120px]">/help</code>
+                      <span className="text-muted-foreground">显示帮助信息</span>
                     </div>
                   </div>
                 </div>
