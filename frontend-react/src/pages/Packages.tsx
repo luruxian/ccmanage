@@ -1,7 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
-import { useUserStore } from '@/store/user';
 import SubscriptionPlans from '@/components/dashboard/SubscriptionPlans';
 
 const Packages: React.FC = () => {
