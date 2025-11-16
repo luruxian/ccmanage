@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { ArrowLeft } from 'lucide-react'
 import request from '@/utils/request'
 
 interface KeyInfo {
@@ -45,6 +46,7 @@ interface UsageRecord {
 
 const UserKeyUsageHistory: React.FC = () => {
   const { apiKey } = useParams<{ apiKey: string }>()
+  const navigate = useNavigate()
   const [keyInfo, setKeyInfo] = useState<KeyInfo | null>(null)
   const [usageStats, setUsageStats] = useState<UsageStats | null>(null)
   const [usageRecords, setUsageRecords] = useState<UsageRecord[]>([])
@@ -268,6 +270,20 @@ const UserKeyUsageHistory: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
+      {/* 面包屑导航 */}
+      <div className="mb-6 flex items-center gap-4">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate('/admin/dashboard')}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft size={18} />
+          返回管理
+        </Button>
+        <h1 className="text-2xl font-bold text-gray-900">User Key使用履历</h1>
+      </div>
+
       {/* User Key基本信息 */}
       <Card className="mb-6">
         <CardHeader>
