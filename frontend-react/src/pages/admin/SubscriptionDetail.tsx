@@ -26,6 +26,7 @@ interface SubscriptionInfo {
 interface UserKey {
   id: number
   user_id: number
+  api_key_id: number
   api_key: string
   real_api_key?: string
   user_email: string
@@ -73,7 +74,9 @@ const SubscriptionDetail: React.FC = () => {
     if (!id) return
     try {
       setLoadingDetail(true)
-      const res: any = await request.get(`/admin/subscription/${id}`)
+      console.log('Loading subscription detail for ID:', id)
+      const res: any = await request.get(`/packages/${id}`)
+      console.log('Subscription detail response:', res)
       setSubscription(res || null)
     } catch (err) {
       console.error('failed to load subscription detail', err)
@@ -86,6 +89,7 @@ const SubscriptionDetail: React.FC = () => {
     if (!id) return
     try {
       setLoadingUserKeys(true)
+      console.log('Loading user keys for subscription ID:', id)
       const res: any = await request.get(`/packages/${id}/userkeys`, {
         params: {
           page: pagination.page,
@@ -93,6 +97,7 @@ const SubscriptionDetail: React.FC = () => {
           status_filter: statusFilter || undefined,
         }
       })
+      console.log('User keys response:', res)
       setUserKeys(res.user_keys || [])
       setPagination(prev => ({ ...prev, total: res.total || 0 }))
     } catch (err) {
@@ -133,6 +138,7 @@ const SubscriptionDetail: React.FC = () => {
       setLoadingBulkOperation(true)
       await request.post(`/packages/${id}/userkeys/batch`, {
         user_ids: selectedKeys.map(k => k.user_id),
+        api_key_id: selectedKeys[0]?.api_key_id,
         operation: bulkOperation.operation,
         notes: bulkOperation.notes,
       })
@@ -250,7 +256,7 @@ const SubscriptionDetail: React.FC = () => {
           {loadingDetail ? (
             <div className="text-center py-8 text-gray-500">加载中...</div>
           ) : subscription ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div>
                 <label className="text-sm text-gray-600">订阅名称</label>
                 <div className="text-lg font-semibold text-gray-900">{subscription.package_name}</div>
@@ -293,12 +299,10 @@ const SubscriptionDetail: React.FC = () => {
                 <label className="text-sm text-gray-600">创建时间</label>
                 <div className="text-sm text-gray-700">{formatDate(subscription.created_at)}</div>
               </div>
-              {subscription.description && (
-                <div className="lg:col-span-3">
-                  <label className="text-sm text-gray-600">描述</label>
-                  <div className="text-sm text-gray-700 mt-1">{subscription.description}</div>
-                </div>
-              )}
+              <div className="lg:col-span-4">
+                <label className="text-sm text-gray-600">描述</label>
+                <div className="text-sm text-gray-700 mt-1">{subscription.description || '暂无描述'}</div>
+              </div>
             </div>
           ) : (
             <div className="text-center py-8 text-gray-500">未找到订阅</div>

@@ -147,8 +147,9 @@ request.interceptors.response.use(
         case 401:
           // 检查是否是登录请求
           const isLoginRequest = config?.url?.includes('/auth/login')
+          const isAdminLoginRequest = config?.url?.includes('/admin/login')
 
-          if (isLoginRequest) {
+          if (isLoginRequest || isAdminLoginRequest) {
             // 登录请求的401错误，不需要跳转，由登录组件处理
             break
           }
