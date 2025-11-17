@@ -1,5 +1,5 @@
 import React from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { useUserStore } from '@/store/user'
 import {
   NavigationMenu,
@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button'
 
 const Header: React.FC = () => {
   const { user, logout } = useUserStore()
-  const navigate = useNavigate()
   const location = useLocation()
 
   // 检查是否在认证页面或管理员页面
@@ -29,20 +28,7 @@ const Header: React.FC = () => {
     return !isAuthPage() && !isAdminPage()
   }
 
-  // 导航到控制台
-  const goToDashboard = () => {
-    navigate('/app/dashboard')
-  }
 
-  // 导航到密钥激活
-  const goToKeyActivation = () => {
-    navigate('/key-activation')
-  }
-
-  // 检查当前路由是否激活
-  const isActive = (path: string) => {
-    return location.pathname === path
-  }
 
   if (!shouldShowNavbar()) {
     return null
@@ -56,61 +42,14 @@ const Header: React.FC = () => {
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <h1
-                className="text-xl font-bold text-primary-foreground cursor-pointer hover:scale-105 transition-transform"
-                onClick={goToDashboard}
+                className="text-xl font-bold text-primary-foreground"
               >
                 agnets.app
               </h1>
             </div>
           </div>
 
-          {/* 导航菜单 - 控制台和密钥激活按钮 */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Button
-              variant={isActive('/app/dashboard') ? "secondary" : "ghost"}
-              size="sm"
-              onClick={goToDashboard}
-              className="text-primary-foreground hover:text-primary-foreground hover:bg-primary/20"
-            >
-              🖥️ 控制台
-            </Button>
-            <Button
-              variant={isActive('/key-activation') ? "secondary" : "ghost"}
-              size="sm"
-              onClick={goToKeyActivation}
-              className="text-primary-foreground hover:text-primary-foreground hover:bg-primary/20"
-            >
-              🔑 密钥激活
-            </Button>
-          </div>
 
-          {/* 移动端导航菜单 */}
-          <div className="md:hidden">
-            <NavigationMenu>
-              <NavigationMenuList className="flex space-x-2">
-                <NavigationMenuItem>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={goToDashboard}
-                    className="text-primary-foreground"
-                  >
-                    🖥️
-                  </Button>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={goToKeyActivation}
-                    className="text-primary-foreground"
-                  >
-                    🔑
-                  </Button>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
-          </div>
 
           {/* User menu */}
           <NavigationMenu>

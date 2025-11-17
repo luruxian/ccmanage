@@ -22,6 +22,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { CheckCircle, AlertCircle } from 'lucide-react'
 
 interface ApiKey {
   id?: string;
@@ -67,6 +71,19 @@ const NewDashboard: React.FC = () => {
   const [resetCreditsDialogVisible, setResetCreditsDialogVisible] = useState(false)
   const [resettingCredits, setResettingCredits] = useState(false)
   const [resetCreditsKey, setResetCreditsKey] = useState<ApiKey | null>(null)
+
+  // 密钥激活相关状态
+  const [keyActivationDialogVisible, setKeyActivationDialogVisible] = useState(false)
+  const [activatingKey, setActivatingKey] = useState(false)
+  const [userKeyInput, setUserKeyInput] = useState('')
+  const [activationToast, setActivationToast] = useState<{type: 'success' | 'error', message: string} | null>(null)
+  const [showActivationSuccessDialog, setShowActivationSuccessDialog] = useState(false)
+  const [activatedKeyInfo, setActivatedKeyInfo] = useState({
+    userKey: '',
+    activationDate: '',
+    expireDate: '',
+    credits: 0
+  })
 
   useEffect(() => {
     loadDashboardData()
@@ -239,10 +256,95 @@ const NewDashboard: React.FC = () => {
     }
   }
 
+  // 密钥激活相关函数
+  const validateKeyActivationForm = (): boolean => {
+    if (!userKeyInput.trim()) {
+      setActivationToast({ type: 'error', message: '请输入用户Key' })
+      return false
+    }
+
+    if (userKeyInput.length < 10) {
+      setActivationToast({ type: 'error', message: '用户Key长度不能少于10位' })
+      return false
+    }
+
+    return true
+  }
+
+  const handleKeyActivation = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!validateKeyActivationForm()) {
+      return
+    }
+
+    setActivatingKey(true)
+
+    try {
+      const res: any = await request.post('/keys/activate-user-key', {
+        user_key: userKeyInput
+      })
+
+      setActivatedKeyInfo({
+        userKey: userKeyInput,
+        activationDate: new Date().toLocaleString('zh-CN'),
+        expireDate: '',
+        credits: 0
+      })
+
+      setShowActivationSuccessDialog(true)
+      setActivationToast({ type: 'success', message: res?.message || '用户Key激活成功！' })
+      setUserKeyInput('')
+
+      // 激活成功后刷新密钥列表
+      await loadUserKeys()
+
+    } catch (error: any) {
+      console.error('激活失败:', error)
+
+      let errorMessage = '激活失败，请稍后重试'
+      if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+
+      setActivationToast({ type: 'error', message: errorMessage })
+    } finally {
+      setActivatingKey(false)
+    }
+  }
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setActivationToast({ type: 'success', message: '已复制到剪贴板' })
+    } catch (error) {
+      setActivationToast({ type: 'error', message: '复制失败' })
+    }
+  }
+
+  const handleActivationSuccessClose = () => {
+    setShowActivationSuccessDialog(false)
+    setKeyActivationDialogVisible(false)
+  }
+
+  // Toast 通知自动隐藏
+  useEffect(() => {
+    if (activationToast) {
+      const timer = setTimeout(() => {
+        setActivationToast(null)
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [activationToast])
+
   const quickActions = [
     {
       label: '激活密钥',
-      onClick: () => navigate('/key-activation'),
+      onClick: () => setKeyActivationDialogVisible(true),
       variant: 'default' as const
     },
     {
@@ -418,6 +520,112 @@ const NewDashboard: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* 密钥激活对话框 */}
+      <Dialog open={keyActivationDialogVisible} onOpenChange={setKeyActivationDialogVisible}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center">用户Key激活</DialogTitle>
+            <DialogDescription className="text-center">
+              激活您的用户Key以使用服务
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleKeyActivation} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="userKey" className="text-gray-700">
+                用户Key
+              </Label>
+              <Input
+                id="userKey"
+                name="userKey"
+                type="text"
+                placeholder="请输入要激活的用户Key"
+                value={userKeyInput}
+                onChange={(e) => setUserKeyInput(e.target.value)}
+                className="h-12 text-base border-gray-200 focus:border-primary focus:ring-primary"
+              />
+              <div className="text-sm text-gray-500 mt-1">
+                输入您获得的用户Key，格式如：sk-xxxxxxxx...
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full h-12 text-base font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary hover:to-primary/90 border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+              disabled={activatingKey}
+            >
+              {activatingKey ? '激活中...' : '激活用户Key'}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* 激活成功对话框 */}
+      <Dialog open={showActivationSuccessDialog} onOpenChange={setShowActivationSuccessDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center">激活成功</DialogTitle>
+          </DialogHeader>
+
+          <div className="text-center">
+            <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+            <h4 className="text-lg font-semibold mb-4">用户Key激活成功！</h4>
+
+            <div className="bg-gray-50 rounded-lg p-4 mb-4 text-left">
+              <p><strong>激活时间:</strong> {activatedKeyInfo.activationDate}</p>
+              <p className="mt-2"><strong>用户Key:</strong></p>
+              <div className="flex gap-2 mt-2">
+                <Input
+                  value={activatedKeyInfo.userKey}
+                  readOnly
+                  className="flex-1"
+                />
+                <Button
+                  onClick={() => copyToClipboard(activatedKeyInfo.userKey)}
+                  variant="outline"
+                >
+                  复制
+                </Button>
+              </div>
+            </div>
+
+            <Alert className="bg-green-50 border-green-200">
+              <CheckCircle className="h-4 w-4 text-green-600" />
+              <AlertTitle className="text-green-800">激活成功</AlertTitle>
+              <AlertDescription className="text-green-700">
+                您的用户Key已成功激活，现在可以使用服务了
+              </AlertDescription>
+            </Alert>
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              onClick={handleActivationSuccessClose}
+              className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary hover:to-primary/90"
+            >
+              完成
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 激活通知 Toast */}
+      {activationToast && (
+        <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg flex items-center gap-3 animate-in fade-in slide-in-from-top-2 ${
+          activationToast.type === 'success'
+            ? 'bg-green-500 text-white'
+            : 'bg-red-500 text-white'
+        }`}>
+          {activationToast.type === 'success' ? (
+            <CheckCircle size={20} />
+          ) : (
+            <AlertCircle size={20} />
+          )}
+          <span>{activationToast.message}</span>
+        </div>
+      )}
     </div>
   )
 }

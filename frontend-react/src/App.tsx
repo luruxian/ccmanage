@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Layout from '@/components/Layout'
 import Home from '@/pages/Home'
-import Dashboard from '@/pages/NewDashboard'
+import Dashboard from '@/pages/Newdashboard'
 import Packages from '@/pages/Packages'
 import Login from '@/pages/Login'
 import Register from '@/pages/Register'

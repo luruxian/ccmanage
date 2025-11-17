@@ -311,18 +311,31 @@ const UsageHistory: React.FC = () => {
         </div>
 
         {/* 使用记录卡片 */}
-        <FeatureCard
-          title="使用记录"
-          description="详细的API调用记录和统计信息"
-          icon={History}
-          actions={[
-            {
-              label: '刷新',
-              onClick: loadUsageRecords,
-              variant: 'outline'
-            }
-          ]}
-        >
+        <Card className="rounded-xl shadow-sm hover:shadow-md transition-all duration-300 bg-white border-gray-200">
+          <CardContent className="p-6">
+            {/* 卡片标题和刷新按钮 */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-primary">
+                  <History className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">使用记录</h3>
+                  <p className="text-sm text-gray-600">详细的API调用记录和统计信息</p>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={loadUsageRecords}
+                className="flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                刷新
+              </Button>
+            </div>
           {loadingUsageRecords ? (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
@@ -448,7 +461,8 @@ const UsageHistory: React.FC = () => {
               </div>
             </>
           )}
-        </FeatureCard>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
