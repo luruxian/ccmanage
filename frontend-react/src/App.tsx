@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Layout from '@/components/Layout'
 import Home from '@/pages/Home'
-import Dashboard from '@/pages/Newdashboard'
+import Dashboard from '@/pages/NewDashboard'
 import Packages from '@/pages/Packages'
 import Login from '@/pages/Login'
 import Register from '@/pages/Register'
@@ -19,6 +19,7 @@ import KeyActivation from '@/pages/KeyActivation'
 import ClaudeCodeBestPractices from '@/pages/ClaudeCodeBestPractices'
 import ResourcesCenter from '@/pages/ResourcesCenter'
 import UsageHistory from '@/pages/UsageHistory'
+import InstallGuide from '@/pages/InstallGuide'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
 function App() {
@@ -64,6 +65,7 @@ function App() {
           <Route path="packages" element={<Packages />} />
           <Route path="resources" element={<ResourcesCenter />} />
           <Route path="best-practices" element={<ClaudeCodeBestPractices />} />
+          <Route path="install-guide" element={<InstallGuide />} />
           <Route path="usage-history/:apiKey" element={<UsageHistory />} />
           {/* 其他受保护页面路由将在这里添加 */}
         </Route>

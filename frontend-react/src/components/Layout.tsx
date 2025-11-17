@@ -14,7 +14,7 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="flex">
+      <div className="flex flex-1">
         <Sidebar activeTab={activeTab} onTabChange={handleTabChange} />
         <main className="flex-1">
           {children || <Outlet context={{ activeTab, setActiveTab }} />}

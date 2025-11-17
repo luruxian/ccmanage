@@ -1,45 +1,50 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import request from '@/utils/request'
 
+interface ForgotPasswordForm {
+  email: string
+}
+
+interface ForgotPasswordResponse {
+  message: string
+}
+
 const ForgotPassword: React.FC = () => {
-  const [email, setEmail] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState(false)
+  // 使用react-hook-form管理表单状态
+  const form = useForm<ForgotPasswordForm>({
+    defaultValues: {
+      email: '',
+    },
+  })
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value)
-    // 清除错误信息
-    if (error) {
-      setError('')
-    }
-  }
+  const [loading, setLoading] = React.useState(false)
+  const [serverError, setServerError] = React.useState('')
+  const [success, setSuccess] = React.useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    // 基本表单验证
-    if (!email) {
-      setError('请输入邮箱地址')
-      return
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError('请输入有效的邮箱地址')
-      return
-    }
+  // 表单提交处理
+  const onSubmit = async (data: ForgotPasswordForm) => {
+    console.log('开始密码重置流程...')
 
     setLoading(true)
-    setError('')
+    setServerError('')
 
     try {
-      await request.post('/auth/forgot-password', {
-        email: email
+      const response: ForgotPasswordResponse = await request.post('/auth/forgot-password', {
+        email: data.email
       })
 
       // 请求成功
@@ -50,9 +55,9 @@ const ForgotPassword: React.FC = () => {
 
       // 错误处理
       if (error.response?.data?.detail) {
-        setError(error.response.data.detail)
+        setServerError(error.response.data.detail)
       } else {
-        setError('请求失败，请稍后重试')
+        setServerError('请求失败，请稍后重试')
       }
     } finally {
       setLoading(false)
@@ -60,13 +65,13 @@ const ForgotPassword: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-muted flex">
       {/* 左侧品牌展示区 (桌面端70%) */}
-      <div className="hidden lg:flex lg:flex-1 lg:flex-col lg:justify-center lg:items-center bg-slate-900 text-white p-12">
+      <div className="hidden lg:flex lg:flex-1 lg:flex-col lg:justify-center lg:items-center bg-card text-card-foreground p-12">
         <div className="max-w-md text-center">
           <div className="mb-8">
-            <div className="w-24 h-24 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-blue-500">
-              <svg className="w-12 h-12 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+            <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-primary">
+              <svg className="w-12 h-12 text-primary" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
               </svg>
             </div>
@@ -75,13 +80,13 @@ const ForgotPassword: React.FC = () => {
 
           <div>
             <h2 className="text-2xl font-semibold mb-4">重置密码</h2>
-            <p className="text-slate-300 text-lg">安全、高效的AI工具</p>
+            <p className="text-muted-foreground text-lg">安全、高效的AI工具</p>
           </div>
         </div>
       </div>
 
       {/* 右侧表单区 (桌面端30%) */}
-      <div className="flex-1 flex flex-col justify-center items-center p-8 bg-card">
+      <div className="flex-1 flex flex-col justify-center items-center p-8 bg-background">
         <div className="w-full max-w-sm">
           <Card className="border-0 shadow-none lg:shadow-lg">
             <CardHeader className="text-center pb-6">
@@ -100,7 +105,7 @@ const ForgotPassword: React.FC = () => {
                   </div>
                   <h3 className="text-lg font-semibold text-foreground">重置链接已发送</h3>
                   <p className="text-muted-foreground">
-                    我们已向 <span className="font-medium">{email}</span> 发送了密码重置链接，请检查您的邮箱。
+                    我们已向 <span className="font-medium">{form.getValues('email')}</span> 发送了密码重置链接，请检查您的邮箱。
                   </p>
                   <div className="pt-4">
                     <Link to="/login">
@@ -111,44 +116,60 @@ const ForgotPassword: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">邮箱地址</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="请输入您的邮箱地址"
-                      value={email}
-                      onChange={handleInputChange}
-                      className="h-12 text-base"
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    {/* 邮箱字段 */}
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      rules={{
+                        required: '请输入邮箱地址',
+                        pattern: {
+                          value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                          message: '请输入有效的邮箱地址'
+                        }
+                      }}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>邮箱地址</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="email"
+                              placeholder="请输入您的邮箱地址"
+                              className="h-12 text-base"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </div>
 
-                  {/* 错误提示 */}
-                  {error && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm flex items-center gap-2">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                      </svg>
-                      {error}
-                    </div>
-                  )}
+                    {/* 服务器错误提示 */}
+                    {serverError && (
+                      <Alert variant="destructive">
+                        <AlertDescription>
+                          {serverError}
+                        </AlertDescription>
+                      </Alert>
+                    )}
 
-                  <Button
-                    type="submit"
-                    className="w-full h-12 text-base font-semibold bg-blue-600 hover:bg-blue-700"
-                    disabled={loading}
-                  >
-                    {loading ? '发送中...' : '发送重置链接'}
-                  </Button>
-                </form>
+                    <Button
+                      type="submit"
+                      className="w-full h-12 text-base font-semibold"
+                      disabled={loading}
+                    >
+                      {loading ? '发送中...' : '发送重置链接'}
+                    </Button>
+                  </form>
+                </Form>
               )}
 
               {!success && (
                 <div className="mt-6 text-center">
                   <Link
                     to="/login"
-                    className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                    className="text-sm text-primary hover:text-primary/80 font-medium"
                   >
                     返回登录
                   </Link>

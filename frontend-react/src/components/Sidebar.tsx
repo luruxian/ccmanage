@@ -16,7 +16,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
   const items = [
     { id: 'keys', name: 'API密钥', icon: Key, path: '/app' },
-    { id: 'getting-started', name: '安装Claude Code', icon: Play, path: '/app/best-practices' },
+    { id: 'getting-started', name: '安装Claude Code', icon: Play, path: '/app/install-guide' },
     { id: 'packages', name: '订阅一览', icon: List, path: '/app/packages' },
     { id: 'resources', name: '资料中心', icon: Book, path: '/app/resources' },
   ]
@@ -29,7 +29,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
 
   return (
     <aside className="hidden md:block w-64">
-      <div className="sidebar bg-gradient-to-b from-background to-muted min-h-screen p-10">
+      <div className="sidebar bg-gradient-to-b from-background to-muted h-full p-10">
         <div className="sidebar-content">
           <NavigationMenu orientation="vertical" className="w-full">
             <NavigationMenuList className="flex flex-col space-y-2">

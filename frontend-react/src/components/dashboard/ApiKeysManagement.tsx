@@ -224,14 +224,14 @@ const ApiKeysManagement: React.FC<ApiKeysManagementProps> = ({
                               size="sm"
                               onClick={() => onResetCredits(key)}
                             >
-                              重置
+                              重置积分
                             </Button>
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => onDownloadConfig(key)}
                             >
-                              下载
+                              下载配置
                             </Button>
                           </div>
                         </TableCell>
@@ -239,8 +239,8 @@ const ApiKeysManagement: React.FC<ApiKeysManagementProps> = ({
                       {/* 第二行：积分信息 */}
                       <TableRow>
                         <TableCell colSpan={7} className="bg-muted/50">
-                          <div className="flex justify-between items-center py-2">
-                            <div className="flex space-x-6 text-sm">
+                          <div className="flex items-center space-x-6 py-2">
+                            <div className="flex items-center space-x-6 text-sm">
                               <div>
                                 <span className="text-muted-foreground">总积分：</span>
                                 <span>

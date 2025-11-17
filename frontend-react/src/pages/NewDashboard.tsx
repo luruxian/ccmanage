@@ -395,7 +395,7 @@ const NewDashboard: React.FC = () => {
             欢迎回来，{user?.name || '用户'}！
           </h1>
           <p className="text-lg text-gray-600">
-            今天是使用 Claude 的好日子 ✨
+            今天是使用 Claude Code 的好日子 ✨
           </p>
         </div>
 
