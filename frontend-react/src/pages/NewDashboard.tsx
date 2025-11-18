@@ -349,7 +349,7 @@ const NewDashboard: React.FC = () => {
     },
     {
       label: '查看订阅',
-      onClick: () => navigate('/packages'),
+      onClick: () => navigate('/app/packages'),
       variant: 'outline' as const
     }
   ]
