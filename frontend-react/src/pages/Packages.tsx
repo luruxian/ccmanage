@@ -6,18 +6,18 @@ const Packages: React.FC = () => {
   // const { isLoggedIn } = useUserStore();
 
   const handleDayCardClick = () => {
-    // TODO: 实现一日体验卡购买逻辑
-    console.log('一日体验卡购买');
+    // 跳转到一日体验卡购买页面
+    window.open('https://www.goofish.com/item?spm=a21ybx.personal.feeds.1.747d2e8eCrK3sY&id=989321369149&categoryId=50023914', '_blank');
   };
 
   const handleWeekCardClick = () => {
-    // TODO: 实现七日行购买逻辑
-    console.log('七日行购买');
+    // 跳转到七日行购买页面
+    window.open('https://www.goofish.com/item?spm=a21ybx.personal.feeds.3.747d2e8eCrK3sY&id=988003159682&categoryId=50023914', '_blank');
   };
 
   const handleMonthCardClick = () => {
-    // TODO: 实现月享卡购买逻辑
-    console.log('月享卡购买');
+    // 跳转到月享卡购买页面
+    window.open('https://www.goofish.com/item?spm=a21ybx.personal.feeds.2.747d2e8eCrK3sY&id=989326213072&categoryId=50023914', '_blank');
   };
 
   return (

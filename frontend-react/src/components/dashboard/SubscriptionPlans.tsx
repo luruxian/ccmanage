@@ -115,7 +115,7 @@ const SubscriptionPlans: React.FC<SubscriptionPlansProps> = ({
                 </Badge>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-primary">¥199</div>
+                <div className="text-2xl font-bold text-primary">¥299</div>
                 <div className="text-sm text-muted-foreground">/月</div>
               </div>
             </CardTitle>

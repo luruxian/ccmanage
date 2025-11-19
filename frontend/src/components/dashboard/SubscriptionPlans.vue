@@ -63,7 +63,7 @@
                 <h4>月享卡</h4>
                 <div class="package-badge">推荐</div>
                 <div class="package-price">
-                  <span class="price">¥199</span>
+                  <span class="price">¥299</span>
                   <span class="period">/月</span>
                 </div>
               </div>
