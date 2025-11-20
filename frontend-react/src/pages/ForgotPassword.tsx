@@ -19,9 +19,6 @@ interface ForgotPasswordForm {
   email: string
 }
 
-interface ForgotPasswordResponse {
-  message: string
-}
 
 const ForgotPassword: React.FC = () => {
   // 使用react-hook-form管理表单状态
@@ -43,7 +40,7 @@ const ForgotPassword: React.FC = () => {
     setServerError('')
 
     try {
-      const response: ForgotPasswordResponse = await request.post('/auth/forgot-password', {
+      await request.post('/auth/password-reset', {
         email: data.email
       })
 

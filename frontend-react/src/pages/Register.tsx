@@ -23,9 +23,6 @@ interface RegisterForm {
   agreement: boolean
 }
 
-interface RegisterResponse {
-  message: string
-}
 
 const Register: React.FC = () => {
   const navigate = useNavigate()
@@ -51,7 +48,7 @@ const Register: React.FC = () => {
     setServerError('')
 
     try {
-      const response: RegisterResponse = await request.post('/auth/register', {
+      await request.post('/auth/register', {
         email: data.email,
         password: data.password
       })

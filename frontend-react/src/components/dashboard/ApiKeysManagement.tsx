@@ -1,9 +1,9 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/components/ui/ToastProvider';
 // import request from '@/utils/request';
 
 interface ApiKey {
@@ -102,25 +102,24 @@ const getRemainingCreditsClass = (remainingCredits?: number, totalCredits?: numb
   return 'text-green-600';
 };
 
-const copyApiKey = async (apiKey: string) => {
-  try {
-    await navigator.clipboard.writeText(apiKey);
-    alert('API密钥已复制到剪贴板');
-  } catch (error) {
-    alert('复制失败，请手动复制');
-  }
-};
-
 const ApiKeysManagement: React.FC<ApiKeysManagementProps> = ({
   apiKeys,
   loadingKeys,
-  keyStats,
   onRefreshKeys,
   onViewUsageHistory,
   onResetCredits,
   onDownloadConfig
 }) => {
-  const navigate = useNavigate();
+  const { success, error } = useToast();
+
+  const copyApiKey = async (apiKey: string) => {
+    try {
+      await navigator.clipboard.writeText(apiKey);
+      success('API密钥已复制到剪贴板');
+    } catch {
+      error('复制失败，请手动复制');
+    }
+  };
 
   return (
     <Card>

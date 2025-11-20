@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ArrowLeft, Plus, Settings, RotateCw, Copy, Edit2, Eye } from 'lucide-react'
 import request from '@/utils/request'
+import { useToast } from '@/components/ui/ToastProvider'
 
 interface SubscriptionInfo {
   id: number
@@ -43,6 +44,7 @@ interface UserKey {
 const SubscriptionDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { success, error } = useToast()
 
   const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null)
   const [userKeys, setUserKeys] = useState<UserKey[]>([])
@@ -121,12 +123,12 @@ const SubscriptionDetail: React.FC = () => {
         count: 10,
         status: 'inactive'
       })
-      alert('批量生成用户密钥成功')
+      success('批量生成用户密钥成功')
       setPagination(prev => ({ ...prev, page: 1 }))
       loadUserKeys()
     } catch (err) {
       console.error('failed to batch generate', err)
-      alert('批量生成失败')
+      error('批量生成失败')
     } finally {
       setLoadingBatchGenerate(false)
     }
@@ -142,14 +144,14 @@ const SubscriptionDetail: React.FC = () => {
         operation: bulkOperation.operation,
         notes: bulkOperation.notes,
       })
-      alert('批量操作成功')
+      success('批量操作成功')
       setBulkOperationDialog(false)
       setBulkOperation({ operation: '', notes: '' })
       setSelectedKeys([])
       loadUserKeys()
     } catch (err) {
       console.error('failed to execute bulk operation', err)
-      alert('批量操作失败')
+      error('批量操作失败')
     } finally {
       setLoadingBulkOperation(false)
     }
@@ -158,9 +160,9 @@ const SubscriptionDetail: React.FC = () => {
   const handleCopyKey = async (key: string) => {
     try {
       await navigator.clipboard.writeText(key)
-      alert('已复制到剪贴板')
+      success('已复制到剪贴板')
     } catch {
-      alert('复制失败')
+      error('复制失败')
     }
   }
 
@@ -176,12 +178,12 @@ const SubscriptionDetail: React.FC = () => {
       await request.put(`/packages/${id}/userkeys/${userKey.id}/real-api-key`, {
         real_api_key: editingValue
       })
-      alert('更新成功')
+      success('更新成功')
       setEditingKeyId(null)
       loadUserKeys()
     } catch (err) {
       console.error('failed to save real api key', err)
-      alert('更新失败')
+      error('更新失败')
     }
   }
 

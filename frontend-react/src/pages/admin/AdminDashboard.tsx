@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
 import { useUserStore } from '@/store/user'
 import request from '@/utils/request'
+import { useToast } from '@/components/ui/ToastProvider'
 import { Users, Package, History, FileText, BarChart3, Menu, X } from 'lucide-react'
 
 interface StatisticState {
@@ -19,6 +20,7 @@ type MenuItemType = 'users' | 'packages' | 'login-history' | 'admin-ops' | 'stat
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate()
   const { user, logout } = useUserStore()
+  const { info } = useToast()
 
   const [statistics, setStatistics] = useState<StatisticState>({
     total_users: 0,
@@ -267,8 +269,8 @@ const AdminDashboard: React.FC = () => {
                           <TableCell className="text-sm">{new Date(u.created_at).toLocaleString('zh-CN')}</TableCell>
                           <TableCell>
                             <div className="flex gap-2">
-                              <Button size="sm" variant="outline" onClick={() => alert('功能未实现')}>切换状态</Button>
-                              <Button size="sm" variant="ghost" onClick={() => alert('功能未实现')}>详情</Button>
+                              <Button size="sm" variant="outline" onClick={() => info('功能未实现')}>切换状态</Button>
+                              <Button size="sm" variant="ghost" onClick={() => info('功能未实现')}>详情</Button>
                             </div>
                           </TableCell>
                         </TableRow>
@@ -308,7 +310,7 @@ const AdminDashboard: React.FC = () => {
               <CardHeader className="flex flex-row items-center justify-between space-y-0">
                 <CardTitle>订阅管理</CardTitle>
                 <div className="flex gap-2">
-                  <Button size="sm" onClick={() => alert('新增订阅功能未实现')}>新增订阅</Button>
+                  <Button size="sm" onClick={() => info('新增订阅功能未实现')}>新增订阅</Button>
                   <Button size="sm" onClick={loadPackages}>刷新</Button>
                 </div>
               </CardHeader>
@@ -350,9 +352,9 @@ const AdminDashboard: React.FC = () => {
                           </TableCell>
                           <TableCell>
                             <div className="flex gap-2">
-                              <Button size="sm" variant="outline" onClick={() => alert('编辑功能未实现')}>编辑</Button>
-                              <Button size="sm" variant="outline" onClick={() => alert('切换功能未实现')}>切换</Button>
-                              <Button size="sm" variant="destructive" onClick={() => alert('删除功能未实现')}>删除</Button>
+                              <Button size="sm" variant="outline" onClick={() => info('编辑功能未实现')}>编辑</Button>
+                              <Button size="sm" variant="outline" onClick={() => info('切换功能未实现')}>切换</Button>
+                              <Button size="sm" variant="destructive" onClick={() => info('删除功能未实现')}>删除</Button>
                             </div>
                           </TableCell>
                         </TableRow>

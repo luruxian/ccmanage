@@ -3,20 +3,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ClipboardCopy } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useToast } from '@/components/ui/ToastProvider'
 
 import { ChevronDown, ChevronRight, Check, Info, Code, CheckCircle } from 'lucide-react'
 
-// 复制到剪贴板的工具函数
-const copyToClipboard = async (text: string) => {
-  try {
-    await navigator.clipboard.writeText(text)
-    alert('已复制到剪贴板')
-  } catch (err) {
-    alert('复制失败')
-  }
-}
-
 const GettingStarted: React.FC = () => {
+  const { success, error } = useToast()
+
+  // 复制到剪贴板的工具函数
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      success('已复制到剪贴板')
+    } catch {
+      error('复制失败')
+    }
+  }
   // 可折叠部分的状态
   const [nodeJsExpanded, setNodeJsExpanded] = React.useState(false)
   const [gitExpanded, setGitExpanded] = React.useState(false)

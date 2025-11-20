@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { ToastProvider } from '@/components/ui/ToastProvider'
 import Layout from '@/components/Layout'
 import Home from '@/pages/Home'
 import Dashboard from '@/pages/NewDashboard'
@@ -24,8 +25,9 @@ import ProtectedRoute from '@/components/ProtectedRoute'
 
 function App() {
   return (
-    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <Routes>
+    <ToastProvider>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <Routes>
         {/* 公开路由 */}
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
@@ -70,7 +72,8 @@ function App() {
           {/* 其他受保护页面路由将在这里添加 */}
         </Route>
       </Routes>
-    </Router>
+      </Router>
+    </ToastProvider>
   )
 }
 

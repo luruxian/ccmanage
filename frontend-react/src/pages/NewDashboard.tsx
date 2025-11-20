@@ -12,6 +12,7 @@ import {
   Bell,
   Circle
 } from 'lucide-react'
+import { useToast } from '@/components/ui/ToastProvider'
 import request from '@/utils/request'
 import {
   Dialog,
@@ -56,6 +57,7 @@ interface DashboardStats {
 const NewDashboard: React.FC = () => {
   const navigate = useNavigate()
   const { user } = useUserStore()
+  const { success, error } = useToast()
 
   const [stats, setStats] = useState<DashboardStats>({
     activeKeys: 0,
@@ -143,7 +145,7 @@ const NewDashboard: React.FC = () => {
       // 检查key对象是否有有效的ID
       const keyId = resetCreditsKey.id || resetCreditsKey.user_key_id
       if (!keyId) {
-        alert('密钥ID无效，无法重置积分')
+        error('密钥ID无效，无法重置积分')
         return
       }
 
@@ -156,7 +158,7 @@ const NewDashboard: React.FC = () => {
 
       // 安全地访问响应数据
       const message = response?.data?.message || '积分重置成功'
-      alert(message)
+      success(message)
 
       // 关闭弹窗
       setResetCreditsDialogVisible(false)
@@ -174,7 +176,7 @@ const NewDashboard: React.FC = () => {
         message = error.message
       }
 
-      alert(message)
+      error(message)
     } finally {
       setResettingCredits(false)
     }
@@ -192,7 +194,7 @@ const NewDashboard: React.FC = () => {
       // 检查key对象是否有有效的ID
       const keyId = key.id || key.user_key_id
       if (!keyId) {
-        alert('密钥ID无效，无法下载配置')
+        error('密钥ID无效，无法下载配置')
         return
       }
 
@@ -235,9 +237,9 @@ const NewDashboard: React.FC = () => {
         document.body.removeChild(a)
         URL.revokeObjectURL(url)
 
-        alert('配置文件下载成功，包含 settings.json 和 config.json')
+        success('配置文件下载成功，包含 settings.json 和 config.json')
       } else {
-        alert('下载失败：响应数据格式错误')
+        error('下载失败：响应数据格式错误')
       }
     } catch (error: any) {
       console.error('下载配置失败:', error)
@@ -252,7 +254,7 @@ const NewDashboard: React.FC = () => {
         message = error.message
       }
 
-      alert(message)
+      error(message)
     }
   }
 
@@ -317,14 +319,6 @@ const NewDashboard: React.FC = () => {
     }
   }
 
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text)
-      setActivationToast({ type: 'success', message: '已复制到剪贴板' })
-    } catch (error) {
-      setActivationToast({ type: 'error', message: '复制失败' })
-    }
-  }
 
   const handleActivationSuccessClose = () => {
     setShowActivationSuccessDialog(false)
