@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { StatCard, FeatureCard } from '@/components/dashboard'
-import { ArrowLeft, History, BarChart3, Calendar, CreditCard } from 'lucide-react'
+import { ArrowLeft, History, CreditCard } from 'lucide-react'
 import request from '@/utils/request'
 
 interface ApiKey {
@@ -225,6 +225,7 @@ const UsageHistory: React.FC = () => {
           <div className="mb-8">
             <FeatureCard
               title="API密钥信息"
+              description="当前API密钥的详细信息"
               icon={CreditCard}
               variant="gradient"
             >

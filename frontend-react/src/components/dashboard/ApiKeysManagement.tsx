@@ -183,7 +183,7 @@ const ApiKeysManagement: React.FC<ApiKeysManagementProps> = ({
                 {apiKeys
                   .filter((key) => key.status === 'active')
                   .map((key) => (
-                    <div key={key.user_key_id} className="border rounded-lg p-4 bg-white shadow-sm">
+                    <div key={`${key.user_key_id}-${key.api_key}`} className="border rounded-lg p-4 bg-white shadow-sm">
                       {/* 基本信息 */}
                       <div className="space-y-3">
                         <div className="flex justify-between items-start">
@@ -297,7 +297,7 @@ const ApiKeysManagement: React.FC<ApiKeysManagementProps> = ({
                     {apiKeys
                       .filter((key) => key.status === 'active') // 只显示激活状态的密钥
                       .map((key) => (
-                      <React.Fragment key={key.user_key_id}>
+                      <React.Fragment key={`${key.user_key_id}-${key.api_key}`}>
                         {/* 第一行：主要信息 */}
                         <TableRow>
                           <TableCell>

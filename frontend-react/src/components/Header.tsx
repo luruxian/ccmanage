@@ -28,8 +28,6 @@ const Header: React.FC = () => {
     return !isAuthPage() && !isAdminPage()
   }
 
-
-
   if (!shouldShowNavbar()) {
     return null
   }
@@ -48,8 +46,6 @@ const Header: React.FC = () => {
               </h1>
             </div>
           </div>
-
-
 
           {/* User menu */}
           <NavigationMenu>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useLocation, Link, useNavigate } from 'react-router-dom'
+import { useLocation, Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -16,7 +16,6 @@ interface ResetPasswordForm {
 
 const ResetPassword: React.FC = () => {
   const location = useLocation()
-  const navigate = useNavigate()
 
   const [formData, setFormData] = useState<ResetPasswordForm>({
     email: '',
