@@ -218,9 +218,6 @@ const UsageHistory: React.FC = () => {
             </Button>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">使用历史</h1>
-          <p className="text-lg text-gray-600">
-            查看API密钥的详细使用记录和统计信息
-          </p>
         </div>
 
         {/* API密钥基本信息卡片 */}
@@ -228,7 +225,6 @@ const UsageHistory: React.FC = () => {
           <div className="mb-8">
             <FeatureCard
               title="API密钥信息"
-              description="当前查看的API密钥详细信息"
               icon={CreditCard}
               variant="gradient"
             >
@@ -259,20 +255,6 @@ const UsageHistory: React.FC = () => {
                     {selectedApiKey.activation_date ? new Date(selectedApiKey.activation_date).toLocaleString('zh-CN') : '未激活'}
                   </div>
                 </div>
-                <div>
-                  <span className="font-medium text-muted-foreground">剩余积分:</span>
-                  <div className="mt-1">
-                    <span className={`font-medium ${getRemainingCreditsClass(selectedApiKey.remaining_credits, selectedApiKey.total_credits)}`}>
-                      {selectedApiKey.remaining_credits !== null ? selectedApiKey.remaining_credits : '-'}
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <span className="font-medium text-muted-foreground">总积分:</span>
-                  <div className="mt-1 font-medium">
-                    {selectedApiKey.total_credits !== null ? selectedApiKey.total_credits : '-'}
-                  </div>
-                </div>
               </div>
             </FeatureCard>
           </div>
@@ -285,27 +267,6 @@ const UsageHistory: React.FC = () => {
             value={usageStats.totalRequests}
             description="所有时间内的请求总数"
             icon={History}
-            variant="gradient"
-          />
-          <StatCard
-            title="积分消耗"
-            value={usageStats.totalCreditsUsed}
-            description="累计消耗的积分数量"
-            icon={BarChart3}
-            variant="gradient"
-          />
-          <StatCard
-            title="成功率"
-            value={`${usageStats.successRate}%`}
-            description="成功请求的比例"
-            icon={Calendar}
-            variant="gradient"
-          />
-          <StatCard
-            title="服务类型"
-            value={usageStats.uniqueServices}
-            description="使用的不同服务数量"
-            icon={CreditCard}
             variant="gradient"
           />
         </div>

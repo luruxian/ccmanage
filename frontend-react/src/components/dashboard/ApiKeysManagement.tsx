@@ -124,17 +124,17 @@ const ApiKeysManagement: React.FC<ApiKeysManagementProps> = ({
   return (
     <Card>
       <CardHeader>
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <CardTitle className="flex items-center space-x-2">
             <span>🔑</span>
-            <span>API密钥管理</span>
+            <span className="text-lg sm:text-xl">API密钥管理</span>
           </CardTitle>
           <Button
             variant="outline"
             size="sm"
             onClick={onRefreshKeys}
             disabled={loadingKeys}
-            className="flex items-center space-x-2"
+            className="flex items-center space-x-2 w-full sm:w-auto"
           >
             {loadingKeys ? (
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
@@ -177,131 +177,235 @@ const ApiKeysManagement: React.FC<ApiKeysManagementProps> = ({
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[180px]">订阅名称</TableHead>
-                    <TableHead className="w-[180px]">API密钥</TableHead>
-                    <TableHead className="w-[80px]">状态</TableHead>
-                    <TableHead className="w-[100px]">激活时间</TableHead>
-                    <TableHead className="w-[100px]">过期时间</TableHead>
-                    <TableHead className="w-[80px]">剩余天数</TableHead>
-                    <TableHead className="w-[160px]">操作</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {apiKeys
-                    .filter((key) => key.status === 'active') // 只显示激活状态的密钥
-                    .map((key) => (
-                    <React.Fragment key={key.user_key_id}>
-                      {/* 第一行：主要信息 */}
-                      <TableRow>
-                        <TableCell>
-                          <div className="font-medium">
-                            {key.package_name || '未知订阅'}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center space-x-2">
-                            <code className="text-sm bg-muted px-2 py-1 rounded">
-                              {maskApiKey(key.api_key)}
-                            </code>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => copyApiKey(key.api_key)}
-                            >
-                              复制
-                            </Button>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={getStatusVariant(key.status)}>
-                            {getStatusText(key.status)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <span className="text-sm">
-                            {key.activation_date ? formatDateShort(key.activation_date) : '未激活'}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <span className="text-sm">
-                            {key.expire_date ? formatDateShort(key.expire_date) : '永久'}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <span className={`text-sm ${getRemainingDaysClass(key.remaining_days)}`}>
-                            {key.remaining_days !== null ? `${key.remaining_days}天` : '永久'}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex space-x-1">
-                            <Button
-                              size="sm"
-                              onClick={() => onViewUsageHistory(key)}
-                            >
-                              履历
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => onResetCredits(key)}
-                            >
-                              重置积分
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => onDownloadConfig(key)}
-                            >
-                              下载配置
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                      {/* 第二行：积分信息 */}
-                      <TableRow>
-                        <TableCell colSpan={7} className="bg-muted/50">
-                          <div className="flex items-center space-x-6 py-2">
-                            <div className="flex items-center space-x-6 text-sm">
-                              <div>
-                                <span className="text-muted-foreground">总积分：</span>
-                                <span>
-                                  {key.total_credits !== null ? key.total_credits : '-'}
-                                </span>
-                              </div>
-                              <div>
-                                <span className="text-muted-foreground">剩余积分：</span>
-                                <span className={getRemainingCreditsClass(key.remaining_credits, key.total_credits)}>
-                                  {key.remaining_credits !== null ? key.remaining_credits : '-'}
-                                </span>
-                              </div>
+            <div className="space-y-4 lg:space-y-0">
+              {/* 移动端卡片视图 */}
+              <div className="lg:hidden space-y-4">
+                {apiKeys
+                  .filter((key) => key.status === 'active')
+                  .map((key) => (
+                    <div key={key.user_key_id} className="border rounded-lg p-4 bg-white shadow-sm">
+                      {/* 基本信息 */}
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3 className="font-medium text-gray-900">
+                              {key.package_name || '未知订阅'}
+                            </h3>
+                            <div className="flex items-center space-x-2 mt-1">
+                              <Badge variant={getStatusVariant(key.status)}>
+                                {getStatusText(key.status)}
+                              </Badge>
+                              <span className={`text-xs ${getRemainingDaysClass(key.remaining_days)}`}>
+                                {key.remaining_days !== null ? `${key.remaining_days}天` : '永久'}
+                              </span>
                             </div>
-                            {key.total_credits && key.total_credits > 0 && (
-                              <div className="w-40">
-                                <div className="flex justify-between text-sm mb-1">
-                                  <span className="text-muted-foreground">剩余积分</span>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => copyApiKey(key.api_key)}
+                            className="text-xs"
+                          >
+                            复制
+                          </Button>
+                        </div>
+
+                        {/* API密钥 */}
+                        <div>
+                          <p className="text-sm text-gray-600 mb-1">API密钥</p>
+                          <code className="text-xs bg-muted px-2 py-1 rounded block truncate">
+                            {maskApiKey(key.api_key)}
+                          </code>
+                        </div>
+
+                        {/* 时间信息 */}
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <p className="text-gray-600">激活时间</p>
+                            <p>{key.activation_date ? formatDateShort(key.activation_date) : '未激活'}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-600">过期时间</p>
+                            <p>{key.expire_date ? formatDateShort(key.expire_date) : '永久'}</p>
+                          </div>
+                        </div>
+
+                        {/* 积分信息 */}
+                        <div className="bg-gray-50 rounded-lg p-3">
+                          <div className="flex justify-between text-sm mb-2">
+                            <span>总积分: {key.total_credits !== null ? key.total_credits : '-'}</span>
+                            <span className={getRemainingCreditsClass(key.remaining_credits, key.total_credits)}>
+                              剩余: {key.remaining_credits !== null ? key.remaining_credits : '-'}
+                            </span>
+                          </div>
+                          {key.total_credits && key.total_credits > 0 && (
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div
+                                className={`h-2 rounded-full ${getProgressColor(Math.round(((key.remaining_credits || 0) / key.total_credits) * 100))}`}
+                                style={{ width: `${Math.round(((key.remaining_credits || 0) / key.total_credits) * 100)}%` }}
+                              ></div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* 操作按钮 */}
+                        <div className="flex flex-wrap gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => onViewUsageHistory(key)}
+                            className="text-xs"
+                          >
+                            履历
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => onResetCredits(key)}
+                            className="text-xs"
+                          >
+                            重置积分
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => onDownloadConfig(key)}
+                            className="text-xs"
+                          >
+                            下载配置
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+
+              {/* 桌面端表格视图 */}
+              <div className="hidden lg:block overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[180px]">订阅名称</TableHead>
+                      <TableHead className="w-[180px]">API密钥</TableHead>
+                      <TableHead className="w-[80px]">状态</TableHead>
+                      <TableHead className="w-[100px]">激活时间</TableHead>
+                      <TableHead className="w-[100px]">过期时间</TableHead>
+                      <TableHead className="w-[80px]">剩余天数</TableHead>
+                      <TableHead className="w-[160px]">操作</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {apiKeys
+                      .filter((key) => key.status === 'active') // 只显示激活状态的密钥
+                      .map((key) => (
+                      <React.Fragment key={key.user_key_id}>
+                        {/* 第一行：主要信息 */}
+                        <TableRow>
+                          <TableCell>
+                            <div className="font-medium">
+                              {key.package_name || '未知订阅'}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center space-x-2">
+                              <code className="text-sm bg-muted px-2 py-1 rounded">
+                                {maskApiKey(key.api_key)}
+                              </code>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => copyApiKey(key.api_key)}
+                              >
+                                复制
+                              </Button>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={getStatusVariant(key.status)}>
+                              {getStatusText(key.status)}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <span className="text-sm">
+                              {key.activation_date ? formatDateShort(key.activation_date) : '未激活'}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <span className="text-sm">
+                              {key.expire_date ? formatDateShort(key.expire_date) : '永久'}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <span className={`text-sm ${getRemainingDaysClass(key.remaining_days)}`}>
+                              {key.remaining_days !== null ? `${key.remaining_days}天` : '永久'}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex space-x-1">
+                              <Button
+                                size="sm"
+                                onClick={() => onViewUsageHistory(key)}
+                              >
+                                履历
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => onResetCredits(key)}
+                              >
+                                重置积分
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => onDownloadConfig(key)}
+                              >
+                                下载配置
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                        {/* 第二行：积分信息 */}
+                        <TableRow>
+                          <TableCell colSpan={7} className="bg-muted/50">
+                            <div className="flex items-center space-x-6 py-2">
+                              <div className="flex items-center space-x-6 text-sm">
+                                <div>
+                                  <span className="text-muted-foreground">总积分：</span>
                                   <span>
-                                    {Math.round(((key.remaining_credits || 0) / key.total_credits) * 100)}%
+                                    {key.total_credits !== null ? key.total_credits : '-'}
                                   </span>
                                 </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2">
-                                  <div
-                                    className={`h-2 rounded-full ${getProgressColor(Math.round(((key.remaining_credits || 0) / key.total_credits) * 100))}`}
-                                    style={{ width: `${Math.round(((key.remaining_credits || 0) / key.total_credits) * 100)}%` }}
-                                  ></div>
+                                <div>
+                                  <span className="text-muted-foreground">剩余积分：</span>
+                                  <span className={getRemainingCreditsClass(key.remaining_credits, key.total_credits)}>
+                                    {key.remaining_credits !== null ? key.remaining_credits : '-'}
+                                  </span>
                                 </div>
                               </div>
-                            )}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    </React.Fragment>
-                  ))}
-                </TableBody>
-              </Table>
+                              {key.total_credits && key.total_credits > 0 && (
+                                <div className="w-40">
+                                  <div className="flex justify-between text-sm mb-1">
+                                    <span className="text-muted-foreground">剩余积分</span>
+                                    <span>
+                                      {Math.round(((key.remaining_credits || 0) / key.total_credits) * 100)}%
+                                    </span>
+                                  </div>
+                                  <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div
+                                      className={`h-2 rounded-full ${getProgressColor(Math.round(((key.remaining_credits || 0) / key.total_credits) * 100))}`}
+                                      style={{ width: `${Math.round(((key.remaining_credits || 0) / key.total_credits) * 100)}%` }}
+                                    ></div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      </React.Fragment>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           )}
         </CardContent>
