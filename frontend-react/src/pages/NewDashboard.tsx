@@ -573,21 +573,7 @@ const NewDashboard: React.FC = () => {
             <h4 className="text-lg font-semibold mb-4">用户Key激活成功！</h4>
 
             <div className="bg-gray-50 rounded-lg p-4 mb-4 text-left">
-              <p><strong>激活时间:</strong> {activatedKeyInfo.activationDate}</p>
-              <p className="mt-2"><strong>用户Key:</strong></p>
-              <div className="flex gap-2 mt-2">
-                <Input
-                  value={activatedKeyInfo.userKey}
-                  readOnly
-                  className="flex-1"
-                />
-                <Button
-                  onClick={() => copyToClipboard(activatedKeyInfo.userKey)}
-                  variant="outline"
-                >
-                  复制
-                </Button>
-              </div>
+              <p><strong>激活时间:</strong> {activatedKeyInfo.activationDate}</p>              
             </div>
 
             <Alert className="bg-green-50 border-green-200">
@@ -611,19 +597,19 @@ const NewDashboard: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* 激活通知 Toast */}
+      {/* 激活通知 Toast - 放在所有对话框之后确保显示在最上层 */}
       {activationToast && (
-        <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg flex items-center gap-3 animate-in fade-in slide-in-from-top-2 ${
+        <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-[100] p-4 rounded-lg shadow-lg flex items-center gap-3 animate-in fade-in slide-in-from-top-2 ${
           activationToast.type === 'success'
-            ? 'bg-green-500 text-white'
-            : 'bg-red-500 text-white'
+            ? 'bg-green-500 text-white border-2 border-green-600'
+            : 'bg-red-500 text-white border-2 border-red-600'
         }`}>
           {activationToast.type === 'success' ? (
             <CheckCircle size={20} />
           ) : (
             <AlertCircle size={20} />
           )}
-          <span>{activationToast.message}</span>
+          <span className="font-medium">{activationToast.message}</span>
         </div>
       )}
     </div>
