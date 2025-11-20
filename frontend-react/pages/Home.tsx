@@ -39,7 +39,7 @@ export default function Home() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">仪表板</h1>
         <p className="text-muted-foreground">
-          欢迎来到CCManage管理系统
+          欢迎来到agnets管理系统
         </p>
       </div>
 
