@@ -176,9 +176,6 @@ const ApiKeysManagement: React.FC<ApiKeysManagementProps> = ({
               <p className="text-sm text-muted-foreground mb-4">
                 您还没有创建任何API密钥
               </p>
-              <Button onClick={() => navigate('/packages')}>
-                立即激活密钥
-              </Button>
             </div>
           ) : (
             <div className="overflow-x-auto">

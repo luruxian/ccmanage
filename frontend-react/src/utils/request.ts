@@ -80,7 +80,7 @@ const refreshToken = async (): Promise<string | null> => {
 // 创建axios实例
 const request = axios.create({
   baseURL: getBaseURL(),
-  timeout: 15000, // 增加超时时间
+  timeout: 30000, // 增加超时时间到30秒
   headers: {
     'Content-Type': 'application/json',
     'X-Requested-With': 'XMLHttpRequest' // 添加CSRF保护

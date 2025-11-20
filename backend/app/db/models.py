@@ -106,7 +106,7 @@ class EmailVerification(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     user_id = Column(String(50), nullable=False, comment="用户ID")
     email = Column(String(255), nullable=False, comment="待验证邮箱")
-    verification_code = Column(String(10), nullable=False, comment="验证码")
+    verification_code = Column(String(512), nullable=False, comment="验证码")
     verification_type = Column(String(20), nullable=False, comment="验证类型: register/reset_password")
     is_used = Column(Boolean, default=False, nullable=False, comment="是否已使用")
     expire_at = Column(DateTime(timezone=True), nullable=False, comment="过期时间")

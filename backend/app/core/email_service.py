@@ -56,31 +56,45 @@ class EmailService:
     def _send_email_sync(self, msg, recipients):
         """同步发送邮件"""
         try:
-            # 发送邮件
-            with smtplib.SMTP(settings.MAIL_SERVER, settings.MAIL_PORT) as server:
+            # 发送邮件 - 使用更长的超时时间
+            with smtplib.SMTP(settings.MAIL_SERVER, settings.MAIL_PORT, timeout=30) as server:
                 server.ehlo()
                 server.starttls(context=ssl.create_default_context())
                 server.ehlo()
                 server.login(settings.MAIL_USERNAME, settings.MAIL_PASSWORD)
+
+                # 发送邮件
                 server.send_message(msg)
+
+                # 显式退出连接
+                server.quit()
 
             logger.info(f"邮件发送成功: {recipients}, 主题: {msg['Subject']}")
             return True
 
         except smtplib.SMTPAuthenticationError as e:
             logger.error(f"SMTP认证失败: {str(e)}")
-            logger.error("请检查Gmail账户设置：")
-            logger.error("1. 确保已启用两步验证")
-            logger.error("2. 确保使用正确的应用密码")
-            logger.error("3. 访问 https://accounts.google.com/b/0/DisplayUnlockCaptcha 解锁账户")
+            logger.error("请检查QQ邮箱账户设置：")
+            logger.error("1. 确保已开启SMTP服务")
+            logger.error("2. 确保使用正确的授权码")
+            logger.error("3. 检查邮箱账户和密码配置")
             return False
 
         except smtplib.SMTPConnectError as e:
             logger.error(f"SMTP连接失败: {str(e)}")
             return False
 
+        except smtplib.SMTPServerDisconnected as e:
+            logger.error(f"SMTP服务器断开连接: {str(e)}")
+            return False
+
+        except smtplib.SMTPException as e:
+            logger.error(f"SMTP错误: {str(e)}")
+            return False
+
         except Exception as e:
             logger.error(f"邮件发送失败: {recipients}, 错误: {str(e)}")
+            logger.error(f"错误类型: {type(e).__name__}")
             return False
 
     def render_template(self, template_name: str, context: Dict[str, Any]) -> str:
@@ -94,6 +108,8 @@ class EmailService:
 
     async def send_verification_email(self, email: str, username: str,
                                     verification_token: str) -> bool:
+        
+        logger.info(f"发送邮箱验证邮件: {email}, 用户名: {username}, 验证令牌: {verification_token}")
         """发送邮箱验证邮件"""
         context = {
             "username": username,
@@ -351,7 +367,7 @@ class EmailService:
 
         return await self.send_email(
             recipients=[email],
-            subject="agnets.app|agnet club - 🎊 欢迎来到智能代理俱乐部！",
+            subject="agnets.app|agnet club - 🎊 欢迎来到agnets.app！",
             html_content=html_content,
             text_content=f"欢迎使用 {context['app_name']}！"
         )
