@@ -68,7 +68,6 @@ const NewDashboard: React.FC = () => {
   })
   const [loading, setLoading] = useState(true)
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([])
-  const [loadingKeys, setLoadingKeys] = useState(false)
   const [keyStats, setKeyStats] = useState({ active: 0 })
   const [resetCreditsDialogVisible, setResetCreditsDialogVisible] = useState(false)
   const [resettingCredits, setResettingCredits] = useState(false)
@@ -88,44 +87,57 @@ const NewDashboard: React.FC = () => {
 
   useEffect(() => {
     loadDashboardData()
-    loadUserKeys()
   }, [])
 
   const loadDashboardData = async () => {
     try {
       setLoading(true)
-      // 这里应该调用实际的API来获取dashboard数据
-      // 暂时使用模拟数据
-      const mockStats: DashboardStats = {
-        activeKeys: 3,
-        totalCredits: 10000,
-        usedCredits: 3500,
-        remainingCredits: 6500,
-        usagePercentage: 35
-      }
-      setStats(mockStats)
+      // 从密钥列表计算统计数据
+      const response: any = await request.get('/keys/')
+      const keys = response.keys || []
+
+      // 设置API密钥列表
+      setApiKeys(keys)
+
+      // 计算活跃密钥数量
+      const activeKeys = keys.filter((k: ApiKey) => k.status === 'active').length
+
+      // 计算积分统计数据（这里需要根据实际业务逻辑调整）
+      const totalCredits = keys.reduce((sum: number, k: ApiKey) => sum + (k.total_credits || 0), 0)
+      const remainingCredits = keys.reduce((sum: number, k: ApiKey) => sum + (k.remaining_credits || 0), 0)
+      const usedCredits = totalCredits - remainingCredits
+      const usagePercentage = totalCredits > 0 ? Math.round((usedCredits / totalCredits) * 100) : 0
+
+      setStats({
+        activeKeys,
+        totalCredits,
+        usedCredits,
+        remainingCredits,
+        usagePercentage
+      })
+
+      // 更新密钥统计数据
+      setKeyStats({ active: activeKeys })
     } catch (error) {
       console.error('加载dashboard数据失败:', error)
+      // 如果API调用失败，使用默认值
+      setStats({
+        activeKeys: 0,
+        totalCredits: 0,
+        usedCredits: 0,
+        remainingCredits: 0,
+        usagePercentage: 0
+      })
+      setApiKeys([])
+      setKeyStats({ active: 0 })
     } finally {
       setLoading(false)
     }
   }
 
-  // 加载用户密钥
+  // 重新加载用户密钥和统计数据
   const loadUserKeys = async () => {
-    try {
-      setLoadingKeys(true)
-      const response: any = await request.get('/keys/')
-      setApiKeys(response.keys || [])
-
-      // 更新统计数据
-      const activeCount = (response.keys || []).filter((k: ApiKey) => k.status === 'active').length
-      setKeyStats({ active: activeCount })
-    } catch (error) {
-      console.error('获取密钥列表失败:', error)
-    } finally {
-      setLoadingKeys(false)
-    }
+    await loadDashboardData()
   }
 
   // 重置积分相关函数
@@ -406,7 +418,7 @@ const NewDashboard: React.FC = () => {
         <div className="mb-8">
           <ApiKeysManagement
             apiKeys={apiKeys}
-            loadingKeys={loadingKeys}
+            loadingKeys={loading}
             keyStats={keyStats}
             onRefreshKeys={loadUserKeys}
             onViewUsageHistory={(key) => {
