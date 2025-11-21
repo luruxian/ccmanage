@@ -29,7 +29,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
 
   return (
     <aside className="hidden md:block w-64">
-      <div className="sidebar bg-gradient-to-b from-background to-muted h-full p-10">
+      <div className="sidebar h-full p-10">
         <div className="sidebar-content">
           <NavigationMenu orientation="vertical" className="w-full">
             <NavigationMenuList className="flex flex-col space-y-2">
