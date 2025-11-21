@@ -26,7 +26,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { CheckCircle, AlertCircle } from 'lucide-react'
+import { CheckCircle } from 'lucide-react'
 
 interface ApiKey {
   id?: string;
@@ -78,7 +78,6 @@ const NewDashboard: React.FC = () => {
   const [keyActivationDialogVisible, setKeyActivationDialogVisible] = useState(false)
   const [activatingKey, setActivatingKey] = useState(false)
   const [userKeyInput, setUserKeyInput] = useState('')
-  const [activationToast, setActivationToast] = useState<{type: 'success' | 'error', message: string} | null>(null)
   const [showActivationSuccessDialog, setShowActivationSuccessDialog] = useState(false)
   const [activatedKeyInfo, setActivatedKeyInfo] = useState({
     userKey: '',
@@ -175,8 +174,9 @@ const NewDashboard: React.FC = () => {
       } else if (error?.message) {
         message = error.message
       }
-
-      error(message)
+      // 显示message
+      success(message)
+      
     } finally {
       setResettingCredits(false)
     }
@@ -261,12 +261,12 @@ const NewDashboard: React.FC = () => {
   // 密钥激活相关函数
   const validateKeyActivationForm = (): boolean => {
     if (!userKeyInput.trim()) {
-      setActivationToast({ type: 'error', message: '请输入用户Key' })
+      error('请输入用户Key')
       return false
     }
 
     if (userKeyInput.length < 10) {
-      setActivationToast({ type: 'error', message: '用户Key长度不能少于10位' })
+      error('用户Key长度不能少于10位')
       return false
     }
 
@@ -295,7 +295,7 @@ const NewDashboard: React.FC = () => {
       })
 
       setShowActivationSuccessDialog(true)
-      setActivationToast({ type: 'success', message: res?.message || '用户Key激活成功！' })
+      success(res?.message || '用户Key激活成功！')
       setUserKeyInput('')
 
       // 激活成功后刷新密钥列表
@@ -313,7 +313,7 @@ const NewDashboard: React.FC = () => {
         errorMessage = error.message
       }
 
-      setActivationToast({ type: 'error', message: errorMessage })
+      error(errorMessage)
     } finally {
       setActivatingKey(false)
     }
@@ -325,15 +325,6 @@ const NewDashboard: React.FC = () => {
     setKeyActivationDialogVisible(false)
   }
 
-  // Toast 通知自动隐藏
-  useEffect(() => {
-    if (activationToast) {
-      const timer = setTimeout(() => {
-        setActivationToast(null)
-      }, 3000)
-      return () => clearTimeout(timer)
-    }
-  }, [activationToast])
 
   const quickActions = [
     {
@@ -591,21 +582,6 @@ const NewDashboard: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* 激活通知 Toast - 放在所有对话框之后确保显示在最上层 */}
-      {activationToast && (
-        <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-[100] p-4 rounded-lg shadow-lg flex items-center gap-3 animate-in fade-in slide-in-from-top-2 ${
-          activationToast.type === 'success'
-            ? 'bg-green-500 text-white border-2 border-green-600'
-            : 'bg-red-500 text-white border-2 border-red-600'
-        }`}>
-          {activationToast.type === 'success' ? (
-            <CheckCircle size={20} />
-          ) : (
-            <AlertCircle size={20} />
-          )}
-          <span className="font-medium">{activationToast.message}</span>
-        </div>
-      )}
     </div>
   )
 }
