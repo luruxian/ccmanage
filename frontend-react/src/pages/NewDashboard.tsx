@@ -253,17 +253,17 @@ const NewDashboard: React.FC = () => {
       } else {
         error('下载失败：响应数据格式错误')
       }
-    } catch (error: any) {
-      console.error('下载配置失败:', error)
+    } catch (err: any) {
+      console.error('下载配置失败:', err)
 
       // 改进错误处理
       let message = '下载设置文件失败'
-      if (error?.response?.data?.detail) {
-        message = error.response.data.detail
-      } else if (error?.response?.data?.message) {
-        message = error.response.data.message
-      } else if (error?.message) {
-        message = error.message
+      if (err?.response?.data?.detail) {
+        message = err.response.data.detail
+      } else if (err?.response?.data?.message) {
+        message = err.response.data.message
+      } else if (err?.message) {
+        message = err.message
       }
 
       error(message)
@@ -313,16 +313,16 @@ const NewDashboard: React.FC = () => {
       // 激活成功后刷新密钥列表
       await loadUserKeys()
 
-    } catch (error: any) {
-      console.error('激活失败:', error)
+    } catch (err: any) {
+      console.error('激活失败:', err)
 
       let errorMessage = '激活失败，请稍后重试'
-      if (error.response?.data?.detail) {
-        errorMessage = error.response.data.detail
-      } else if (error.response?.data?.message) {
-        errorMessage = error.response.data.message
-      } else if (error.message) {
-        errorMessage = error.message
+      if (err.response?.data?.detail) {
+        errorMessage = err.response.data.detail
+      } else if (err.response?.data?.message) {
+        errorMessage = err.response.data.message
+      } else if (err.message) {
+        errorMessage = err.message
       }
 
       error(errorMessage)
