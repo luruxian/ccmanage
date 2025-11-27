@@ -356,25 +356,25 @@ const NewDashboard: React.FC = () => {
     {
       title: '系统升级通知',
       content: '系统将于本周六凌晨进行维护升级，预计2小时。',
-      time: '2024-01-18 14:30'
+      time: '2025-01-18 14:30'
     },
     {
       title: '新功能上线',
       content: 'Claude Sonnet 4.5 现已全面支持，欢迎体验。',
-      time: '2024-01-15 10:00'
+      time: '2025-10-01 10:00'
     }
   ]
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-8">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen bg-background p-2 sm:p-4 md:p-6 lg:p-8">
+        <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/3 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="h-8 bg-muted rounded w-1/4 mb-4"></div>
+            <div className="h-4 bg-muted rounded w-1/3 mb-6 sm:mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-32 bg-gray-200 rounded-xl"></div>
+                <div key={i} className="h-32 bg-muted rounded-xl"></div>
               ))}
             </div>
           </div>
@@ -384,20 +384,20 @@ const NewDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-3 sm:p-4 md:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-background p-2 sm:p-4 md:p-6 lg:p-8">
+      <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8">
         {/* 欢迎区域 */}
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
             欢迎回来，{user?.name || '用户'}！
           </h1>
-          <p className="text-base sm:text-lg text-gray-600">
+          <p className="text-base sm:text-lg text-muted-foreground">
             今天是使用 Claude Code 的好日子 ✨
           </p>
         </div>
 
         {/* 第一行卡片 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <StatCard
             title="激活密钥"
             value={stats.activeKeys}
@@ -415,7 +415,7 @@ const NewDashboard: React.FC = () => {
         </div>
 
         {/* API密钥管理 - 独占一行 */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <ApiKeysManagement
             apiKeys={apiKeys}
             loadingKeys={loading}
@@ -431,7 +431,7 @@ const NewDashboard: React.FC = () => {
         </div>
 
         {/* 其他功能卡片网格 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {/* 公告卡片 */}
           <FeatureCard
             title="最新公告"
@@ -448,9 +448,9 @@ const NewDashboard: React.FC = () => {
             <div className="space-y-3 mt-4">
               {announcements.map((announcement, index) => (
                 <div key={index} className="border-l-4 border-primary pl-4 py-2">
-                  <h4 className="font-medium text-gray-900">{announcement.title}</h4>
-                  <p className="text-sm text-gray-600 mt-1">{announcement.content}</p>
-                  <p className="text-xs text-gray-400 mt-1">{announcement.time}</p>
+                  <h4 className="font-medium text-foreground">{announcement.title}</h4>
+                  <p className="text-sm text-muted-foreground mt-1">{announcement.content}</p>
+                  <p className="text-xs text-muted-foreground/70 mt-1">{announcement.time}</p>
                 </div>
               ))}
             </div>
@@ -470,12 +470,12 @@ const NewDashboard: React.FC = () => {
             ]}
           >
             <div className="text-center mt-4">
-              <div className="bg-gray-100 rounded-lg p-4 inline-block">
-                <div className="w-32 h-32 bg-gray-300 rounded flex items-center justify-center text-gray-500">
+              <div className="bg-muted rounded-lg p-4 inline-block">
+                <div className="w-32 h-32 bg-muted-foreground/10 rounded flex items-center justify-center text-muted-foreground/60">
                   二维码
                 </div>
               </div>
-              <p className="text-sm text-gray-600 mt-3">
+              <p className="text-sm text-muted-foreground mt-3">
                 扫描二维码加入社群
               </p>
             </div>
@@ -530,7 +530,7 @@ const NewDashboard: React.FC = () => {
 
           <form onSubmit={handleKeyActivation} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="userKey" className="text-gray-700">
+              <Label htmlFor="userKey" className="text-foreground">
                 用户Key
               </Label>
               <Input
@@ -540,9 +540,9 @@ const NewDashboard: React.FC = () => {
                 placeholder="请输入要激活的用户Key"
                 value={userKeyInput}
                 onChange={(e) => setUserKeyInput(e.target.value)}
-                className="h-12 text-base border-gray-200 focus:border-primary focus:ring-primary"
+                className="h-12 text-base"
               />
-              <div className="text-sm text-gray-500 mt-1">
+              <div className="text-sm text-muted-foreground mt-1">
                 输入您获得的用户Key，格式如：sk-xxxxxxxx...
               </div>
             </div>
@@ -566,17 +566,17 @@ const NewDashboard: React.FC = () => {
           </DialogHeader>
 
           <div className="text-center">
-            <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+            <CheckCircle className="w-16 h-16 text-success mx-auto mb-4" />
             <h4 className="text-lg font-semibold mb-4">用户Key激活成功！</h4>
 
-            <div className="bg-gray-50 rounded-lg p-4 mb-4 text-left">
-              <p><strong>激活时间:</strong> {activatedKeyInfo.activationDate}</p>              
+            <div className="bg-muted rounded-lg p-4 mb-4 text-left">
+              <p><strong>激活时间:</strong> {activatedKeyInfo.activationDate}</p>
             </div>
 
-            <Alert className="bg-green-50 border-green-200">
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              <AlertTitle className="text-green-800">激活成功</AlertTitle>
-              <AlertDescription className="text-green-700">
+            <Alert className="bg-success/10 border-success/20">
+              <CheckCircle className="h-4 w-4 text-success" />
+              <AlertTitle className="text-success-foreground">激活成功</AlertTitle>
+              <AlertDescription className="text-success-foreground/90">
                 您的用户Key已成功激活，现在可以使用服务了
               </AlertDescription>
             </Alert>
