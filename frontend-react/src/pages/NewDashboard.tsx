@@ -437,13 +437,7 @@ const NewDashboard: React.FC = () => {
             title="最新公告"
             description="系统通知和重要更新"
             icon={Bell}
-            actions={[
-              {
-                label: '查看全部',
-                onClick: () => console.log('查看公告'),
-                variant: 'ghost'
-              }
-            ]}
+            actions={[]}
           >
             <div className="space-y-3 mt-4">
               {announcements.map((announcement, index) => (
@@ -461,19 +455,15 @@ const NewDashboard: React.FC = () => {
             title="加入社区"
             description="获取最新动态和技术支持"
             icon={Circle}
-            actions={[
-              {
-                label: '加入群聊',
-                onClick: () => console.log('加入群聊'),
-                variant: 'outline'
-              }
-            ]}
+            actions={[]}
           >
             <div className="text-center mt-4">
               <div className="bg-muted rounded-lg p-4 inline-block">
-                <div className="w-32 h-32 bg-muted-foreground/10 rounded flex items-center justify-center text-muted-foreground/60">
-                  二维码
-                </div>
+                <img
+                  src="/src/assets/images/cc.jpg"
+                  alt="社区二维码"
+                  className="w-32 h-32 rounded object-cover"
+                />
               </div>
               <p className="text-sm text-muted-foreground mt-3">
                 扫描二维码加入社群
