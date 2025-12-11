@@ -71,10 +71,6 @@ const getProgressColor = (percentage: number) => {
   return 'bg-red-500';
 };
 
-const formatDateShort = (dateStr?: string) => {
-  if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleDateString('zh-CN');
-};
 
 const getRemainingDaysClass = (days?: number) => {
   if (days === undefined || days === null) return 'text-muted-foreground';
@@ -218,17 +214,6 @@ const ApiKeysManagement: React.FC<ApiKeysManagementProps> = ({
                           </code>
                         </div>
 
-                        {/* 时间信息 */}
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <p className="text-gray-600">激活时间</p>
-                            <p>{key.activation_date ? formatDateShort(key.activation_date) : '未激活'}</p>
-                          </div>
-                          <div>
-                            <p className="text-gray-600">过期时间</p>
-                            <p>{key.expire_date ? formatDateShort(key.expire_date) : '永久'}</p>
-                          </div>
-                        </div>
 
                         {/* 积分信息 */}
                         <div className="bg-gray-50 rounded-lg p-3">
@@ -287,8 +272,6 @@ const ApiKeysManagement: React.FC<ApiKeysManagementProps> = ({
                       <TableHead className="w-[180px]">订阅名称</TableHead>
                       <TableHead className="w-[180px]">API密钥</TableHead>
                       <TableHead className="w-[80px]">状态</TableHead>
-                      <TableHead className="w-[100px]">激活时间</TableHead>
-                      <TableHead className="w-[100px]">过期时间</TableHead>
                       <TableHead className="w-[80px]">剩余天数</TableHead>
                       <TableHead className="w-[160px]">操作</TableHead>
                     </TableRow>
@@ -323,16 +306,6 @@ const ApiKeysManagement: React.FC<ApiKeysManagementProps> = ({
                             <Badge variant={getStatusVariant(key.status)}>
                               {getStatusText(key.status)}
                             </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <span className="text-sm">
-                              {key.activation_date ? formatDateShort(key.activation_date) : '未激活'}
-                            </span>
-                          </TableCell>
-                          <TableCell>
-                            <span className="text-sm">
-                              {key.expire_date ? formatDateShort(key.expire_date) : '永久'}
-                            </span>
                           </TableCell>
                           <TableCell>
                             <span className={`text-sm ${getRemainingDaysClass(key.remaining_days)}`}>

@@ -229,7 +229,7 @@ const UsageHistory: React.FC = () => {
               icon={CreditCard}
               variant="gradient"
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                 <div>
                   <span className="font-medium text-muted-foreground">订阅名称:</span>
                   <div className="mt-1 font-medium">{selectedApiKey.package_name || '未知订阅'}</div>
@@ -254,6 +254,12 @@ const UsageHistory: React.FC = () => {
                   <span className="font-medium text-muted-foreground">激活时间:</span>
                   <div className="mt-1 font-medium">
                     {selectedApiKey.activation_date ? new Date(selectedApiKey.activation_date).toLocaleString('zh-CN') : '未激活'}
+                  </div>
+                </div>
+                <div>
+                  <span className="font-medium text-muted-foreground">到期时间:</span>
+                  <div className="mt-1 font-medium">
+                    {selectedApiKey.expire_date ? new Date(selectedApiKey.expire_date).toLocaleString('zh-CN') : '无限制'}
                   </div>
                 </div>
               </div>
