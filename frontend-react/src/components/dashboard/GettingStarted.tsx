@@ -23,7 +23,7 @@ const GettingStarted: React.FC = () => {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6 md:space-y-8 p-2 sm:p-4 md:p-6 lg:p-8 max-w-4xl mx-auto">
+    <div className="space-y-4 sm:space-y-6 md:space-y-8 p-2 sm:p-4 md:p-6 lg:p-8 container mx-auto">
       {/* 页面标题区域 */}
       <div className="text-center mb-6 sm:mb-8 md:mb-12">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 text-foreground flex items-center justify-center gap-2">
@@ -123,7 +123,7 @@ const GettingStarted: React.FC = () => {
                         <li>安装完成后，打开命令提示符，运行以下命令：</li>
                       </ol>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                        <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">nvm install 18</code>
+                        <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">nvm install 18</code>
                         <Button
                           size="sm"
                           onClick={() => copyToClipboard('nvm install 18')}
@@ -134,7 +134,7 @@ const GettingStarted: React.FC = () => {
                         </Button>
                       </div>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                        <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">nvm use 18</code>
+                        <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">nvm use 18</code>
                         <Button
                           size="sm"
                           onClick={() => copyToClipboard('nvm use 18')}
@@ -161,7 +161,7 @@ const GettingStarted: React.FC = () => {
                       <h4 className="font-medium mb-2">方法二：使用 Homebrew</h4>
                       <p className="mb-2 text-sm">如果您已安装 Homebrew，可以使用以下命令：</p>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                        <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">brew install node@18</code>
+                        <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">brew install node@18</code>
                         <Button
                           size="sm"
                           onClick={() => copyToClipboard('brew install node@18')}
@@ -173,7 +173,7 @@ const GettingStarted: React.FC = () => {
                       </div>
                       <p className="text-sm text-muted-foreground">如果需要将 Node.js 添加到 PATH，请运行：</p>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                        <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">echo 'export PATH="/usr/local/opt/node@18/bin:$PATH"' &gt;&gt; ~/.zshrc && source ~/.zshrc</code>
+                        <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">echo 'export PATH="/usr/local/opt/node@18/bin:$PATH"' &gt;&gt; ~/.zshrc && source ~/.zshrc</code>
                         <Button
                           size="sm"
                           onClick={() => copyToClipboard('echo \'export PATH="/usr/local/opt/node@18/bin:$PATH"\' >> ~/.zshrc && source ~/.zshrc')}
@@ -194,7 +194,7 @@ const GettingStarted: React.FC = () => {
                         <div className="mb-3">
                           <p className="font-medium text-sm mb-1">Ubuntu/Debian:</p>
                           <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                            <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs</code>
+                            <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs</code>
                             <Button
                               size="sm"
                               onClick={() => copyToClipboard('curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs')}
@@ -209,7 +209,7 @@ const GettingStarted: React.FC = () => {
                         <div className="mb-3">
                           <p className="font-medium text-sm mb-1">Fedora/RHEL/CentOS:</p>
                           <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                            <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash - && sudo dnf install -y nodejs</code>
+                            <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash - && sudo dnf install -y nodejs</code>
                             <Button
                               size="sm"
                               onClick={() => copyToClipboard('curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash - && sudo dnf install -y nodejs')}
@@ -224,7 +224,7 @@ const GettingStarted: React.FC = () => {
                         <div>
                           <p className="font-medium text-sm mb-1">使用 nvm (推荐，适用于所有 Linux):</p>
                           <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                            <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash</code>
+                            <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash</code>
                             <Button
                               size="sm"
                               onClick={() => copyToClipboard('curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash')}
@@ -236,7 +236,7 @@ const GettingStarted: React.FC = () => {
                           </div>
                           <p className="text-sm text-muted-foreground mb-2">安装完成后，重启终端并运行：</p>
                           <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                            <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">nvm install 18</code>
+                            <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">nvm install 18</code>
                             <Button
                               size="sm"
                               onClick={() => copyToClipboard('nvm install 18')}
@@ -247,7 +247,7 @@ const GettingStarted: React.FC = () => {
                             </Button>
                           </div>
                           <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                            <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">nvm use 18</code>
+                            <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">nvm use 18</code>
                             <Button
                               size="sm"
                               onClick={() => copyToClipboard('nvm use 18')}
@@ -268,7 +268,7 @@ const GettingStarted: React.FC = () => {
                       <p className="mb-2">安装完成后，运行以下命令验证 Node.js 和 npm 版本：</p>
                       
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                        <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">node -v</code>
+                        <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">node -v</code>
                         <Button
                           size="sm"
                           onClick={() => copyToClipboard('node -v')}
@@ -280,7 +280,7 @@ const GettingStarted: React.FC = () => {
                       </div>
 
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                        <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">npm -v</code>
+                        <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">npm -v</code>
                         <Button
                           size="sm"
                           onClick={() => copyToClipboard('npm -v')}
@@ -291,7 +291,7 @@ const GettingStarted: React.FC = () => {
                         </Button>
                       </div>
                       
-                      <div className="expected-output bg-muted/50 p-3 rounded-lg mb-3">
+                      <div className="expected-output bg-black/50 p-3 rounded-lg mb-3">
                         <p className="text-sm font-medium mb-1">预期输出示例：</p>
                         <pre className="text-xs text-muted-foreground bg-white p-2 rounded">
 {`v18.16.0  # Node.js 版本
@@ -348,7 +348,7 @@ const GettingStarted: React.FC = () => {
                       <h4 className="font-medium mb-2">方法二：使用 Chocolatey</h4>
                       <p className="mb-2 text-sm">如果您已安装 Chocolatey 包管理器，可以使用以下命令：</p>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                        <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">choco install git -y</code>
+                        <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">choco install git -y</code>
                         <Button
                           size="sm"
                           onClick={() => copyToClipboard('choco install git -y')}
@@ -366,7 +366,7 @@ const GettingStarted: React.FC = () => {
                       <h4 className="font-medium mb-2">方法一：使用 Homebrew</h4>
                       <p className="mb-2 text-sm">使用 Homebrew 安装 Git（推荐）：</p>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                        <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">brew install git</code>
+                        <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">brew install git</code>
                         <Button
                           size="sm"
                           onClick={() => copyToClipboard('brew install git')}
@@ -391,7 +391,7 @@ const GettingStarted: React.FC = () => {
                       <h4 className="font-medium mb-2">方法三：使用 Xcode Command Line Tools</h4>
                       <p className="mb-2 text-sm">如果已安装 Xcode 或 Xcode Command Line Tools，Git 可能已预安装。如果没有，可以通过以下命令安装：</p>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                        <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">xcode-select --install</code>
+                        <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">xcode-select --install</code>
                         <Button
                           size="sm"
                           onClick={() => copyToClipboard('xcode-select --install')}
@@ -408,7 +408,7 @@ const GettingStarted: React.FC = () => {
                     <div className="mb-4">
                       <h4 className="font-medium mb-2">Debian/Ubuntu</h4>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                        <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">sudo apt update && sudo apt install git -y</code>
+                        <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">sudo apt update && sudo apt install git -y</code>
                         <Button
                           size="sm"
                           onClick={() => copyToClipboard('sudo apt update && sudo apt install git -y')}
@@ -423,7 +423,7 @@ const GettingStarted: React.FC = () => {
                     <div className="mb-4">
                       <h4 className="font-medium mb-2">CentOS/RHEL</h4>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                        <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">sudo yum install git -y</code>
+                        <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">sudo yum install git -y</code>
                         <Button
                           size="sm"
                           onClick={() => copyToClipboard('sudo yum install git -y')}
@@ -438,7 +438,7 @@ const GettingStarted: React.FC = () => {
                     <div>
                       <h4 className="font-medium mb-2">Fedora</h4>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                        <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">sudo dnf install git -y</code>
+                        <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">sudo dnf install git -y</code>
                         <Button
                           size="sm"
                           onClick={() => copyToClipboard('sudo dnf install git -y')}
@@ -457,7 +457,7 @@ const GettingStarted: React.FC = () => {
                       <p className="mb-2">安装完成后，运行以下命令验证 Git 版本：</p>
                        
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                        <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">git --version</code>
+                        <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">git --version</code>
                         <Button
                           size="sm"
                           onClick={() => copyToClipboard('git --version')}
@@ -468,7 +468,7 @@ const GettingStarted: React.FC = () => {
                         </Button>
                       </div>
                        
-                      <div className="expected-output bg-muted/50 p-3 rounded-lg mb-3">
+                      <div className="expected-output bg-black/50 p-3 rounded-lg mb-3">
                         <p className="text-sm font-medium mb-1">预期输出示例：</p>
                         <pre className="text-xs text-muted-foreground bg-white p-2 rounded">
 {`git version 2.40.0  # 版本号可能会有所不同`}
@@ -515,7 +515,7 @@ const GettingStarted: React.FC = () => {
             <TabsContent value="npm" className="space-y-4">
               <p>使用 npm 全局安装 Claude Code CLI 工具：</p>
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
-                <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">npm install -g @anthropic-ai/claude-code</code>
+                <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">npm install -g @anthropic-ai/claude-code</code>
                 <Button
                   size="sm"
                   onClick={() => copyToClipboard('npm install -g @anthropic-ai/claude-code')}
@@ -548,7 +548,7 @@ const GettingStarted: React.FC = () => {
               <div className="os-method mb-4">
                 <h5 className="font-medium mb-2">🔵 PowerShell 安装（推荐）</h5>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                  <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">irm https://claude.ai/install.ps1 | iex</code>
+                  <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">irm https://claude.ai/install.ps1 | iex</code>
                   <Button
                     size="sm"
                     onClick={() => copyToClipboard('irm https://claude.ai/install.ps1 | iex')}
@@ -564,7 +564,7 @@ const GettingStarted: React.FC = () => {
               <div className="os-method mb-4">
                 <h5 className="font-medium mb-2">⬛ 命令提示符 (CMD)</h5>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                  <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd</code>
+                  <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd</code>
                   <Button
                     size="sm"
                     onClick={() => copyToClipboard('curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd')}
@@ -582,8 +582,8 @@ const GettingStarted: React.FC = () => {
                 <AlertDescription>
                   <ul className="list-disc pl-5 space-y-1">
                     <li>右键点击 PowerShell 或 CMD，选择"以管理员身份运行"</li>
-                    <li>如果遇到执行策略问题，先运行：<code className="bg-white px-1 rounded">Set-ExecutionPolicy RemoteSigned</code></li>
-                    <li>安装完成后重启终端以使用 <code className="bg-white px-1 rounded">claude</code> 命令</li>
+                    <li>如果遇到执行策略问题，先运行：<code className="bg-black text-white px-1 rounded">Set-ExecutionPolicy RemoteSigned</code></li>
+                    <li>安装完成后重启终端以使用 <code className="bg-black text-white px-1 rounded">claude</code> 命令</li>
                   </ul>
                 </AlertDescription>
               </Alert>
@@ -596,7 +596,7 @@ const GettingStarted: React.FC = () => {
               <div className="os-method mb-4">
                 <h5 className="font-medium mb-2">🍎 一键安装脚本</h5>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                  <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">curl -fsSL https://claude.ai/install.sh | bash</code>
+                  <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">curl -fsSL https://claude.ai/install.sh | bash</code>
                   <Button
                     size="sm"
                     onClick={() => copyToClipboard('curl -fsSL https://claude.ai/install.sh | bash')}
@@ -614,7 +614,7 @@ const GettingStarted: React.FC = () => {
                 <AlertDescription>
                   <ul className="list-disc pl-5 space-y-1">
                     <li>打开 Terminal（终端）应用程序</li>
-                    <li>如果提示权限问题，可能需要在命令前加 <code className="bg-white px-1 rounded">sudo</code></li>
+                    <li>如果提示权限问题，可能需要在命令前加 <code className="bg-black text-white px-1 rounded">sudo</code></li>
                     <li>首次运行可能会触发 macOS 安全提示，请允许执行</li>
                     <li>如果使用 Homebrew，也可以通过包管理器安装</li>
                   </ul>
@@ -629,7 +629,7 @@ const GettingStarted: React.FC = () => {
               <div className="os-method mb-4">
                 <h5 className="font-medium mb-2">🐧 一键安装脚本</h5>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                  <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">curl -fsSL https://claude.ai/install.sh | bash</code>
+                  <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">curl -fsSL https://claude.ai/install.sh | bash</code>
                   <Button
                     size="sm"
                     onClick={() => copyToClipboard('curl -fsSL https://claude.ai/install.sh | bash')}
@@ -647,9 +647,9 @@ const GettingStarted: React.FC = () => {
                 <AlertDescription>
                   <ul className="list-disc pl-5 space-y-1">
                     <li>大多数发行版都支持该安装脚本</li>
-                    <li>如果需要管理员权限，在命令前加 <code className="bg-white px-1 rounded">sudo</code></li>
-                    <li>确保已安装 <code className="bg-white px-1 rounded">curl</code> 或 <code className="bg-white px-1 rounded">wget</code></li>
-                    <li>安装完成后可能需要重新加载 shell 配置：<code className="bg-white px-1 rounded">source ~/.bashrc</code></li>
+                    <li>如果需要管理员权限，在命令前加 <code className="bg-black text-white px-1 rounded">sudo</code></li>
+                    <li>确保已安装 <code className="bg-black text-white px-1 rounded">curl</code> 或 <code className="bg-black text-white px-1 rounded">wget</code></li>
+                    <li>安装完成后可能需要重新加载 shell 配置：<code className="bg-black text-white px-1 rounded">source ~/.bashrc</code></li>
                   </ul>
                 </AlertDescription>
               </Alert>
@@ -673,7 +673,7 @@ const GettingStarted: React.FC = () => {
               <h3 className="font-semibold text-lg mb-3">验证 Node.js 和 npm 版本</h3>
               <div className="space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                  <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">node -v</code>
+                  <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">node -v</code>
                   <Button
                     size="sm"
                     onClick={() => copyToClipboard('node -v')}
@@ -686,7 +686,7 @@ const GettingStarted: React.FC = () => {
                 <p className="text-sm text-muted-foreground ml-3">预期输出示例：v18.16.0 或更高版本</p>
                 
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                  <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">npm -v</code>
+                  <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">npm -v</code>
                   <Button
                     size="sm"
                     onClick={() => copyToClipboard('npm -v')}
@@ -705,7 +705,7 @@ const GettingStarted: React.FC = () => {
               <h3 className="font-semibold text-lg mb-3">验证 Git 安装</h3>
               <div className="space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                  <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">git --version</code>
+                  <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">git --version</code>
                   <Button
                     size="sm"
                     onClick={() => copyToClipboard('git --version')}
@@ -724,7 +724,7 @@ const GettingStarted: React.FC = () => {
               <h3 className="font-semibold text-lg mb-3">验证 Claude Code CLI 安装</h3>
               <div className="space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                  <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">claude --version</code>
+                  <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">claude --version</code>
                   <Button
                     size="sm"
                     onClick={() => copyToClipboard('claude --version')}
@@ -743,7 +743,7 @@ const GettingStarted: React.FC = () => {
               <h3 className="font-semibold text-lg mb-3">验证 Claude 配置</h3>
               <div className="space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                  <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">claude config list</code>
+                  <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">claude config list</code>
                   <Button
                     size="sm"
                     onClick={() => copyToClipboard('claude config list')}
@@ -830,8 +830,8 @@ const GettingStarted: React.FC = () => {
               <p className="text-muted-foreground mb-4 text-sm md:text-base">按照以下步骤快速开始使用 Claude Code：</p>
               
               {/* 完整使用流程代码块 */}
-              <div className="bg-muted/50 rounded-lg border border-border overflow-hidden mb-6">
-                <div className="flex items-center justify-between px-3 md:px-4 py-2 bg-muted">
+              <div className="bg-black text-white/50 rounded-lg border border-border overflow-hidden mb-6">
+                <div className="flex items-center justify-between px-3 md:px-4 py-2 bg-black text-white">
                   <span className="font-medium text-sm md:text-base">完整使用流程</span>
                   <Button
                     size="sm"
@@ -842,7 +842,7 @@ const GettingStarted: React.FC = () => {
                     复制
                   </Button>
                 </div>
-                <pre className="bg-muted/50 p-2 sm:p-3 md:p-4 overflow-auto text-xs sm:text-sm md:text-base"><code># 1. 导航到您的项目文件夹
+                <pre className="bg-black text-white/50 p-2 sm:p-3 md:p-4 overflow-auto text-xs sm:text-sm md:text-base"><code># 1. 导航到您的项目文件夹
 cd /path/to/your/project
 
 # 2. 用 claude 命令启动 Claude Code
@@ -860,32 +860,32 @@ claude
                     🎯 基本命令
                   </h3>
                   <div className="space-y-3">
-                    <div className="flex items-center p-3 bg-muted rounded-lg">
-                      <code className="bg-secondary px-2 sm:px-3 py-1 rounded text-xs sm:text-sm md:text-base whitespace-pre-wrap break-words mr-3 min-w-[80px] sm:min-w-[100px] md:min-w-[120px]">claude</code>
+                    <div className="flex items-center p-3 bg-black text-white rounded-lg">
+                      <code className="bg-black text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm md:text-base whitespace-pre-wrap break-words mr-3 min-w-[80px] sm:min-w-[100px] md:min-w-[120px]">claude</code>
                       <span className="text-muted-foreground text-sm md:text-base">启动交互式会话</span>
                     </div>
-                    <div className="flex items-center p-3 bg-muted rounded-lg">
-                      <code className="bg-secondary px-2 sm:px-3 py-1 rounded text-xs sm:text-sm whitespace-pre-wrap break-words mr-3 min-w-[100px] sm:min-w-[120px]">claude "任务描述"</code>
+                    <div className="flex items-center p-3 bg-black text-white rounded-lg">
+                      <code className="bg-black text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm whitespace-pre-wrap break-words mr-3 min-w-[100px] sm:min-w-[120px]">claude "任务描述"</code>
                       <span className="text-muted-foreground">执行一次性任务</span>
                     </div>
-                    <div className="flex items-center p-3 bg-muted rounded-lg">
-                      <code className="bg-secondary px-2 sm:px-3 py-1 rounded text-xs sm:text-sm whitespace-pre-wrap break-words mr-3 min-w-[100px] sm:min-w-[120px]">claude commit</code>
+                    <div className="flex items-center p-3 bg-black text-white rounded-lg">
+                      <code className="bg-black text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm whitespace-pre-wrap break-words mr-3 min-w-[100px] sm:min-w-[120px]">claude commit</code>
                       <span className="text-muted-foreground">创建Git提交</span>
                     </div>
-                    <div className="flex items-center p-3 bg-muted rounded-lg">
-                      <code className="bg-secondary px-2 sm:px-3 py-1 rounded text-xs sm:text-sm whitespace-pre-wrap break-words mr-3 min-w-[100px] sm:min-w-[120px]">claude explain</code>
+                    <div className="flex items-center p-3 bg-black text-white rounded-lg">
+                      <code className="bg-black text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm whitespace-pre-wrap break-words mr-3 min-w-[100px] sm:min-w-[120px]">claude explain</code>
                       <span className="text-muted-foreground">解释代码功能和工作原理</span>
                     </div>
-                    <div className="flex items-center p-3 bg-muted rounded-lg">
-                      <code className="bg-secondary px-2 sm:px-3 py-1 rounded text-xs sm:text-sm whitespace-pre-wrap break-words mr-3 min-w-[100px] sm:min-w-[120px]">claude refactor</code>
+                    <div className="flex items-center p-3 bg-black text-white rounded-lg">
+                      <code className="bg-black text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm whitespace-pre-wrap break-words mr-3 min-w-[100px] sm:min-w-[120px]">claude refactor</code>
                       <span className="text-muted-foreground">优化和重构代码</span>
                     </div>
-                    <div className="flex items-center p-3 bg-muted rounded-lg">
-                      <code className="bg-secondary px-2 sm:px-3 py-1 rounded text-xs sm:text-sm whitespace-pre-wrap break-words mr-3 min-w-[100px] sm:min-w-[120px]">claude test</code>
+                    <div className="flex items-center p-3 bg-black text-white rounded-lg">
+                      <code className="bg-black text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm whitespace-pre-wrap break-words mr-3 min-w-[100px] sm:min-w-[120px]">claude test</code>
                       <span className="text-muted-foreground">为代码生成测试用例</span>
                     </div>
-                    <div className="flex items-center p-3 bg-muted rounded-lg">
-                      <code className="bg-secondary px-2 sm:px-3 py-1 rounded text-xs sm:text-sm whitespace-pre-wrap break-words mr-3 min-w-[100px] sm:min-w-[120px]">/help</code>
+                    <div className="flex items-center p-3 bg-black text-white rounded-lg">
+                      <code className="bg-black text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm whitespace-pre-wrap break-words mr-3 min-w-[100px] sm:min-w-[120px]">/help</code>
                       <span className="text-muted-foreground">显示帮助信息</span>
                     </div>
                   </div>
@@ -934,7 +934,7 @@ claude
                     <h3 className="font-semibold text-lg mb-3">🔑 API密钥配置</h3>
                     <p className="text-muted-foreground mb-3">首次使用时，配置您的 API 密钥：</p>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                      <code className="bg-muted px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">claude config set api_key 您的API密钥</code>
+                      <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">claude config set api_key 您的API密钥</code>
                       <Button
                         size="sm"
                         onClick={() => copyToClipboard('claude config set api_key 您的API密钥')}
@@ -987,8 +987,8 @@ claude
                 <h3 className="font-semibold text-lg mb-3 flex items-center gap-1">
                   🖥️ 方法二：通过命令行安装
                 </h3>
-                <div className="bg-muted/50 rounded-lg border border-border overflow-hidden">
-                  <div className="flex items-center justify-between px-4 py-2 bg-muted">
+                <div className="bg-black text-white/50 rounded-lg border border-border overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-2 bg-black text-white">
                     <span className="font-medium">Terminal</span>
                     <Button 
                       size="sm" 
@@ -999,7 +999,7 @@ claude
                       复制
                     </Button>
                   </div>
-                  <pre className="bg-muted/50 p-2 sm:p-4 overflow-auto text-xs sm:text-sm"><code>code --install-extension anthropic.claude-code</code></pre>
+                  <pre className="bg-black text-white/50 p-2 sm:p-4 overflow-auto text-xs sm:text-sm"><code>code --install-extension anthropic.claude-code</code></pre>
                 </div>
               </div>
 
@@ -1008,8 +1008,8 @@ claude
                 <h3 className="font-semibold text-lg mb-3 flex items-center gap-1">
                   ⚡ 方法三：通过VS Code快速打开
                 </h3>
-                <div className="bg-muted/50 rounded-lg border border-border overflow-hidden">
-                  <div className="flex items-center justify-between px-4 py-2 bg-muted">
+                <div className="bg-black text-white/50 rounded-lg border border-border overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-2 bg-black text-white">
                     <span className="font-medium">Terminal</span>
                     <Button 
                       size="sm" 
@@ -1020,7 +1020,7 @@ claude
                       复制
                     </Button>
                   </div>
-                  <pre className="bg-muted/50 p-2 sm:p-4 overflow-auto text-xs sm:text-sm"><code>code --install-extension anthropic.claude-code</code></pre>
+                  <pre className="bg-black text-white/50 p-2 sm:p-4 overflow-auto text-xs sm:text-sm"><code>code --install-extension anthropic.claude-code</code></pre>
                 </div>
               </div>
 
