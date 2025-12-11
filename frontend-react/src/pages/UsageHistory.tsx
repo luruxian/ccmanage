@@ -204,7 +204,7 @@ const UsageHistory: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
+    <div className="container mx-auto py-6">
       <div className="max-w-7xl mx-auto">
         {/* 返回按钮和标题 */}
         <div className="mb-8">
