@@ -46,17 +46,24 @@ const VerifyResult: React.FC = () => {
   const handleNavigateToLogin = () => {
     // 如果验证成功，传递邮箱参数以便预填充
     if (status === 'success' && userEmail) {
-      navigate({
-        pathname: '/login',
-        search: `?email=${encodeURIComponent(userEmail)}&verified=true`
+      navigate('/', {
+        state: {
+          showLoginModal: true,
+          prefillEmail: userEmail,
+          verified: true
+        }
       })
     } else {
-      navigate('/login')
+      navigate('/', {
+        state: { showLoginModal: true }
+      })
     }
   }
 
   const handleNavigateToRegister = () => {
-    navigate('/register')
+    navigate('/', {
+      state: { showRegisterModal: true }
+    })
   }
 
   if (status === 'loading') {

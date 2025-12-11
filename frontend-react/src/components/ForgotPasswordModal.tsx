@@ -1,9 +1,15 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   Form,
@@ -15,12 +21,17 @@ import {
 } from '@/components/ui/form'
 import request from '@/utils/request'
 
+interface ForgotPasswordModalProps {
+  isOpen: boolean
+  onClose: () => void
+  onSwitchToLogin?: () => void
+}
+
 interface ForgotPasswordForm {
   email: string
 }
 
-
-const ForgotPassword: React.FC = () => {
+const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClose, onSwitchToLogin }) => {
   // 使用react-hook-form管理表单状态
   const form = useForm<ForgotPasswordForm>({
     defaultValues: {
@@ -51,7 +62,9 @@ const ForgotPassword: React.FC = () => {
       console.error('密码重置请求失败:', error)
 
       // 错误处理
-      if (error.response?.data?.detail) {
+      if (error.response?.status === 404) {
+        setServerError('该邮箱未注册')
+      } else if (error.response?.data?.detail) {
         setServerError(error.response.data.detail)
       } else {
         setServerError('请求失败，请稍后重试')
@@ -61,58 +74,51 @@ const ForgotPassword: React.FC = () => {
     }
   }
 
+  const handleBackToLogin = () => {
+    onClose()
+    if (onSwitchToLogin) {
+      onSwitchToLogin()
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-muted flex">
-      {/* 左侧品牌展示区 (桌面端70%) */}
-      <div className="hidden lg:flex lg:flex-1 lg:flex-col lg:justify-center lg:items-center bg-card text-card-foreground p-12">
-        <div className="max-w-md text-center">
-          <div className="mb-8">
-            <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-primary">
-              <svg className="w-12 h-12 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <h1 className="text-4xl font-bold">agnets.app</h1>
-          </div>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold">
+            {success ? '重置链接已发送' : '忘记密码'}
+          </DialogTitle>
+          <DialogDescription className="text-base">
+            {success
+              ? '我们已向您的邮箱发送了密码重置链接'
+              : '输入您的邮箱地址以重置密码'}
+          </DialogDescription>
+        </DialogHeader>
 
-          <div>
-            <h2 className="text-2xl font-semibold mb-4">重置密码</h2>
-            <p className="text-muted-foreground text-lg">安全、高效的AI工具</p>
-          </div>
-        </div>
-      </div>
-
-      {/* 右侧表单区 (桌面端30%) */}
-      <div className="flex-1 flex flex-col justify-center items-center p-8 bg-background">
-        <div className="w-full max-w-sm">
-          <Card className="border-0 shadow-none lg:shadow-lg">
-            <CardHeader className="text-center pb-6">
-              <CardTitle className="text-2xl font-bold">忘记密码</CardTitle>
-              <CardDescription className="text-base">
-                输入您的邮箱地址，我们将发送重置链接
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {success ? (
-                <div className="text-center space-y-4">
-                  <div className="w-16 h-16 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8 text-success" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-semibold text-foreground">重置链接已发送</h3>
-                  <p className="text-muted-foreground">
-                    我们已向 <span className="font-medium">{form.getValues('email')}</span> 发送了密码重置链接，请检查您的邮箱。
-                  </p>
-                  <div className="pt-4">
-                    <Link to="/" state={{ showLoginModal: true }}>
-                      <Button className="w-full">
-                        返回登录
-                      </Button>
-                    </Link>
-                  </div>
+        <Card className="border-0 shadow-none">
+          <CardContent className="pt-6">
+            {success ? (
+              <div className="text-center">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
                 </div>
-              ) : (
+                <h3 className="text-lg font-semibold text-foreground mb-2">重置链接已发送</h3>
+                <p className="text-muted-foreground mb-6">
+                  我们已向 <span className="font-medium">{form.getValues('email')}</span> 发送了密码重置链接，请检查您的邮箱。
+                </p>
+                <div className="space-y-3">
+                  <Button
+                    onClick={handleBackToLogin}
+                    className="w-full"
+                  >
+                    返回登录
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <>
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     {/* 邮箱字段 */}
@@ -160,24 +166,23 @@ const ForgotPassword: React.FC = () => {
                     </Button>
                   </form>
                 </Form>
-              )}
 
-              {!success && (
                 <div className="mt-6 text-center">
-                  <Link
-                    to="/" state={{ showLoginModal: true }}
+                  <button
+                    type="button"
+                    onClick={handleBackToLogin}
                     className="text-sm text-primary hover:text-primary/80 font-medium"
                   >
                     返回登录
-                  </Link>
+                  </button>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </DialogContent>
+    </Dialog>
   )
 }
 
-export default ForgotPassword
+export default ForgotPasswordModal

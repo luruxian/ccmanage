@@ -28,7 +28,7 @@ const EmailVerification: React.FC = () => {
             </p>
 
             <div className="space-y-3">
-              <Link to="/login">
+              <Link to="/" state={{ showLoginModal: true }}>
                 <Button className="w-full">
                   返回登录
                 </Button>

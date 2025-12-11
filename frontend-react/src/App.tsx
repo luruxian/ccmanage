@@ -1,10 +1,10 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { ToastProvider } from '@/components/ui/ToastProvider'
 import Layout from '@/components/Layout'
 import Home from '@/pages/Home'
+import LandingPage from '@/pages/LandingPage'
 import Dashboard from '@/pages/NewDashboard'
 import Packages from '@/pages/Packages'
-import Login from '@/pages/Login'
 import Register from '@/pages/Register'
 import ForgotPassword from '@/pages/ForgotPassword'
 import ResetPassword from '@/pages/ResetPassword'
@@ -29,8 +29,8 @@ function App() {
       <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
         {/* 公开路由 */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LandingPage />} />
         <Route path="/meme" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={
           <ProtectedRoute requireAdmin>

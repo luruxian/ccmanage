@@ -48,6 +48,10 @@ export const useUserStore = create<UserState>()(
       },
 
       logout: () => {
+        // 先重定向到根路径，再清除状态
+        if (typeof window !== 'undefined') {
+          window.location.href = '/'
+        }
         set({
           user: null,
           token: null,

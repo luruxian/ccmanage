@@ -137,7 +137,7 @@ const ResetPassword: React.FC = () => {
               <p className="text-gray-600 mb-6">
                 您的密码已成功重置，现在可以使用新密码登录。
               </p>
-              <Link to="/login">
+              <Link to="/" state={{ showLoginModal: true }}>
                 <Button className="w-full">
                   立即登录
                 </Button>
@@ -262,7 +262,7 @@ const ResetPassword: React.FC = () => {
 
               <div className="mt-6 text-center">
                 <Link
-                  to="/login"
+                  to="/" state={{ showLoginModal: true }}
                   className="text-sm text-primary hover:text-primary/80 font-medium"
                 >
                   返回登录
