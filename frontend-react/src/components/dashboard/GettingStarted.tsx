@@ -293,7 +293,7 @@ const GettingStarted: React.FC = () => {
                       
                       <div className="expected-output bg-black/50 p-3 rounded-lg mb-3">
                         <p className="text-sm font-medium mb-1">预期输出示例：</p>
-                        <pre className="text-xs text-muted-foreground bg-white p-2 rounded">
+                        <pre className="text-xs text-white bg-black p-2 rounded">
 {`v18.16.0  # Node.js 版本
 9.5.1     # npm 版本`}
                         </pre>
@@ -470,7 +470,7 @@ const GettingStarted: React.FC = () => {
                        
                       <div className="expected-output bg-black/50 p-3 rounded-lg mb-3">
                         <p className="text-sm font-medium mb-1">预期输出示例：</p>
-                        <pre className="text-xs text-muted-foreground bg-white p-2 rounded">
+                        <pre className="text-xs text-white bg-black p-2 rounded">
 {`git version 2.40.0  # 版本号可能会有所不同`}
                         </pre>
                       </div>
@@ -831,7 +831,7 @@ const GettingStarted: React.FC = () => {
               
               {/* 完整使用流程代码块 */}
               <div className="bg-black text-white/50 rounded-lg border border-border overflow-hidden mb-6">
-                <div className="flex items-center justify-between px-3 md:px-4 py-2 bg-black text-white">
+                <div className="flex items-center justify-between px-3 md:px-4 py-2 bg-gray-800 text-white">
                   <span className="font-medium text-sm md:text-base">完整使用流程</span>
                   <Button
                     size="sm"
@@ -844,12 +844,12 @@ const GettingStarted: React.FC = () => {
                 </div>
                 <pre className="bg-black text-white/50 p-2 sm:p-3 md:p-4 overflow-auto text-xs sm:text-sm md:text-base"><code># 1. 导航到您的项目文件夹
 cd /path/to/your/project
-
+<br/>
 # 2. 用 claude 命令启动 Claude Code
 claude
-
-# 3. 配置 API 密钥（配置文件可从API密钥一览页面下载，解压缩放到下面的指定路径以后，用/exit命令从cluade code退出，然后重新启动claude code）
-# 配置文件路径：~/.claude/settings.json,~/.claude/config.json</code></pre>
+<br/>
+# 3. 配置 API 密钥<br/>     可从API密钥一览页面下载，解压缩放到下面的指定路径以后，用/exit命令从cluade code退出，然后重新启动claude code）
+<br/># 配置文件路径：~/.claude/settings.json,~/.claude/config.json</code></pre>
               </div>
               
               {/* 基本命令和使用技巧 - 两列布局 */}
@@ -862,31 +862,31 @@ claude
                   <div className="space-y-3">
                     <div className="flex items-center p-3 bg-black text-white rounded-lg">
                       <code className="bg-black text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm md:text-base whitespace-pre-wrap break-words mr-3 min-w-[80px] sm:min-w-[100px] md:min-w-[120px]">claude</code>
-                      <span className="text-muted-foreground text-sm md:text-base">启动交互式会话</span>
+                      <span className="bg-gray-800 text-gray-300 text-sm md:text-base px-3 py-1 rounded flex-1">启动交互式会话</span>
                     </div>
                     <div className="flex items-center p-3 bg-black text-white rounded-lg">
                       <code className="bg-black text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm whitespace-pre-wrap break-words mr-3 min-w-[100px] sm:min-w-[120px]">claude "任务描述"</code>
-                      <span className="text-muted-foreground">执行一次性任务</span>
+                      <span className="bg-gray-800 text-gray-300 px-3 py-1 rounded flex-1">执行一次性任务</span>
                     </div>
                     <div className="flex items-center p-3 bg-black text-white rounded-lg">
                       <code className="bg-black text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm whitespace-pre-wrap break-words mr-3 min-w-[100px] sm:min-w-[120px]">claude commit</code>
-                      <span className="text-muted-foreground">创建Git提交</span>
+                      <span className="bg-gray-800 text-gray-300 px-3 py-1 rounded flex-1">创建Git提交</span>
                     </div>
                     <div className="flex items-center p-3 bg-black text-white rounded-lg">
                       <code className="bg-black text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm whitespace-pre-wrap break-words mr-3 min-w-[100px] sm:min-w-[120px]">claude explain</code>
-                      <span className="text-muted-foreground">解释代码功能和工作原理</span>
+                      <span className="bg-gray-800 text-gray-300 px-3 py-1 rounded flex-1">解释代码功能和工作原理</span>
                     </div>
                     <div className="flex items-center p-3 bg-black text-white rounded-lg">
                       <code className="bg-black text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm whitespace-pre-wrap break-words mr-3 min-w-[100px] sm:min-w-[120px]">claude refactor</code>
-                      <span className="text-muted-foreground">优化和重构代码</span>
+                      <span className="bg-gray-800 text-gray-300 px-3 py-1 rounded flex-1">优化和重构代码</span>
                     </div>
                     <div className="flex items-center p-3 bg-black text-white rounded-lg">
                       <code className="bg-black text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm whitespace-pre-wrap break-words mr-3 min-w-[100px] sm:min-w-[120px]">claude test</code>
-                      <span className="text-muted-foreground">为代码生成测试用例</span>
+                      <span className="bg-gray-800 text-gray-300 px-3 py-1 rounded flex-1">为代码生成测试用例</span>
                     </div>
                     <div className="flex items-center p-3 bg-black text-white rounded-lg">
                       <code className="bg-black text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm whitespace-pre-wrap break-words mr-3 min-w-[100px] sm:min-w-[120px]">/help</code>
-                      <span className="text-muted-foreground">显示帮助信息</span>
+                      <span className="bg-gray-800 text-gray-300 px-3 py-1 rounded flex-1">显示帮助信息</span>
                     </div>
                   </div>
                 </div>
@@ -988,7 +988,7 @@ claude
                   🖥️ 方法二：通过命令行安装
                 </h3>
                 <div className="bg-black text-white/50 rounded-lg border border-border overflow-hidden">
-                  <div className="flex items-center justify-between px-4 py-2 bg-black text-white">
+                  <div className="flex items-center justify-between px-4 py-2 bg-gray-800 text-white">
                     <span className="font-medium">Terminal</span>
                     <Button 
                       size="sm" 
@@ -1009,7 +1009,7 @@ claude
                   ⚡ 方法三：通过VS Code快速打开
                 </h3>
                 <div className="bg-black text-white/50 rounded-lg border border-border overflow-hidden">
-                  <div className="flex items-center justify-between px-4 py-2 bg-black text-white">
+                  <div className="flex items-center justify-between px-4 py-2 bg-gray-800 text-white">
                     <span className="font-medium">Terminal</span>
                     <Button 
                       size="sm" 
