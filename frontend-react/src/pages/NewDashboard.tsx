@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUserStore } from '@/store/user'
+import ccImage from '@/assets/images/cc.jpg'
 import {
   StatCard,
   FeatureCard,
@@ -460,7 +461,7 @@ const NewDashboard: React.FC = () => {
             <div className="text-center mt-4">
               <div className="bg-muted rounded-lg p-4 inline-block">
                 <img
-                  src="/src/assets/images/cc.jpg"
+                  src={ccImage}
                   alt="社区二维码"
                   className="w-32 h-32 rounded object-cover"
                 />
