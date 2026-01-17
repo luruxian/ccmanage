@@ -58,7 +58,7 @@ const GettingStarted: React.FC = () => {
                 <li className="flex items-start gap-3">
                   <Check className="h-5 w-5 text-success mt-1 flex-shrink-0" />
                   <span>
-                    <strong>Node.js 18+</strong> - Claude Code 需要 Node.js 18 或更高版本才能运行。
+                    <strong>Node.js 22+</strong> - Claude Code 需要 Node.js 22 或更高版本才能运行。
                     如果您的系统上安装了较低版本，需要先进行升级。
                   </span>
                 </li>
@@ -123,10 +123,10 @@ const GettingStarted: React.FC = () => {
                         <li>安装完成后，打开命令提示符，运行以下命令：</li>
                       </ol>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                        <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">nvm install 18</code>
+                        <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">nvm install 22</code>
                         <Button
                           size="sm"
-                          onClick={() => copyToClipboard('nvm install 18')}
+                          onClick={() => copyToClipboard('nvm install 22')}
                           className="gap-1 w-full sm:w-auto flex-shrink-0"
                         >
                           <ClipboardCopy className="h-4 w-4" />
@@ -134,10 +134,10 @@ const GettingStarted: React.FC = () => {
                         </Button>
                       </div>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                        <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">nvm use 18</code>
+                        <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">nvm use 22</code>
                         <Button
                           size="sm"
-                          onClick={() => copyToClipboard('nvm use 18')}
+                          onClick={() => copyToClipboard('nvm use 22')}
                           className="gap-1 w-full sm:w-auto flex-shrink-0"
                         >
                           <ClipboardCopy className="h-4 w-4" />
@@ -161,10 +161,10 @@ const GettingStarted: React.FC = () => {
                       <h4 className="font-medium mb-2">方法二：使用 Homebrew</h4>
                       <p className="mb-2 text-sm">如果您已安装 Homebrew，可以使用以下命令：</p>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                        <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">brew install node@18</code>
+                        <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">brew install node@22</code>
                         <Button
                           size="sm"
-                          onClick={() => copyToClipboard('brew install node@18')}
+                          onClick={() => copyToClipboard('brew install node@22')}
                           className="gap-1 w-full sm:w-auto flex-shrink-0"
                         >
                           <ClipboardCopy className="h-4 w-4" />
@@ -173,10 +173,10 @@ const GettingStarted: React.FC = () => {
                       </div>
                       <p className="text-sm text-muted-foreground">如果需要将 Node.js 添加到 PATH，请运行：</p>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                        <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">echo 'export PATH="/usr/local/opt/node@18/bin:$PATH"' &gt;&gt; ~/.zshrc && source ~/.zshrc</code>
+                        <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">echo 'export PATH="/usr/local/opt/node@22/bin:$PATH"' &gt;&gt; ~/.zshrc && source ~/.zshrc</code>
                         <Button
                           size="sm"
-                          onClick={() => copyToClipboard('echo \'export PATH="/usr/local/opt/node@18/bin:$PATH"\' >> ~/.zshrc && source ~/.zshrc')}
+                          onClick={() => copyToClipboard('echo \'export PATH="/usr/local/opt/node@22/bin:$PATH"\' >> ~/.zshrc && source ~/.zshrc')}
                           className="gap-1 w-full sm:w-auto flex-shrink-0"
                         >
                           <ClipboardCopy className="h-4 w-4" />
@@ -194,10 +194,10 @@ const GettingStarted: React.FC = () => {
                         <div className="mb-3">
                           <p className="font-medium text-sm mb-1">Ubuntu/Debian:</p>
                           <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                            <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs</code>
+                            <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash - && sudo apt-get install -y nodejs</code>
                             <Button
                               size="sm"
-                              onClick={() => copyToClipboard('curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs')}
+                              onClick={() => copyToClipboard('curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash - && sudo apt-get install -y nodejs')}
                               className="gap-1 w-full sm:w-auto flex-shrink-0"
                             >
                               <ClipboardCopy className="h-4 w-4" />
@@ -205,14 +205,14 @@ const GettingStarted: React.FC = () => {
                             </Button>
                           </div>
                         </div>
-                        
+
                         <div className="mb-3">
                           <p className="font-medium text-sm mb-1">Fedora/RHEL/CentOS:</p>
                           <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                            <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash - && sudo dnf install -y nodejs</code>
+                            <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">curl -fsSL https://rpm.nodesource.com/setup_22.x | sudo bash - && sudo dnf install -y nodejs</code>
                             <Button
                               size="sm"
-                              onClick={() => copyToClipboard('curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash - && sudo dnf install -y nodejs')}
+                              onClick={() => copyToClipboard('curl -fsSL https://rpm.nodesource.com/setup_22.x | sudo bash - && sudo dnf install -y nodejs')}
                               className="gap-1 w-full sm:w-auto flex-shrink-0"
                             >
                               <ClipboardCopy className="h-4 w-4" />
@@ -224,10 +224,10 @@ const GettingStarted: React.FC = () => {
                         <div>
                           <p className="font-medium text-sm mb-1">使用 nvm (推荐，适用于所有 Linux):</p>
                           <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                            <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash</code>
+                            <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash</code>
                             <Button
                               size="sm"
-                              onClick={() => copyToClipboard('curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash')}
+                              onClick={() => copyToClipboard('curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash')}
                               className="gap-1 w-full sm:w-auto flex-shrink-0"
                             >
                               <ClipboardCopy className="h-4 w-4" />
@@ -236,10 +236,10 @@ const GettingStarted: React.FC = () => {
                           </div>
                           <p className="text-sm text-muted-foreground mb-2">安装完成后，重启终端并运行：</p>
                           <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                            <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">nvm install 18</code>
+                            <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">nvm install 22</code>
                             <Button
                               size="sm"
-                              onClick={() => copyToClipboard('nvm install 18')}
+                              onClick={() => copyToClipboard('nvm install 22')}
                               className="gap-1 w-full sm:w-auto flex-shrink-0"
                             >
                               <ClipboardCopy className="h-4 w-4" />
@@ -247,10 +247,10 @@ const GettingStarted: React.FC = () => {
                             </Button>
                           </div>
                           <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                            <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">nvm use 18</code>
+                            <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">nvm use 22</code>
                             <Button
                               size="sm"
-                              onClick={() => copyToClipboard('nvm use 18')}
+                              onClick={() => copyToClipboard('nvm use 22')}
                               className="gap-1 w-full sm:w-auto flex-shrink-0"
                             >
                               <ClipboardCopy className="h-4 w-4" />
@@ -294,8 +294,8 @@ const GettingStarted: React.FC = () => {
                       <div className="expected-output bg-black/50 p-3 rounded-lg mb-3">
                         <p className="text-sm font-medium mb-1">预期输出示例：</p>
                         <pre className="text-xs text-white bg-black p-2 rounded">
-{`v18.16.0  # Node.js 版本
-9.5.1     # npm 版本`}
+{`v22.14.0  # Node.js 版本
+11.6.0    # npm 版本`}
                         </pre>
                       </div>
                       
@@ -471,7 +471,7 @@ const GettingStarted: React.FC = () => {
                       <div className="expected-output bg-black/50 p-3 rounded-lg mb-3">
                         <p className="text-sm font-medium mb-1">预期输出示例：</p>
                         <pre className="text-xs text-white bg-black p-2 rounded">
-{`git version 2.40.0  # 版本号可能会有所不同`}
+{`git version 2.51.2  # 版本号可能会有所不同`}
                         </pre>
                       </div>
                        
@@ -683,7 +683,7 @@ const GettingStarted: React.FC = () => {
                     复制
                   </Button>
                 </div>
-                <p className="text-sm text-muted-foreground ml-3">预期输出示例：v18.16.0 或更高版本</p>
+                <p className="text-sm text-muted-foreground ml-3">预期输出示例：v22.14.0 或更高版本</p>
                 
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                   <code className="bg-black text-white px-2 sm:px-3 py-1.5 rounded text-xs sm:text-sm md:text-base flex-1 overflow-x-auto whitespace-pre-wrap break-words">npm -v</code>
@@ -696,7 +696,7 @@ const GettingStarted: React.FC = () => {
                     复制
                   </Button>
                 </div>
-                <p className="text-sm text-muted-foreground ml-3">预期输出示例：9.5.1 或更高版本</p>
+                <p className="text-sm text-muted-foreground ml-3">预期输出示例：11.6.0 或更高版本</p>
               </div>
             </div>
             
@@ -715,7 +715,7 @@ const GettingStarted: React.FC = () => {
                     复制
                   </Button>
                 </div>
-                <p className="text-sm text-muted-foreground ml-3">预期输出示例：git version 2.40.1 或更高版本</p>
+                <p className="text-sm text-muted-foreground ml-3">预期输出示例：git version 2.51.2 或更高版本</p>
               </div>
             </div>
             
@@ -734,7 +734,7 @@ const GettingStarted: React.FC = () => {
                     复制
                   </Button>
                 </div>
-                <p className="text-sm text-muted-foreground ml-3">预期输出示例：Claude Code CLI v1.2.3 或类似版本信息</p>
+                <p className="text-sm text-muted-foreground ml-3">预期输出示例：Claude Code CLI v2.1.11 或类似版本信息</p>
               </div>
             </div>
             
@@ -787,7 +787,7 @@ const GettingStarted: React.FC = () => {
                     <h4 className="font-medium mb-2">版本过低</h4>
                     <p className="text-sm text-muted-foreground mb-1">如果 Node.js 版本过低，请：</p>
                     <ul className="list-disc pl-5 text-sm text-muted-foreground">
-                      <li>升级到 Node.js 18+ 版本</li>
+                      <li>升级到 Node.js 22+ 版本</li>
                       <li>考虑使用 nvm (Node Version Manager) 来管理多个 Node.js 版本</li>
                     </ul>
                   </div>
