@@ -1,13 +1,16 @@
 import React from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Header from '@/components/Header'
 import IntroductionContent from '@/components/IntroductionContent'
 import LoginModal from '@/components/LoginModal'
 import RegisterModal from '@/components/RegisterModal'
 import ForgotPasswordModal from '@/components/ForgotPasswordModal'
+import { useUserStore } from '@/store/user'
 
 const LandingPage: React.FC = () => {
   const location = useLocation()
+  const navigate = useNavigate()
+  const { user } = useUserStore()
   const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false)
   const [isRegisterModalOpen, setIsRegisterModalOpen] = React.useState(false)
   const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] = React.useState(false)
@@ -16,6 +19,14 @@ const LandingPage: React.FC = () => {
   // 如果state中包含showRegisterModal，自动打开注册模态
   // 如果state中包含showForgotPasswordModal，自动打开忘记密码模态
   React.useEffect(() => {
+    // 已登录用户重定向逻辑
+    if (user) {
+      // 已登录用户不需要登录或注册模态，直接重定向到仪表板
+      navigate('/app/dashboard', { replace: true })
+      return // 重定向后不需要执行后续逻辑
+    }
+
+    // 未登录用户的处理
     if (location.pathname === '/login' || location.state?.showLoginModal) {
       setIsLoginModalOpen(true)
       // 清除showLoginModal状态，但保留prefillEmail和verified
@@ -41,7 +52,7 @@ const LandingPage: React.FC = () => {
       delete newState.showForgotPasswordModal
       window.history.replaceState(newState, document.title)
     }
-  }, [location.pathname, location.state])
+  }, [location.pathname, location.state, user, navigate])
 
   const handleLoginClick = () => {
     setIsLoginModalOpen(true)
