@@ -7,6 +7,7 @@ import logging
 import secrets
 import string
 from app.schemas.enums import PackageType
+from app.services.credits_reset_client import credits_reset_client
 
 logger = logging.getLogger(__name__)
 
@@ -198,6 +199,23 @@ class APIKeyCRUD:
             self.db.commit()
             self.db.refresh(key)
             logger.info(f"为用户 {user_id} 的密钥 {key.id} 累加积分: {credits}")
+
+            # 调用外部API更新Redis缓存
+            try:
+                external_result = credits_reset_client.reset_credits(
+                    api_key=key.api_key,
+                    remaining_credits=key.remaining_credits,
+                    last_reset_credits_at=key.last_reset_credits_at.isoformat() if key.last_reset_credits_at else None
+                )
+
+                if not external_result["success"]:
+                    logger.warning(f"Redis积分更新失败: {external_result['message']}")
+                else:
+                    logger.info(f"Redis积分更新成功: {key.api_key[:10]}..., 剩余积分: {key.remaining_credits}")
+            except Exception as redis_error:
+                logger.error(f"调用Redis更新API失败: {str(redis_error)}")
+                # Redis更新失败不影响主要功能，继续返回成功
+
             return key
 
         except Exception as e:
