@@ -17,12 +17,23 @@ class PackageCRUD:
     def create_package(self, package_data: Dict[str, Any]) -> Optional[Package]:
         """创建套餐"""
         try:
+            # 设置daily_reset_credits的默认值
+            daily_reset_credits = package_data.get("daily_reset_credits")
+            if daily_reset_credits is None:
+                # 根据套餐类型设置默认值
+                package_type = package_data.get("package_type", "01")
+                if package_type == "01":
+                    daily_reset_credits = 10000  # 标准订阅默认10000
+                else:
+                    daily_reset_credits = 0  # 加油包默认0
+
             package = Package(
                 package_code=package_data["package_code"],
                 package_name=package_data["package_name"],
                 description=package_data.get("description"),
                 price=package_data["price"],
                 credits=package_data["credits"],
+                daily_reset_credits=daily_reset_credits,
                 duration_days=package_data["duration_days"],
                 package_type=package_data.get("package_type", "01"),
                 is_active=package_data.get("is_active", True),
@@ -33,7 +44,7 @@ class PackageCRUD:
             self.db.commit()
             self.db.refresh(package)
 
-            logger.info(f"套餐创建成功: {package.package_code}")
+            logger.info(f"套餐创建成功: {package.package_code}, 每日重置积分: {daily_reset_credits}")
             return package
 
         except Exception as e:

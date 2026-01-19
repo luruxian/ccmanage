@@ -12,6 +12,7 @@ class PackageCreate(BaseModel):
     endpoint: Optional[str] = Field(None, max_length=256, description="订阅服务端点")
     price: Decimal = Field(..., gt=0, description="订阅价格")
     credits: int = Field(..., gt=0, description="订阅积分")
+    daily_reset_credits: Optional[int] = Field(None, ge=0, description="每日重置积分数，01类型订阅默认为10000，91类型订阅为0")
     duration_days: int = Field(..., gt=0, description="订阅时长（天）")
     package_type: str = Field("01", min_length=2, max_length=2, description="订阅类型：01-标准订阅，91-加油包（只累加积分）")
     is_active: bool = Field(True, description="订阅是否可用")
@@ -35,6 +36,17 @@ class PackageCreate(BaseModel):
             raise ValueError('订阅类型必须是01（标准订阅）或91（加油包）')
         return v
 
+    @validator('daily_reset_credits')
+    def validate_daily_reset_credits(cls, v, values):
+        if v is None:
+            # 根据套餐类型设置默认值
+            package_type = values.get('package_type', '01')
+            if package_type == '01':
+                return 10000  # 标准订阅默认10000
+            else:
+                return 0  # 加油包默认0
+        return v
+
 
 class PackageUpdate(BaseModel):
     """更新订阅请求"""
@@ -43,6 +55,7 @@ class PackageUpdate(BaseModel):
     endpoint: Optional[str] = Field(None, max_length=256, description="订阅服务端点")
     price: Optional[Decimal] = Field(None, gt=0, description="订阅价格")
     credits: Optional[int] = Field(None, gt=0, description="订阅积分")
+    daily_reset_credits: Optional[int] = Field(None, ge=0, description="每日重置积分数，01类型订阅默认为10000，91类型订阅为0")
     duration_days: Optional[int] = Field(None, gt=0, description="订阅时长（天）")
     package_type: Optional[str] = Field(None, min_length=2, max_length=2, description="订阅类型：01-标准订阅，91-加油包（只累加积分）")
     is_active: Optional[bool] = Field(None, description="订阅是否可用")
@@ -52,6 +65,12 @@ class PackageUpdate(BaseModel):
     def validate_package_type(cls, v):
         if v is not None and v not in ['01', '91']:
             raise ValueError('订阅类型必须是01（标准订阅）或91（加油包）')
+        return v
+
+    @validator('daily_reset_credits')
+    def validate_daily_reset_credits(cls, v, values):
+        if v is not None and v < 0:
+            raise ValueError('每日重置积分数不能为负数')
         return v
 
 
@@ -64,6 +83,7 @@ class PackageResponse(BaseModel):
     endpoint: Optional[str]
     price: Decimal
     credits: int
+    daily_reset_credits: int
     duration_days: int
     package_type: str
     is_active: bool

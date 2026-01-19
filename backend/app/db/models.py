@@ -126,6 +126,7 @@ class Package(Base):
     endpoint = Column(String(256), nullable=True, comment="订阅服务端点")
     price = Column(DECIMAL(10, 2), nullable=False, comment="订阅价格")
     credits = Column(Integer, nullable=False, comment="订阅积分")
+    daily_reset_credits = Column(Integer, default=10000, nullable=False, comment="每日重置积分数，01类型订阅默认为10000，91类型订阅为0")
     duration_days = Column(Integer, nullable=False, comment="订阅时长（天）")
     package_type = Column(String(2), default='01', nullable=False, comment="订阅类型：01-标准订阅，91-加油包（只累加积分）")
     is_active = Column(Boolean, default=True, nullable=False, comment="订阅是否可用")
