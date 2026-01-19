@@ -193,7 +193,8 @@ class APIKeyCRUD:
 
             key = active_keys[0]
             key.remaining_credits += credits
-            key.total_credits += credits
+            # 注意：加油包只增加剩余积分，不修改总积分
+            # key.total_credits += credits  # 移除这行，加油包不应该修改total_credits
             key.updated_at = datetime.now()
 
             self.db.commit()
