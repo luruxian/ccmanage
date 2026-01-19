@@ -11,6 +11,7 @@ from ...schemas.package import (
     PackagePurchaseResponse,
     PackageStatisticsResponse
 )
+from ...schemas.enums import PackageType
 from ...schemas.user_key_management import (
     UserKeyRelationResponse,
     UserKeysListResponse,
@@ -265,7 +266,7 @@ async def purchase_package(
             )
 
         # 根据订阅类型处理不同的逻辑
-        if package.package_type == "91":
+        if package.package_type == PackageType.FUEL_PACK:
             # "91"类型（加油包）：给用户唯一的有效密钥累加积分
             updated_key = api_key_crud.add_credits_to_active_key(current_user.user_id, package.credits)
             if not updated_key:

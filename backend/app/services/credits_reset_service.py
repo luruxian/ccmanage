@@ -8,6 +8,7 @@ import pytz
 from ..db.models import APIKey, Package
 from ..db.crud.api_key import APIKeyCRUD
 from .credits_reset_client import credits_reset_client
+from ..schemas.enums import PackageType
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ class CreditsResetService:
 
             # 查询条件：
             # 1. 状态为"active"
-            # 2. 关联的套餐类型为"01"（标准订阅）
+            # 2. 关联的套餐类型为"01"或"02"（标准订阅或Max系列订阅）
             # 3. 套餐的daily_reset_credits > 0
             # 4. 今天还没有重置过（last_reset_credits_at < today_start 或为NULL）
             # 注意：数据库中的时间可能是UTC，这里比较时需要考虑时区转换
@@ -48,7 +49,7 @@ class CreditsResetService:
                 .filter(
                     and_(
                         APIKey.status == 'active',
-                        Package.package_type == '01',
+                        Package.package_type.in_([PackageType.STANDARD, PackageType.MAX_SERIES]),
                         Package.daily_reset_credits > 0,
                         or_(
                             APIKey.last_reset_credits_at < today_start,

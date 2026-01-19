@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field, validator
 from typing import Optional, List
 from decimal import Decimal
 from datetime import datetime
+from .enums import PackageType
 
 
 class PackageCreate(BaseModel):
@@ -12,9 +13,9 @@ class PackageCreate(BaseModel):
     endpoint: Optional[str] = Field(None, max_length=256, description="订阅服务端点")
     price: Decimal = Field(..., gt=0, description="订阅价格")
     credits: int = Field(..., gt=0, description="订阅积分")
-    daily_reset_credits: Optional[int] = Field(None, ge=0, description="每日重置积分数，01类型订阅默认为10000，91类型订阅为0")
+    daily_reset_credits: Optional[int] = Field(None, ge=0, description=f"每日重置积分数，{PackageType.STANDARD}类型订阅默认为10000，{PackageType.MAX_SERIES}类型订阅默认为15000，{PackageType.FUEL_PACK}类型订阅为0")
     duration_days: int = Field(..., gt=0, description="订阅时长（天）")
-    package_type: str = Field("01", min_length=2, max_length=2, description="订阅类型：01-标准订阅，91-加油包（只累加积分）")
+    package_type: str = Field(PackageType.STANDARD, min_length=2, max_length=2, description=f"订阅类型：{PackageType.STANDARD}-标准订阅，{PackageType.MAX_SERIES}-Max系列订阅，{PackageType.FUEL_PACK}-加油包（只累加积分）")
     is_active: bool = Field(True, description="订阅是否可用")
     sort_order: int = Field(0, description="排序顺序")
 
@@ -32,19 +33,16 @@ class PackageCreate(BaseModel):
 
     @validator('package_type')
     def validate_package_type(cls, v):
-        if v not in ['01', '91']:
-            raise ValueError('订阅类型必须是01（标准订阅）或91（加油包）')
+        if not PackageType.is_valid_type(v):
+            raise ValueError(f'订阅类型必须是{PackageType.STANDARD}（标准订阅）、{PackageType.MAX_SERIES}（Max系列订阅）或{PackageType.FUEL_PACK}（加油包）')
         return v
 
     @validator('daily_reset_credits')
     def validate_daily_reset_credits(cls, v, values):
         if v is None:
             # 根据套餐类型设置默认值
-            package_type = values.get('package_type', '01')
-            if package_type == '01':
-                return 10000  # 标准订阅默认10000
-            else:
-                return 0  # 加油包默认0
+            package_type = values.get('package_type', PackageType.STANDARD)
+            return PackageType.get_default_daily_reset_credits(package_type)
         return v
 
 
@@ -55,16 +53,16 @@ class PackageUpdate(BaseModel):
     endpoint: Optional[str] = Field(None, max_length=256, description="订阅服务端点")
     price: Optional[Decimal] = Field(None, gt=0, description="订阅价格")
     credits: Optional[int] = Field(None, gt=0, description="订阅积分")
-    daily_reset_credits: Optional[int] = Field(None, ge=0, description="每日重置积分数，01类型订阅默认为10000，91类型订阅为0")
+    daily_reset_credits: Optional[int] = Field(None, ge=0, description=f"每日重置积分数，{PackageType.STANDARD}类型订阅默认为10000，{PackageType.MAX_SERIES}类型订阅默认为15000，{PackageType.FUEL_PACK}类型订阅为0")
     duration_days: Optional[int] = Field(None, gt=0, description="订阅时长（天）")
-    package_type: Optional[str] = Field(None, min_length=2, max_length=2, description="订阅类型：01-标准订阅，91-加油包（只累加积分）")
+    package_type: Optional[str] = Field(None, min_length=2, max_length=2, description=f"订阅类型：{PackageType.STANDARD}-标准订阅，{PackageType.MAX_SERIES}-Max系列订阅，{PackageType.FUEL_PACK}-加油包（只累加积分）")
     is_active: Optional[bool] = Field(None, description="订阅是否可用")
     sort_order: Optional[int] = Field(None, description="排序顺序")
 
     @validator('package_type')
     def validate_package_type(cls, v):
-        if v is not None and v not in ['01', '91']:
-            raise ValueError('订阅类型必须是01（标准订阅）或91（加油包）')
+        if v is not None and not PackageType.is_valid_type(v):
+            raise ValueError(f'订阅类型必须是{PackageType.STANDARD}（标准订阅）、{PackageType.MAX_SERIES}（Max系列订阅）或{PackageType.FUEL_PACK}（加油包）')
         return v
 
     @validator('daily_reset_credits')

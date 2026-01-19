@@ -4,6 +4,7 @@ from sqlalchemy import desc, asc
 from ..models import Package
 from datetime import datetime
 import logging
+from app.schemas.enums import PackageType
 
 logger = logging.getLogger(__name__)
 
@@ -21,11 +22,8 @@ class PackageCRUD:
             daily_reset_credits = package_data.get("daily_reset_credits")
             if daily_reset_credits is None:
                 # 根据套餐类型设置默认值
-                package_type = package_data.get("package_type", "01")
-                if package_type == "01":
-                    daily_reset_credits = 10000  # 标准订阅默认10000
-                else:
-                    daily_reset_credits = 0  # 加油包默认0
+                package_type = package_data.get("package_type", PackageType.STANDARD)
+                daily_reset_credits = PackageType.get_default_daily_reset_credits(package_type)
 
             package = Package(
                 package_code=package_data["package_code"],

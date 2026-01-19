@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import logging
 import secrets
 import string
+from app.schemas.enums import PackageType
 
 logger = logging.getLogger(__name__)
 
@@ -57,8 +58,8 @@ class APIKeyCRUD:
 
         result = []
         for api_key, package in results:
-            # 过滤掉package_type="91"的加油包（不显示给普通用户）
-            if package and package.package_type == "91":
+            # 过滤掉package_type为加油包的记录（不显示给普通用户）
+            if package and package.package_type == PackageType.FUEL_PACK:
                 continue
             # 计算剩余天数
             remaining_days = None
@@ -170,7 +171,7 @@ class APIKeyCRUD:
                 ~exists().where(
                     and_(
                         Package.id == APIKey.package_id,
-                        Package.package_type == "91"
+                        Package.package_type == PackageType.FUEL_PACK
                     )
                 )
             )
@@ -317,8 +318,8 @@ class APIKeyCRUD:
             if user_key_record.package_id:
                 package = self.db.query(Package).filter(Package.id == user_key_record.package_id).first()
 
-            # 处理加油包（package_type="91"）
-            if package and package.package_type == "91":
+            # 处理加油包
+            if package and package.package_type == PackageType.FUEL_PACK:
                 # 检查用户是否只有一个激活且在有效期限内的API密钥
                 active_keys = self.get_user_active_valid_keys(user.user_id)
 
@@ -354,9 +355,9 @@ class APIKeyCRUD:
                     "expire_date": None
                 }
 
-            # 处理标准订阅（非"91"类型套餐）
-            # 检查一人一激活限制（仅对非"91"类型套餐）
-            if package and package.package_type != "91":
+            # 处理标准订阅（非加油包类型套餐）
+            # 检查一人一激活限制（仅对非加油包类型套餐）
+            if package and package.package_type != PackageType.FUEL_PACK:
                 # 检查用户是否有激活且在有效期限内的API密钥
                 active_keys = self.get_user_active_valid_keys(user.user_id)
                 if active_keys:
