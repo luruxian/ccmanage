@@ -24,6 +24,7 @@ class PackageCRUD:
                 price=package_data["price"],
                 credits=package_data["credits"],
                 duration_days=package_data["duration_days"],
+                package_type=package_data.get("package_type", "01"),
                 is_active=package_data.get("is_active", True),
                 sort_order=package_data.get("sort_order", 0)
             )

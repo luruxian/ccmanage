@@ -264,48 +264,75 @@ async def purchase_package(
                 detail="订阅不存在或不可用"
             )
 
-        # 创建用户订阅（直接创建API密钥记录）
-        start_date = datetime.utcnow()
-        expire_date = start_date + timedelta(days=package.duration_days)
+        # 根据订阅类型处理不同的逻辑
+        if package.package_type == "91":
+            # "91"类型（加油包）：给用户唯一的有效密钥累加积分
+            updated_key = api_key_crud.add_credits_to_active_key(current_user.user_id, package.credits)
+            if not updated_key:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="加油包只能给唯一有效密钥累加积分，请确保您只有一个激活且在有效期内的密钥"
+                )
 
-        # 生成定义的真实API密钥（生产环境中应从配置文件读取）
-        default_real_api_key = "sk-real-api-key-for-production"
-
-        # 创建API密钥记录
-        api_key_data = {
-            "user_id": current_user.user_id,
-            "api_key": api_key_crud.generate_api_key(),
-            "real_api_key": default_real_api_key,
-            "key_name": f"购买套餐-{package.package_name}",
-            "description": f"用户购买的{package.package_name}套餐",
-            "is_active": True,
-
-            # 订阅管理字段
-            "package_id": package.id,
-            "activation_date": start_date,
-            "expire_date": expire_date,
-            "remaining_days": package.duration_days,
-            "remaining_credits": package.credits,
-            "total_credits": package.credits,
-            "status": "active",
-            "notes": f"购买套餐: {package.package_code}, 自动续费: {purchase_data.auto_renew}"
-        }
-
-        api_key = api_key_crud.create_api_key(api_key_data)
-        if not api_key:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="购买订阅失败"
+            logger.info(f"用户 {current_user.user_id} 购买加油包: {package.package_code}, 累加积分: {package.credits}")
+            return PackagePurchaseResponse(
+                message="加油包购买成功，积分已累加到您的有效密钥",
+                user_plan_id=updated_key.id,
+                package_code=package.package_code,
+                credits_added=package.credits,
+                expire_date=updated_key.expire_date  # 保持原有到期时间
             )
+        else:
+            # 非"91"类型：检查用户是否有激活且在有效期限内的API密钥
+            active_keys = api_key_crud.get_user_active_valid_keys(current_user.user_id)
+            if active_keys:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="您已有激活且在有效期内的API密钥，无法购买新的标准订阅"
+                )
 
-        logger.info(f"用户 {current_user.user_id} 购买订阅: {package.package_code}")
-        return PackagePurchaseResponse(
-            message="订阅购买成功",
-            user_plan_id=api_key.id,  # 使用api_key_id作为订阅ID
-            package_code=package.package_code,
-            credits_added=package.credits,
-            expire_date=expire_date
-        )
+            # 创建用户订阅（直接创建API密钥记录）
+            start_date = datetime.utcnow()
+            expire_date = start_date + timedelta(days=package.duration_days)
+
+            # 生成定义的真实API密钥（生产环境中应从配置文件读取）
+            default_real_api_key = "sk-real-api-key-for-production"
+
+            # 创建API密钥记录
+            api_key_data = {
+                "user_id": current_user.user_id,
+                "api_key": api_key_crud.generate_api_key(),
+                "real_api_key": default_real_api_key,
+                "key_name": f"购买套餐-{package.package_name}",
+                "description": f"用户购买的{package.package_name}套餐",
+                "is_active": True,
+
+                # 订阅管理字段
+                "package_id": package.id,
+                "activation_date": start_date,
+                "expire_date": expire_date,
+                "remaining_days": package.duration_days,
+                "remaining_credits": package.credits,
+                "total_credits": package.credits,
+                "status": "active",
+                "notes": f"购买套餐: {package.package_code}, 自动续费: {purchase_data.auto_renew}"
+            }
+
+            api_key = api_key_crud.create_api_key(api_key_data)
+            if not api_key:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="购买订阅失败"
+                )
+
+            logger.info(f"用户 {current_user.user_id} 购买订阅: {package.package_code}")
+            return PackagePurchaseResponse(
+                message="订阅购买成功",
+                user_plan_id=api_key.id,  # 使用api_key_id作为订阅ID
+                package_code=package.package_code,
+                credits_added=package.credits,
+                expire_date=expire_date
+            )
 
     except HTTPException:
         raise

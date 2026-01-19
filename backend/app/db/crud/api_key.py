@@ -57,6 +57,9 @@ class APIKeyCRUD:
 
         result = []
         for api_key, package in results:
+            # 过滤掉package_type="91"的加油包（不显示给普通用户）
+            if package and package.package_type == "91":
+                continue
             # 计算剩余天数
             remaining_days = None
             current_status = api_key.status or "inactive"
@@ -146,6 +149,60 @@ class APIKeyCRUD:
         self.db.refresh(db_api_key)
         logger.info(f"更新API密钥信息: {api_key_id}")
         return db_api_key
+
+    def get_user_active_valid_keys(self, user_id: str) -> List[APIKey]:
+        """获取用户激活且在有效期限内的API密钥（排除加油包）"""
+        try:
+            now = datetime.now()
+
+            # 使用子查询排除加油包（package_type="91"）
+            from sqlalchemy import exists, and_
+
+            # 查询所有激活且在有效期限内的密钥
+            query = self.db.query(APIKey).filter(
+                APIKey.user_id == user_id,
+                APIKey.status == 'active',
+                APIKey.expire_date > now
+            )
+
+            # 排除加油包密钥（通过JOIN Package表检查package_type）
+            query = query.filter(
+                ~exists().where(
+                    and_(
+                        Package.id == APIKey.package_id,
+                        Package.package_type == "91"
+                    )
+                )
+            )
+
+            return query.all()
+        except Exception as e:
+            logger.error(f"获取用户有效密钥失败: {str(e)}")
+            return []
+
+    def add_credits_to_active_key(self, user_id: str, credits: int) -> Optional[APIKey]:
+        """给用户唯一的有效密钥累加积分"""
+        try:
+            # 获取用户所有激活且在有效期限内的密钥
+            active_keys = self.get_user_active_valid_keys(user_id)
+
+            if len(active_keys) != 1:
+                return None  # 不是只有一个有效密钥
+
+            key = active_keys[0]
+            key.remaining_credits += credits
+            key.total_credits += credits
+            key.updated_at = datetime.now()
+
+            self.db.commit()
+            self.db.refresh(key)
+            logger.info(f"为用户 {user_id} 的密钥 {key.id} 累加积分: {credits}")
+            return key
+
+        except Exception as e:
+            self.db.rollback()
+            logger.error(f"累加积分失败: {str(e)}")
+            return None
 
     def delete_api_key(self, api_key: str) -> bool:
         """软删除API密钥（设置为非激活状态）"""
@@ -246,13 +303,64 @@ class APIKeyCRUD:
             if not user_key_record:
                 return {"success": False, "message": "用户密钥不存在"}
 
-            if user_key_record.status == "active":
-                return {"success": False, "message": "用户密钥已被激活"}
+            # 检查密钥是否已被使用（无论是active还是inactive状态，只要有关联用户）
+            if user_key_record.user_id:
+                return {"success": False, "message": "用户密钥已被使用，无法重复激活"}
 
             # 查找或创建用户
             user = self.db.query(User).filter(User.email == user_email).first()
             if not user:
                 return {"success": False, "message": "用户不存在，请先注册"}
+
+            # 获取套餐信息
+            package = None
+            if user_key_record.package_id:
+                package = self.db.query(Package).filter(Package.id == user_key_record.package_id).first()
+
+            # 处理加油包（package_type="91"）
+            if package and package.package_type == "91":
+                # 检查用户是否只有一个激活且在有效期限内的API密钥
+                active_keys = self.get_user_active_valid_keys(user.user_id)
+
+                if not active_keys:
+                    return {"success": False, "message": "您没有激活的有效密钥，无法使用加油包"}
+
+                if len(active_keys) > 1:
+                    return {"success": False, "message": "您有多个激活的有效密钥，无法使用加油包"}
+
+                # 给用户唯一的有效密钥累加积分
+                credits_to_add = user_key_record.total_credits or package.credits
+                updated_key = self.add_credits_to_active_key(user.user_id, credits_to_add)
+
+                if not updated_key:
+                    return {"success": False, "message": "积分累加失败"}
+
+                # 更新加油包密钥信息
+                activation_date = datetime.now()
+                user_key_record.user_id = user.user_id
+                user_key_record.status = "inactive"
+                user_key_record.activation_date = activation_date  # 记录激活时间
+                user_key_record.notes = f"加油包积分已累加到密钥 {updated_key.id}，增加积分: {credits_to_add}，激活时间: {activation_date}"
+
+                self.db.commit()
+
+                logger.info(f"加油包积分累加成功: {api_key} -> 用户 {user.user_id}，增加积分: {credits_to_add}")
+                return {
+                    "success": True,
+                    "message": "加油包积分累加成功",
+                    "is_refuel_package": True,
+                    "credits_added": credits_to_add,
+                    "activation_date": activation_date.isoformat(),  # 返回激活时间
+                    "expire_date": None
+                }
+
+            # 处理标准订阅（非"91"类型套餐）
+            # 检查一人一激活限制（仅对非"91"类型套餐）
+            if package and package.package_type != "91":
+                # 检查用户是否有激活且在有效期限内的API密钥
+                active_keys = self.get_user_active_valid_keys(user.user_id)
+                if active_keys:
+                    return {"success": False, "message": "您已有激活且在有效期内的API密钥，无法激活新的标准订阅"}
 
             # 计算过期时间（使用操作系统时区）
             activation_date = datetime.now()
@@ -270,6 +378,8 @@ class APIKeyCRUD:
             return {
                 "success": True,
                 "message": "激活成功",
+                "is_refuel_package": False,
+                "credits_added": 0,
                 "activation_date": activation_date.isoformat(),
                 "expire_date": expire_date.isoformat() if expire_date else None
             }

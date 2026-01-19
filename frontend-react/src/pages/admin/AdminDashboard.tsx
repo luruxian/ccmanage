@@ -3,6 +3,18 @@ import { useNavigate } from 'react-router-dom'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useUserStore } from '@/store/user'
 import request from '@/utils/request'
 import { useToast } from '@/components/ui/ToastProvider'
@@ -37,6 +49,20 @@ const AdminDashboard: React.FC = () => {
   const [userPage, setUserPage] = useState(1)
   const userPageSize = 20
   const [userTotal, setUserTotal] = useState(0)
+
+  // 创建订阅相关状态
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const [newPackage, setNewPackage] = useState({
+    package_code: '',
+    package_name: '',
+    description: '',
+    price: '',
+    credits: '',
+    duration_days: '',
+    package_type: '01',
+    is_active: true,
+    sort_order: '0'
+  })
 
   const handleLogout = () => {
     logout()
@@ -75,6 +101,57 @@ const AdminDashboard: React.FC = () => {
     } catch (err) {
       console.error('failed to load packages', err)
     }
+  }
+
+  const handleCreatePackage = async () => {
+    try {
+      // 验证必填字段
+      if (!newPackage.package_code || !newPackage.package_name || !newPackage.price ||
+          !newPackage.credits || !newPackage.duration_days) {
+        info('请填写所有必填字段')
+        return
+      }
+
+      // 转换数据类型
+      const packageData = {
+        ...newPackage,
+        price: parseFloat(newPackage.price),
+        credits: parseInt(newPackage.credits),
+        duration_days: parseInt(newPackage.duration_days),
+        sort_order: parseInt(newPackage.sort_order)
+      }
+
+      const res = await request.post('/packages/', packageData)
+
+      if (res) {
+        info('订阅创建成功')
+        setCreateDialogOpen(false)
+        // 重置表单
+        setNewPackage({
+          package_code: '',
+          package_name: '',
+          description: '',
+          price: '',
+          credits: '',
+          duration_days: '',
+          package_type: '01',
+          is_active: true,
+          sort_order: '0'
+        })
+        // 重新加载套餐列表
+        loadPackages()
+      }
+    } catch (err: any) {
+      console.error('创建订阅失败', err)
+      info(err.response?.data?.detail || '创建订阅失败')
+    }
+  }
+
+  const handleNewPackageChange = (field: string, value: string) => {
+    setNewPackage(prev => ({
+      ...prev,
+      [field]: value
+    }))
   }
 
   useEffect(() => {
@@ -310,7 +387,130 @@ const AdminDashboard: React.FC = () => {
               <CardHeader className="flex flex-row items-center justify-between space-y-0">
                 <CardTitle>订阅管理</CardTitle>
                 <div className="flex gap-2">
-                  <Button size="sm" onClick={() => info('新增订阅功能未实现')}>新增订阅</Button>
+                  <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button size="sm">新增订阅</Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[500px]">
+                      <DialogHeader>
+                        <DialogTitle>创建新订阅</DialogTitle>
+                        <DialogDescription>
+                          填写订阅信息，所有带*的字段为必填项。
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="package_code" className="text-right">
+                            订阅代码*
+                          </Label>
+                          <Input
+                            id="package_code"
+                            value={newPackage.package_code}
+                            onChange={(e) => handleNewPackageChange('package_code', e.target.value)}
+                            className="col-span-3"
+                            placeholder="如：basic_monthly"
+                          />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="package_name" className="text-right">
+                            订阅名称*
+                          </Label>
+                          <Input
+                            id="package_name"
+                            value={newPackage.package_name}
+                            onChange={(e) => handleNewPackageChange('package_name', e.target.value)}
+                            className="col-span-3"
+                            placeholder="如：基础月套餐"
+                          />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="description" className="text-right">
+                            描述
+                          </Label>
+                          <Input
+                            id="description"
+                            value={newPackage.description}
+                            onChange={(e) => handleNewPackageChange('description', e.target.value)}
+                            className="col-span-3"
+                            placeholder="订阅描述"
+                          />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="price" className="text-right">
+                            价格*
+                          </Label>
+                          <Input
+                            id="price"
+                            type="number"
+                            step="0.01"
+                            value={newPackage.price}
+                            onChange={(e) => handleNewPackageChange('price', e.target.value)}
+                            className="col-span-3"
+                            placeholder="如：99.99"
+                          />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="credits" className="text-right">
+                            积分*
+                          </Label>
+                          <Input
+                            id="credits"
+                            type="number"
+                            value={newPackage.credits}
+                            onChange={(e) => handleNewPackageChange('credits', e.target.value)}
+                            className="col-span-3"
+                            placeholder="如：10000"
+                          />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="duration_days" className="text-right">
+                            时长(天)*
+                          </Label>
+                          <Input
+                            id="duration_days"
+                            type="number"
+                            value={newPackage.duration_days}
+                            onChange={(e) => handleNewPackageChange('duration_days', e.target.value)}
+                            className="col-span-3"
+                            placeholder="如：30"
+                          />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="package_type" className="text-right">
+                            订阅类型*
+                          </Label>
+                          <Select
+                            value={newPackage.package_type}
+                            onValueChange={(value) => handleNewPackageChange('package_type', value)}
+                          >
+                            <SelectTrigger className="col-span-3">
+                              <SelectValue placeholder="选择订阅类型" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="01">01 - 标准订阅</SelectItem>
+                              <SelectItem value="91">91 - 加油包（只累加积分）</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="sort_order" className="text-right">
+                            排序顺序
+                          </Label>
+                          <Input
+                            id="sort_order"
+                            type="number"
+                            value={newPackage.sort_order}
+                            onChange={(e) => handleNewPackageChange('sort_order', e.target.value)}
+                            className="col-span-3"
+                            placeholder="如：0"
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button type="submit" onClick={handleCreatePackage}>创建订阅</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                   <Button size="sm" onClick={loadPackages}>刷新</Button>
                 </div>
               </CardHeader>
@@ -321,6 +521,7 @@ const AdminDashboard: React.FC = () => {
                       <TableRow>
                         <TableHead>订阅名称</TableHead>
                         <TableHead>代码</TableHead>
+                        <TableHead>类型</TableHead>
                         <TableHead>价格</TableHead>
                         <TableHead>积分</TableHead>
                         <TableHead>时长</TableHead>
@@ -340,6 +541,13 @@ const AdminDashboard: React.FC = () => {
                             </button>
                           </TableCell>
                           <TableCell>{p.package_code}</TableCell>
+                          <TableCell>
+                            <span className={`px-2 py-1 rounded text-xs font-medium ${
+                              p.package_type === '91' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
+                            }`}>
+                              {p.package_type === '91' ? '加油包' : '标准订阅'}
+                            </span>
+                          </TableCell>
                           <TableCell>¥{p.price}</TableCell>
                           <TableCell>{p.credits}</TableCell>
                           <TableCell>{p.duration_days}天</TableCell>

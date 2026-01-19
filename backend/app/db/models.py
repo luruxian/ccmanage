@@ -127,6 +127,7 @@ class Package(Base):
     price = Column(DECIMAL(10, 2), nullable=False, comment="订阅价格")
     credits = Column(Integer, nullable=False, comment="订阅积分")
     duration_days = Column(Integer, nullable=False, comment="订阅时长（天）")
+    package_type = Column(String(2), default='01', nullable=False, comment="订阅类型：01-标准订阅，91-加油包（只累加积分）")
     is_active = Column(Boolean, default=True, nullable=False, comment="订阅是否可用")
     sort_order = Column(Integer, default=0, nullable=False, comment="排序顺序")
     created_at = Column(DateTime(timezone=True), server_default=func.now(), comment="创建时间")

@@ -13,6 +13,7 @@ class PackageCreate(BaseModel):
     price: Decimal = Field(..., gt=0, description="订阅价格")
     credits: int = Field(..., gt=0, description="订阅积分")
     duration_days: int = Field(..., gt=0, description="订阅时长（天）")
+    package_type: str = Field("01", min_length=2, max_length=2, description="订阅类型：01-标准订阅，91-加油包（只累加积分）")
     is_active: bool = Field(True, description="订阅是否可用")
     sort_order: int = Field(0, description="排序顺序")
 
@@ -28,6 +29,12 @@ class PackageCreate(BaseModel):
             raise ValueError('订阅端点不能为空字符串')
         return v
 
+    @validator('package_type')
+    def validate_package_type(cls, v):
+        if v not in ['01', '91']:
+            raise ValueError('订阅类型必须是01（标准订阅）或91（加油包）')
+        return v
+
 
 class PackageUpdate(BaseModel):
     """更新订阅请求"""
@@ -37,8 +44,15 @@ class PackageUpdate(BaseModel):
     price: Optional[Decimal] = Field(None, gt=0, description="订阅价格")
     credits: Optional[int] = Field(None, gt=0, description="订阅积分")
     duration_days: Optional[int] = Field(None, gt=0, description="订阅时长（天）")
+    package_type: Optional[str] = Field(None, min_length=2, max_length=2, description="订阅类型：01-标准订阅，91-加油包（只累加积分）")
     is_active: Optional[bool] = Field(None, description="订阅是否可用")
     sort_order: Optional[int] = Field(None, description="排序顺序")
+
+    @validator('package_type')
+    def validate_package_type(cls, v):
+        if v is not None and v not in ['01', '91']:
+            raise ValueError('订阅类型必须是01（标准订阅）或91（加油包）')
+        return v
 
 
 class PackageResponse(BaseModel):
@@ -51,6 +65,7 @@ class PackageResponse(BaseModel):
     price: Decimal
     credits: int
     duration_days: int
+    package_type: str
     is_active: bool
     sort_order: int
     created_at: datetime

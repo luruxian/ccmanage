@@ -4,13 +4,15 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 import os
 import json
+from datetime import datetime
 
 from ...schemas.user_keys import (
     KeyActivationRequest,
     KeyActivationResponse,
     UserKeyResponse,
     UserKeysListResponse,
-    UserPlanStatusResponse
+    UserPlanStatusResponse,
+    UserKeyActivationResponse
 )
 from ...schemas.auth import MessageResponse
 from ...core.auth_service import auth_service
@@ -28,7 +30,7 @@ router = APIRouter(prefix="/api/v1/keys", tags=["User Keys Management"])
 security = HTTPBearer()
 
 
-@router.post("/activate-user-key", response_model=MessageResponse)
+@router.post("/activate-user-key", response_model=UserKeyActivationResponse)
 async def activate_user_key(
     request: dict,
     current_user = Depends(get_current_user),
@@ -49,7 +51,29 @@ async def activate_user_key(
         result = api_key_crud.activate_user_key(user_key, current_user.email)
 
         if result["success"]:
-            return MessageResponse(message=result["message"])
+            # 解析activation_date和expire_date字符串为datetime对象
+            activation_date = None
+            expire_date = None
+
+            if result.get("activation_date"):
+                try:
+                    activation_date = datetime.fromisoformat(result["activation_date"])
+                except (ValueError, TypeError):
+                    activation_date = None
+
+            if result.get("expire_date"):
+                try:
+                    expire_date = datetime.fromisoformat(result["expire_date"])
+                except (ValueError, TypeError):
+                    expire_date = None
+
+            return UserKeyActivationResponse(
+                message=result["message"],
+                is_refuel_package=result.get("is_refuel_package", False),
+                credits_added=result.get("credits_added", 0),
+                activation_date=activation_date,
+                expire_date=expire_date
+            )
         else:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,

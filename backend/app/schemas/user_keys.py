@@ -54,3 +54,12 @@ class UserPlanStatusResponse(BaseModel):
     credits_remaining: int
     total_credits: int
     usage_percentage: float
+
+
+class UserKeyActivationResponse(BaseModel):
+    """用户密钥激活响应（支持加油包）"""
+    message: str
+    is_refuel_package: bool = False
+    credits_added: int = 0
+    activation_date: Optional[datetime] = None
+    expire_date: Optional[datetime] = None

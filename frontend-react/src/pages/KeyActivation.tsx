@@ -19,6 +19,14 @@ interface ToastMessage {
   message: string
 }
 
+interface ActivationResponse {
+  message: string
+  is_refuel_package: boolean
+  credits_added: number
+  activation_date: string | null
+  expire_date: string | null
+}
+
 const KeyActivation: React.FC = () => {
   const navigate = useNavigate()
   const { isLoggedIn } = useUserStore()
@@ -33,7 +41,9 @@ const KeyActivation: React.FC = () => {
     userKey: '',
     activationDate: '',
     expireDate: '',
-    credits: 0
+    credits: 0,
+    isRefuelPackage: false,
+    creditsAdded: 0
   })
 
   // 检查用户认证状态
@@ -82,19 +92,43 @@ const KeyActivation: React.FC = () => {
     setLoading(true)
 
     try {
-      const res: any = await request.post('/keys/activate-user-key', {
+      const res: ActivationResponse = await request.post('/keys/activate-user-key', {
         user_key: formData.userKey
       })
 
+      // 设置激活信息
+      const activationDate = res.activation_date
+        ? new Date(res.activation_date).toLocaleString('zh-CN')
+        : new Date().toLocaleString('zh-CN')
+
+      const expireDate = res.expire_date
+        ? new Date(res.expire_date).toLocaleString('zh-CN')
+        : ''
+
       setActivatedKeyInfo({
         userKey: formData.userKey,
-        activationDate: new Date().toLocaleString('zh-CN'),
-        expireDate: '',
-        credits: 0
+        activationDate,
+        expireDate,
+        credits: 0,
+        isRefuelPackage: res.is_refuel_package,
+        creditsAdded: res.credits_added
       })
 
       setShowSuccessDialog(true)
-      setToastMessage({ type: 'success', message: res?.message || '用户Key激活成功！' })
+
+      // 根据是否为加油包显示不同的成功消息
+      if (res.is_refuel_package) {
+        setToastMessage({
+          type: 'success',
+          message: `加油包积分累加成功！已为您当前的有效密钥增加 ${res.credits_added} 积分`
+        })
+      } else {
+        setToastMessage({
+          type: 'success',
+          message: res.message || '用户Key激活成功！'
+        })
+      }
+
       setFormData({ userKey: '' })
 
     } catch (error: any) {
@@ -175,6 +209,16 @@ const KeyActivation: React.FC = () => {
                 </div>
               </div>
 
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="font-medium text-blue-800 mb-2">激活规则说明：</h4>
+                <ul className="text-sm text-blue-700 space-y-1">
+                  <li>• <strong>标准订阅</strong>：每个用户只能有一个激活且在有效期内的密钥</li>
+                  <li>• <strong>加油包</strong>：只能给唯一有效密钥累加积分，不能单独激活</li>
+                  <li>• 如果您已有激活的密钥，将无法激活新的标准订阅</li>
+                  <li>• 加油包密钥不会显示在普通用户的API密钥管理页面</li>
+                </ul>
+              </div>
+
               <Button
                 type="submit"
                 className="w-full h-12 text-base font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary hover:to-primary/90 border-0 shadow-lg hover:shadow-xl transition-all duration-300"
@@ -201,36 +245,59 @@ const KeyActivation: React.FC = () => {
       <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-center">激活成功</DialogTitle>
+            <DialogTitle className="text-center">
+              {activatedKeyInfo.isRefuelPackage ? '积分累加成功' : '激活成功'}
+            </DialogTitle>
           </DialogHeader>
 
           <div className="text-center">
             <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-            <h4 className="text-lg font-semibold mb-4">用户Key激活成功！</h4>
+            <h4 className="text-lg font-semibold mb-4">
+              {activatedKeyInfo.isRefuelPackage ? '加油包积分累加成功！' : '用户Key激活成功！'}
+            </h4>
 
             <div className="bg-gray-50 rounded-lg p-4 mb-4 text-left">
-              <p><strong>激活时间:</strong> {activatedKeyInfo.activationDate}</p>
-              <p className="mt-2"><strong>用户Key:</strong></p>
-              <div className="flex gap-2 mt-2">
-                <Input
-                  value={activatedKeyInfo.userKey}
-                  readOnly
-                  className="flex-1"
-                />
-                <Button
-                  onClick={() => copyToClipboard(activatedKeyInfo.userKey)}
-                  variant="outline"
-                >
-                  复制
-                </Button>
-              </div>
+              {activatedKeyInfo.isRefuelPackage ? (
+                <>
+                  <p><strong>积分增加:</strong> {activatedKeyInfo.creditsAdded} 积分</p>
+                  <p className="mt-2"><strong>处理时间:</strong> {activatedKeyInfo.activationDate}</p>
+                  <p className="mt-2 text-sm text-gray-600">
+                    加油包积分已成功累加到您当前的有效密钥中，不会创建新的API密钥。
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p><strong>激活时间:</strong> {activatedKeyInfo.activationDate}</p>
+                  {activatedKeyInfo.expireDate && (
+                    <p className="mt-2"><strong>过期时间:</strong> {activatedKeyInfo.expireDate}</p>
+                  )}
+                  <p className="mt-2"><strong>用户Key:</strong></p>
+                  <div className="flex gap-2 mt-2">
+                    <Input
+                      value={activatedKeyInfo.userKey}
+                      readOnly
+                      className="flex-1"
+                    />
+                    <Button
+                      onClick={() => copyToClipboard(activatedKeyInfo.userKey)}
+                      variant="outline"
+                    >
+                      复制
+                    </Button>
+                  </div>
+                </>
+              )}
             </div>
 
             <Alert className="bg-green-50 border-green-200">
               <CheckCircle className="h-4 w-4 text-green-600" />
-              <AlertTitle className="text-green-800">激活成功</AlertTitle>
+              <AlertTitle className="text-green-800">
+                {activatedKeyInfo.isRefuelPackage ? '积分累加成功' : '激活成功'}
+              </AlertTitle>
               <AlertDescription className="text-green-700">
-                您的用户Key已成功激活，现在可以使用服务了
+                {activatedKeyInfo.isRefuelPackage
+                  ? '加油包积分已成功累加到您当前的有效密钥中。'
+                  : '您的用户Key已成功激活，现在可以使用服务了'}
               </AlertDescription>
             </Alert>
           </div>
