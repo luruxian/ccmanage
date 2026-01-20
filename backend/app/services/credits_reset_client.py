@@ -17,7 +17,7 @@ class CreditsResetClient:
         self,
         api_key: str,
         remaining_credits: int,
-        last_reset_credits_at: str
+        last_reset_credits_at: str = None
     ) -> Dict[str, Any]:
         """
         调用外部API重置Redis中的积分
@@ -25,7 +25,7 @@ class CreditsResetClient:
         Args:
             api_key: API密钥
             remaining_credits: 剩余积分
-            last_reset_credits_at: 最后重置时间（ISO格式字符串）
+            last_reset_credits_at: 最后重置时间（ISO格式字符串，可选）
 
         Returns:
             包含调用结果的字典
@@ -37,9 +37,12 @@ class CreditsResetClient:
             # 构建请求数据
             payload = {
                 "api_key": api_key,
-                "remaining_credits": remaining_credits,
-                "last_reset_credits_at": last_reset_credits_at
+                "remaining_credits": remaining_credits
             }
+
+            # 只有在提供了重置时间时才包含该字段
+            if last_reset_credits_at:
+                payload["last_reset_credits_at"] = last_reset_credits_at
 
             # 发送POST请求
             response = requests.post(

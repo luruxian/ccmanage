@@ -489,6 +489,8 @@ const AdminDashboard: React.FC = () => {
                             <SelectContent>
                               <SelectItem value="01">01 - 标准订阅</SelectItem>
                               <SelectItem value="02">02 - Max系列订阅</SelectItem>
+                              <SelectItem value="20">20 - 体验积分包（固定积分10000，用完为止，不参与每日重置）</SelectItem>
+                              <SelectItem value="21">21 - 临时积分包（固定积分5000，用完为止，不参与每日重置）</SelectItem>
                               <SelectItem value="91">91 - 加油包（只累加积分）</SelectItem>
                             </SelectContent>
                           </Select>
@@ -545,10 +547,14 @@ const AdminDashboard: React.FC = () => {
                           <TableCell>
                             <span className={`px-2 py-1 rounded text-xs font-medium ${
                               p.package_type === '91' ? 'bg-blue-100 text-blue-700' :
-                              p.package_type === '02' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'
+                              p.package_type === '02' ? 'bg-purple-100 text-purple-700' :
+                              p.package_type === '20' ? 'bg-green-100 text-green-700' :
+                              p.package_type === '21' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700'
                             }`}>
                               {p.package_type === '91' ? '加油包' :
-                               p.package_type === '02' ? 'Max系列订阅' : '标准订阅'}
+                               p.package_type === '02' ? 'Max系列订阅' :
+                               p.package_type === '20' ? '体验积分包' :
+                               p.package_type === '21' ? '临时积分包' : '标准订阅'}
                             </span>
                           </TableCell>
                           <TableCell>¥{p.price}</TableCell>

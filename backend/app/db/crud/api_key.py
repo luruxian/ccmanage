@@ -85,6 +85,7 @@ class APIKeyCRUD:
                 "api_key": api_key.api_key,
                 "key_name": api_key.key_name,
                 "package_name": package.package_name if package else "未知套餐",
+                "package_type": package.package_type if package else None,  # 添加package_type字段
                 "description": api_key.description,
                 "is_active": api_key.is_active,
                 "last_used_at": api_key.last_used_at.isoformat() if api_key.last_used_at else None,  # 转为ISO字符串
@@ -153,18 +154,22 @@ class APIKeyCRUD:
         return db_api_key
 
     def get_user_active_valid_keys(self, user_id: str) -> List[APIKey]:
-        """获取用户激活且在有效期限内的API密钥（排除加油包）"""
+        """获取用户激活且在有效期限内的API密钥（排除加油包）
+
+        对于不同package_type使用不同的有效性判断：
+        1. package_type为"01"或"02"：需要激活且在有效期限内（expire_date > now）
+        2. package_type为"20"或"21"：需要激活且剩余积分大于0（remaining_credits > 0）
+        """
         try:
             now = datetime.now()
 
             # 使用子查询排除加油包（package_type="91"）
-            from sqlalchemy import exists, and_
+            from sqlalchemy import exists, and_, or_
 
-            # 查询所有激活且在有效期限内的密钥
+            # 查询所有激活的密钥
             query = self.db.query(APIKey).filter(
                 APIKey.user_id == user_id,
-                APIKey.status == 'active',
-                APIKey.expire_date > now
+                APIKey.status == 'active'
             )
 
             # 排除加油包密钥（通过JOIN Package表检查package_type）
@@ -173,6 +178,34 @@ class APIKeyCRUD:
                     and_(
                         Package.id == APIKey.package_id,
                         Package.package_type == PackageType.FUEL_PACK
+                    )
+                )
+            )
+
+            # 根据package_type使用不同的有效性判断
+            # 对于package_type为"01"或"02"：需要expire_date > now
+            # 对于package_type为"20"或"21"：需要remaining_credits > 0
+            query = query.filter(
+                or_(
+                    # package_type为"01"或"02"：检查有效期
+                    and_(
+                        exists().where(
+                            and_(
+                                Package.id == APIKey.package_id,
+                                Package.package_type.in_([PackageType.STANDARD, PackageType.MAX_SERIES]),
+                                APIKey.expire_date > now
+                            )
+                        )
+                    ),
+                    # package_type为"20"或"21"：检查剩余积分
+                    and_(
+                        exists().where(
+                            and_(
+                                Package.id == APIKey.package_id,
+                                Package.package_type.in_([PackageType.EXPERIENCE_PACKAGE, PackageType.TEMPORARY_PACKAGE]),
+                                APIKey.remaining_credits > 0
+                            )
+                        )
                     )
                 )
             )
@@ -384,7 +417,18 @@ class APIKeyCRUD:
 
             # 计算过期时间（使用操作系统时区）
             activation_date = datetime.now()
-            expire_date = activation_date + timedelta(days=user_key_record.remaining_days) if user_key_record.remaining_days else None
+
+            # 检查是否为体验积分包或临时积分包
+            is_trial_or_temp = False
+            if package:
+                is_trial_or_temp = package.package_type in [PackageType.EXPERIENCE_PACKAGE, PackageType.TEMPORARY_PACKAGE]
+
+            # 对于体验积分包和临时积分包，设置expire_date和remaining_days为null
+            if is_trial_or_temp:
+                expire_date = None
+                user_key_record.remaining_days = None
+            else:
+                expire_date = activation_date + timedelta(days=user_key_record.remaining_days) if user_key_record.remaining_days else None
 
             # 更新用户密钥信息
             user_key_record.user_id = user.user_id

@@ -268,9 +268,6 @@ const KeyActivation: React.FC = () => {
               ) : (
                 <>
                   <p><strong>激活时间:</strong> {activatedKeyInfo.activationDate}</p>
-                  {activatedKeyInfo.expireDate && (
-                    <p className="mt-2"><strong>过期时间:</strong> {activatedKeyInfo.expireDate}</p>
-                  )}
                   <p className="mt-2"><strong>用户Key:</strong></p>
                   <div className="flex gap-2 mt-2">
                     <Input

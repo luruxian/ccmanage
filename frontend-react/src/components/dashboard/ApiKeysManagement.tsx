@@ -16,6 +16,7 @@ interface ApiKey {
   last_used_at?: string;
   created_at: string;
   package_name?: string;
+  package_type?: string;  // 套餐类型：01-标准订阅，02-Max系列订阅，20-体验积分包，21-临时积分包，91-加油包
   activation_date?: string;
   expire_date?: string;
   remaining_days?: number;
@@ -96,6 +97,14 @@ const getRemainingCreditsClass = (remainingCredits?: number, totalCredits?: numb
     return 'text-yellow-600 font-bold';
   }
   return 'text-green-600';
+};
+
+// 判断是否应该显示重置积分按钮
+// 只对"01"（标准订阅）和"02"（Max系列订阅）显示重置按钮
+// 对"20"（体验积分包）、"21"（临时积分包）和"91"（加油包）隐藏重置按钮
+const shouldShowResetCreditsButton = (packageType?: string): boolean => {
+  if (!packageType) return false;
+  return packageType === '01' || packageType === '02';
 };
 
 const ApiKeysManagement: React.FC<ApiKeysManagementProps> = ({
@@ -242,14 +251,16 @@ const ApiKeysManagement: React.FC<ApiKeysManagementProps> = ({
                           >
                             履历
                           </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => onResetCredits(key)}
-                            className="text-xs"
-                          >
-                            重置积分
-                          </Button>
+                          {shouldShowResetCreditsButton(key.package_type) && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => onResetCredits(key)}
+                              className="text-xs"
+                            >
+                              重置积分
+                            </Button>
+                          )}
                           <Button
                             variant="outline"
                             size="sm"
@@ -320,13 +331,15 @@ const ApiKeysManagement: React.FC<ApiKeysManagementProps> = ({
                               >
                                 履历
                               </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => onResetCredits(key)}
-                              >
-                                重置积分
-                              </Button>
+                              {shouldShowResetCreditsButton(key.package_type) && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => onResetCredits(key)}
+                                >
+                                  重置积分
+                                </Button>
+                              )}
                               <Button
                                 variant="outline"
                                 size="sm"

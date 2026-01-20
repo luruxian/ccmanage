@@ -32,17 +32,15 @@ class CreditsResetService:
             需要重置的API密钥列表
         """
         try:
-            # 使用+8时区（北京时间）计算今天开始时间
+            # 使用+8时区（北京时间）
             beijing_tz = pytz.timezone('Asia/Shanghai')
             now = datetime.now(beijing_tz)
-            today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
 
             # 查询条件：
             # 1. 状态为"active"
             # 2. 关联的套餐类型为"01"或"02"（标准订阅或Max系列订阅）
             # 3. 套餐的daily_reset_credits > 0
-            # 4. 今天还没有重置过（last_reset_credits_at < today_start 或为NULL）
-            # 5. 在有效期内（expire_date > now 或 expire_date为NULL）
+            # 4. 在有效期内（expire_date > now 或 expire_date为NULL）
             # 注意：数据库中的时间可能是UTC，这里比较时需要考虑时区转换
             query = (
                 self.db.query(APIKey)
@@ -50,12 +48,8 @@ class CreditsResetService:
                 .filter(
                     and_(
                         APIKey.status == 'active',
-                        Package.package_type.in_([PackageType.STANDARD, PackageType.MAX_SERIES]),
+                        Package.package_type.in_([PackageType.STANDARD, PackageType.MAX_SERIES]),  # 只重置标准订阅和Max系列订阅，排除体验积分包、临时积分包和加油包
                         Package.daily_reset_credits > 0,
-                        or_(
-                            APIKey.last_reset_credits_at < today_start,
-                            APIKey.last_reset_credits_at.is_(None)
-                        ),
                         # 新增：检查有效期，确保只重置在有效期内的API密钥
                         or_(
                             APIKey.expire_date.is_(None),  # 没有设置过期时间（理论上不应该，但保留兼容性）
@@ -110,7 +104,7 @@ class CreditsResetService:
             beijing_tz = pytz.timezone('Asia/Shanghai')
             now = datetime.now(beijing_tz)
             api_key.remaining_credits = reset_credits
-            api_key.last_reset_credits_at = now
+            # 注意：last_reset_credits_at字段用于用户手动重置积分，每日自动重置不更新此字段
 
             # 提交数据库更改
             self.db.commit()
@@ -119,7 +113,7 @@ class CreditsResetService:
             external_result = credits_reset_client.reset_credits(
                 api_key=api_key.api_key,
                 remaining_credits=reset_credits,
-                last_reset_credits_at=now.isoformat()
+                # 注意：last_reset_credits_at字段用于用户手动重置积分，每日自动重置不更新此字段
             )
 
             # 记录日志
@@ -246,11 +240,14 @@ class CreditsResetService:
         """
         获取最近N天的积分重置统计
 
+        注意：此方法仅统计手动重置的记录（基于last_reset_credits_at字段）
+        每日自动重置不更新last_reset_credits_at字段，因此不会被此方法统计
+
         Args:
             days: 统计天数
 
         Returns:
-            统计信息
+            统计信息（仅包含手动重置记录）
         """
         try:
             # 使用+8时区计算日期范围
