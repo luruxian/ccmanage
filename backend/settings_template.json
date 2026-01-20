@@ -1,6 +1,6 @@
 {
   "env": {
-    "ANTHROPIC_BASE_URL": "https://endpoint.agnets.app/",
+    "ANTHROPIC_BASE_URL": "https://endpoint.burkx.com/",
     "ANTHROPIC_AUTH_TOKEN": "{{API_KEY}}",
     "DISABLE_AUTOUPDATER":0,
     "DISABLE_TELEMETRY":1,

@@ -42,6 +42,7 @@ class CreditsResetService:
             # 2. 关联的套餐类型为"01"或"02"（标准订阅或Max系列订阅）
             # 3. 套餐的daily_reset_credits > 0
             # 4. 今天还没有重置过（last_reset_credits_at < today_start 或为NULL）
+            # 5. 在有效期内（expire_date > now 或 expire_date为NULL）
             # 注意：数据库中的时间可能是UTC，这里比较时需要考虑时区转换
             query = (
                 self.db.query(APIKey)
@@ -54,6 +55,11 @@ class CreditsResetService:
                         or_(
                             APIKey.last_reset_credits_at < today_start,
                             APIKey.last_reset_credits_at.is_(None)
+                        ),
+                        # 新增：检查有效期，确保只重置在有效期内的API密钥
+                        or_(
+                            APIKey.expire_date.is_(None),  # 没有设置过期时间（理论上不应该，但保留兼容性）
+                            APIKey.expire_date > now  # 过期时间在当前时间之后
                         )
                     )
                 )
