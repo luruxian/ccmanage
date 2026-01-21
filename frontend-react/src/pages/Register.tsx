@@ -15,18 +15,14 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import request from '@/utils/request'
-
 interface RegisterForm {
   email: string
   password: string
   confirmPassword: string
   agreement: boolean
 }
-
-
 const Register: React.FC = () => {
   const navigate = useNavigate()
-
   // 使用react-hook-form管理表单状态
   const form = useForm<RegisterForm>({
     defaultValues: {
@@ -36,32 +32,23 @@ const Register: React.FC = () => {
       agreement: false,
     },
   })
-
   const [loading, setLoading] = React.useState(false)
   const [serverError, setServerError] = React.useState('')
-
   // 表单提交处理
   const onSubmit = async (data: RegisterForm) => {
-    console.log('开始注册流程...')
-
     setLoading(true)
     setServerError('')
-
     try {
       await request.post('/auth/register', {
         email: data.email,
         password: data.password
       })
-
       // 注册成功，跳转到邮箱验证页面
-      console.log('注册成功，跳转到邮箱验证页面')
       navigate('/email-verification', {
         state: { email: data.email }
       })
-
     } catch (error: any) {
       console.error('注册失败:', error)
-
       // 服务器端注册错误处理
       if (error.response?.status === 409) {
         setServerError('该邮箱已被注册')
@@ -74,7 +61,6 @@ const Register: React.FC = () => {
       setLoading(false)
     }
   }
-
   return (
     <div className="min-h-screen bg-muted flex">
       {/* 左侧品牌展示区 (桌面端70%) */}
@@ -88,14 +74,12 @@ const Register: React.FC = () => {
             </div>
             <h1 className="text-4xl font-bold">agnets.app</h1>
           </div>
-
           <div>
             <h2 className="text-2xl font-semibold mb-4">开始使用agnets.app</h2>
             <p className="text-muted-foreground text-lg">安全、高效的AI工具</p>
           </div>
         </div>
       </div>
-
       {/* 右侧注册表单区 (桌面端30%) */}
       <div className="flex-1 flex flex-col justify-center items-center p-8 bg-background">
         <div className="w-full max-w-sm">
@@ -135,7 +119,6 @@ const Register: React.FC = () => {
                       </FormItem>
                     )}
                   />
-
                   {/* 密码字段 */}
                   <FormField
                     control={form.control}
@@ -162,7 +145,6 @@ const Register: React.FC = () => {
                       </FormItem>
                     )}
                   />
-
                   {/* 确认密码字段 */}
                   <FormField
                     control={form.control}
@@ -189,7 +171,6 @@ const Register: React.FC = () => {
                       </FormItem>
                     )}
                   />
-
                   {/* 协议同意字段 */}
                   <FormField
                     control={form.control}
@@ -216,7 +197,6 @@ const Register: React.FC = () => {
                       </FormItem>
                     )}
                   />
-
                   {/* 服务器错误提示 */}
                   {serverError && (
                     <Alert variant="destructive">
@@ -225,7 +205,6 @@ const Register: React.FC = () => {
                       </AlertDescription>
                     </Alert>
                   )}
-
                   <Button
                     type="submit"
                     className="w-full h-12 text-base font-semibold"
@@ -235,7 +214,6 @@ const Register: React.FC = () => {
                   </Button>
                 </form>
               </Form>
-
               <div className="mt-6 text-center">
                 <p className="text-sm text-muted-foreground">
                   已有账户？
@@ -251,5 +229,4 @@ const Register: React.FC = () => {
     </div>
   )
 }
-
 export default Register

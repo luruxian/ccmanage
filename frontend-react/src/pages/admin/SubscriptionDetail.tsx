@@ -9,7 +9,6 @@ import { Label } from '@/components/ui/label'
 import { ArrowLeft, Plus, Settings, RotateCw, Copy, Edit2, Eye } from 'lucide-react'
 import request from '@/utils/request'
 import { useToast } from '@/components/ui/ToastProvider'
-
 interface SubscriptionInfo {
   id: number
   package_name: string
@@ -23,7 +22,6 @@ interface SubscriptionInfo {
   description?: string
   is_active: boolean
 }
-
 interface UserKey {
   id: number
   user_id: number
@@ -40,45 +38,36 @@ interface UserKey {
   last_used_at?: string
   notes?: string
 }
-
 const SubscriptionDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { success, error } = useToast()
-
   const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null)
   const [userKeys, setUserKeys] = useState<UserKey[]>([])
   const [selectedKeys, setSelectedKeys] = useState<UserKey[]>([])
   const [statusFilter, setStatusFilter] = useState<string>('')
-
   const [loadingDetail, setLoadingDetail] = useState(false)
   const [loadingUserKeys, setLoadingUserKeys] = useState(false)
   const [loadingBatchGenerate, setLoadingBatchGenerate] = useState(false)
   const [loadingBulkOperation, setLoadingBulkOperation] = useState(false)
-
   const [pagination, setPagination] = useState({
     page: 1,
     size: 25,
     total: 0,
   })
-
   const [bulkOperationDialog, setBulkOperationDialog] = useState(false)
   const [bulkOperation, setBulkOperation] = useState({
     operation: '',
     notes: '',
   })
-
   const [editingKeyId, setEditingKeyId] = useState<number | null>(null)
   const [editingValue, setEditingValue] = useState('')
   const editInputRef = useRef<HTMLInputElement>(null)
-
   const loadSubscriptionDetail = async () => {
     if (!id) return
     try {
       setLoadingDetail(true)
-      console.log('Loading subscription detail for ID:', id)
       const res: any = await request.get(`/packages/${id}`)
-      console.log('Subscription detail response:', res)
       setSubscription(res || null)
     } catch (err) {
       console.error('failed to load subscription detail', err)
@@ -86,12 +75,10 @@ const SubscriptionDetail: React.FC = () => {
       setLoadingDetail(false)
     }
   }
-
   const loadUserKeys = async () => {
     if (!id) return
     try {
       setLoadingUserKeys(true)
-      console.log('Loading user keys for subscription ID:', id)
       const res: any = await request.get(`/packages/${id}/userkeys`, {
         params: {
           page: pagination.page,
@@ -99,7 +86,6 @@ const SubscriptionDetail: React.FC = () => {
           status_filter: statusFilter || undefined,
         }
       })
-      console.log('User keys response:', res)
       setUserKeys(res.user_keys || [])
       setPagination(prev => ({ ...prev, total: res.total || 0 }))
     } catch (err) {
@@ -108,13 +94,11 @@ const SubscriptionDetail: React.FC = () => {
       setLoadingUserKeys(false)
     }
   }
-
   useEffect(() => {
     loadSubscriptionDetail()
     loadUserKeys()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, pagination.page, pagination.size, statusFilter])
-
   const handleBatchGenerate = async () => {
     if (!id) return
     try {
@@ -133,7 +117,6 @@ const SubscriptionDetail: React.FC = () => {
       setLoadingBatchGenerate(false)
     }
   }
-
   const handleBulkOperation = async () => {
     if (!id || !bulkOperation.operation) return
     try {
@@ -156,7 +139,6 @@ const SubscriptionDetail: React.FC = () => {
       setLoadingBulkOperation(false)
     }
   }
-
   const handleCopyKey = async (key: string) => {
     try {
       await navigator.clipboard.writeText(key)
@@ -165,13 +147,11 @@ const SubscriptionDetail: React.FC = () => {
       error('复制失败')
     }
   }
-
   const handleEditRealApiKey = (userKey: UserKey) => {
     setEditingKeyId(userKey.id)
     setEditingValue(userKey.real_api_key || '')
     setTimeout(() => editInputRef.current?.focus(), 0)
   }
-
   const handleSaveRealApiKey = async (userKey: UserKey) => {
     if (!id) return
     try {
@@ -186,16 +166,13 @@ const SubscriptionDetail: React.FC = () => {
       error('更新失败')
     }
   }
-
   const handleViewUsageHistory = (apiKey: string) => {
     navigate(`/admin/user-key-usage/${apiKey}`)
   }
-
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return '-'
     return new Date(dateStr).toLocaleString('zh-CN')
   }
-
   const getStatusType = (status: string) => {
     switch (status) {
       case 'active':
@@ -208,7 +185,6 @@ const SubscriptionDetail: React.FC = () => {
         return 'bg-gray-100 text-gray-800'
     }
   }
-
   const getStatusText = (status: string) => {
     switch (status) {
       case 'active':
@@ -221,16 +197,13 @@ const SubscriptionDetail: React.FC = () => {
         return '未知'
     }
   }
-
   const getRemainingDaysClass = (days: number) => {
     if (days <= 0) return 'text-red-600 font-semibold'
     if (days <= 7) return 'text-orange-600 font-semibold'
     if (days <= 30) return 'text-yellow-600 font-semibold'
     return 'text-gray-600'
   }
-
   if (!id) return <div className="p-6">无效订阅ID</div>
-
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       {/* 顶部导航 */}
@@ -246,7 +219,6 @@ const SubscriptionDetail: React.FC = () => {
         </Button>
         <h1 className="text-2xl font-bold text-gray-900">订阅详情</h1>
       </div>
-
       {/* 订阅基本信息 */}
       <Card className="mb-6">
         <CardHeader>
@@ -311,7 +283,6 @@ const SubscriptionDetail: React.FC = () => {
           )}
         </CardContent>
       </Card>
-
       {/* 用户密钥管理 */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
@@ -346,7 +317,6 @@ const SubscriptionDetail: React.FC = () => {
             </Button>
           </div>
         </CardHeader>
-
         <CardContent>
           {/* 筛选器 */}
           <div className="mb-4 pb-4 border-b border-gray-200">
@@ -364,12 +334,10 @@ const SubscriptionDetail: React.FC = () => {
               <option value="expired">过期</option>
             </select>
           </div>
-
           {/* 加载状态 */}
           {loadingUserKeys && (
             <div className="text-center py-8 text-gray-500">加载中...</div>
           )}
-
           {/* 用户密钥表格 */}
           {!loadingUserKeys && (
             <Table>
@@ -501,7 +469,6 @@ const SubscriptionDetail: React.FC = () => {
               </TableBody>
             </Table>
           )}
-
           {/* 分页 */}
           <div className="mt-4 flex items-center justify-between text-sm">
             <span className="text-gray-600">共 {pagination.total} 条</span>
@@ -538,14 +505,12 @@ const SubscriptionDetail: React.FC = () => {
           </div>
         </CardContent>
       </Card>
-
       {/* 批量操作对话框 */}
       <Dialog open={bulkOperationDialog} onOpenChange={setBulkOperationDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>批量操作</DialogTitle>
           </DialogHeader>
-
           <div className="space-y-4">
             <div>
               <Label htmlFor="operation">操作类型</Label>
@@ -562,7 +527,6 @@ const SubscriptionDetail: React.FC = () => {
                 <option value="delete">删除密钥</option>
               </select>
             </div>
-
             <div>
               <Label htmlFor="notes">操作备注</Label>
               <textarea
@@ -574,7 +538,6 @@ const SubscriptionDetail: React.FC = () => {
                 placeholder="可选的操作备注"
               />
             </div>
-
             <div className="bg-blue-50 border border-blue-200 rounded p-3 text-sm text-blue-800">
               将对 <strong>{selectedKeys.length}</strong> 个用户密钥执行
               <strong className="ml-1">
@@ -586,7 +549,6 @@ const SubscriptionDetail: React.FC = () => {
               操作
             </div>
           </div>
-
           <DialogFooter>
             <Button
               variant="outline"
@@ -606,5 +568,4 @@ const SubscriptionDetail: React.FC = () => {
     </div>
   )
 }
-
 export default SubscriptionDetail

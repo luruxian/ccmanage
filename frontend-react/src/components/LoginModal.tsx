@@ -22,7 +22,6 @@ import {
 } from '@/components/ui/form'
 import { useUserStore } from '@/store/user'
 import request from '@/utils/request'
-
 interface LoginModalProps {
   isOpen: boolean
   onClose: () => void
@@ -31,12 +30,10 @@ interface LoginModalProps {
   prefillEmail?: string
   verified?: boolean
 }
-
 interface LoginForm {
   email: string
   password: string
 }
-
 interface LoginResponse {
   user: {
     user_id: string
@@ -54,11 +51,9 @@ interface LoginResponse {
     expires_in: number
   }
 }
-
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegister, onSwitchToForgotPassword, prefillEmail, verified }) => {
   const navigate = useNavigate()
   const { login } = useUserStore()
-
   // 使用react-hook-form管理表单状态
   const form = useForm<LoginForm>({
     defaultValues: {
@@ -66,32 +61,24 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
       password: '',
     },
   })
-
   const [loading, setLoading] = React.useState(false)
   const [serverError, setServerError] = React.useState('')
-
   // 当prefillEmail变化时更新表单
   React.useEffect(() => {
     if (prefillEmail) {
       form.setValue('email', prefillEmail)
     }
   }, [prefillEmail, form])
-
   // 表单提交处理
   const onSubmit = async (data: LoginForm) => {
-    console.log('开始登录流程...')
-
     setLoading(true)
     setServerError('')
-
     try {
       const response: LoginResponse = await request.post('/auth/login', {
         email: data.email,
         password: data.password
       })
-
       // 保存用户信息和token
-      console.log('登录成功，保存用户信息到状态管理')
       login({
         id: response.user.user_id,
         name: response.user.email,
@@ -99,15 +86,11 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
         token: response.tokens.access_token,
         refreshToken: response.tokens.refresh_token
       })
-
       // 关闭模态并跳转到仪表板
-      console.log('用户登录成功，关闭模态并跳转到仪表板')
       onClose()
       navigate('/app/dashboard', { replace: true })
-
     } catch (error: any) {
       console.error('登录失败:', error)
-
       // 服务器端登录错误处理
       if (error.response?.status === 401) {
         setServerError('邮箱或密码错误，请重新输入')
@@ -120,7 +103,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
       setLoading(false)
     }
   }
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -132,7 +114,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
             {verified ? '您的邮箱已验证成功，现在可以登录了' : '登录到您的agnets.app账户'}
           </DialogDescription>
         </DialogHeader>
-
         <Card className="border-0 shadow-none">
           <CardContent className="pt-6">
             <Form {...form}>
@@ -163,7 +144,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
                     </FormItem>
                   )}
                 />
-
                 {/* 密码字段 */}
                 <FormField
                   control={form.control}
@@ -190,7 +170,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
                     </FormItem>
                   )}
                 />
-
                 {/* 服务器错误提示 */}
                 {serverError && (
                   <Alert variant="destructive">
@@ -199,7 +178,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
                     </AlertDescription>
                   </Alert>
                 )}
-
                 <Button
                   type="submit"
                   className="w-full h-12 text-base font-semibold"
@@ -209,7 +187,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
                 </Button>
               </form>
             </Form>
-
             <div className="mt-6 text-center space-y-3">
               <p className="text-sm text-muted-foreground">
                 还没有账户？
@@ -249,5 +226,4 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
     </Dialog>
   )
 }
-
 export default LoginModal

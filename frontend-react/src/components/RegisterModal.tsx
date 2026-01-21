@@ -22,23 +22,19 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import request from '@/utils/request'
-
 interface RegisterModalProps {
   isOpen: boolean
   onClose: () => void
   onSwitchToLogin?: () => void
 }
-
 interface RegisterForm {
   email: string
   password: string
   confirmPassword: string
   agreement: boolean
 }
-
 const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitchToLogin }) => {
   const navigate = useNavigate()
-
   // 使用react-hook-form管理表单状态
   const form = useForm<RegisterForm>({
     defaultValues: {
@@ -48,36 +44,26 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
       agreement: false,
     },
   })
-
   const [loading, setLoading] = React.useState(false)
   const [serverError, setServerError] = React.useState('')
-
   // 获取密码字段的值用于确认密码验证
   const password = form.watch('password')
-
   // 表单提交处理
   const onSubmit = async (data: RegisterForm) => {
-    console.log('开始注册流程...')
-
     setLoading(true)
     setServerError('')
-
     try {
       await request.post('/auth/register', {
         email: data.email,
         password: data.password
       })
-
       // 注册成功，跳转到邮箱验证页面
-      console.log('注册成功，跳转到邮箱验证页面')
       onClose()
       navigate('/email-verification', {
         state: { email: data.email }
       })
-
     } catch (error: any) {
       console.error('注册失败:', error)
-
       // 服务器端注册错误处理
       if (error.response?.status === 409) {
         setServerError('该邮箱已被注册')
@@ -90,7 +76,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
       setLoading(false)
     }
   }
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -100,7 +85,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
             注册您的agnets.app账户
           </DialogDescription>
         </DialogHeader>
-
         <Card className="border-0 shadow-none">
           <CardContent className="pt-6">
             <Form {...form}>
@@ -131,7 +115,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
                     </FormItem>
                   )}
                 />
-
                 {/* 密码字段 */}
                 <FormField
                   control={form.control}
@@ -158,7 +141,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
                     </FormItem>
                   )}
                 />
-
                 {/* 确认密码字段 */}
                 <FormField
                   control={form.control}
@@ -182,7 +164,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
                     </FormItem>
                   )}
                 />
-
                 {/* 同意条款字段 */}
                 <FormField
                   control={form.control}
@@ -214,7 +195,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
                     </FormItem>
                   )}
                 />
-
                 {/* 服务器错误提示 */}
                 {serverError && (
                   <Alert variant="destructive">
@@ -223,7 +203,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
                     </AlertDescription>
                   </Alert>
                 )}
-
                 <Button
                   type="submit"
                   className="w-full h-12 text-base font-semibold"
@@ -233,7 +212,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
                 </Button>
               </form>
             </Form>
-
             <div className="mt-6 text-center space-y-3">
               <p className="text-sm text-muted-foreground">
                 已有账户？
@@ -259,5 +237,4 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     </Dialog>
   )
 }
-
 export default RegisterModal

@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-
 interface User {
   id: string
   name: string
@@ -8,21 +7,18 @@ interface User {
   role?: string
   avatar?: string
 }
-
 interface UserState {
   user: User | null
   token: string | null
   refreshToken: string | null
   isLoggedIn: boolean
   isAdmin: boolean
-
   // Actions
   login: (userData: { id: string; name: string; email: string; role?: string; token: string; refreshToken: string }) => void
   logout: () => void
   updateUser: (userData: Partial<User>) => void
   hasActiveApiKeys: () => Promise<boolean>
 }
-
 export const useUserStore = create<UserState>()(
   persist(
     (set) => ({ 
@@ -31,7 +27,6 @@ export const useUserStore = create<UserState>()(
       refreshToken: null,
       isLoggedIn: false,
       isAdmin: false,
-
       login: (userData) => {
         set({
           user: {
@@ -46,7 +41,6 @@ export const useUserStore = create<UserState>()(
           isAdmin: ['admin', 'super_admin'].includes(userData.role || ''), // 根据角色判断是否为管理员
         })
       },
-
       logout: () => {
         // 先重定向到根路径，再清除状态
         if (typeof window !== 'undefined') {
@@ -60,18 +54,15 @@ export const useUserStore = create<UserState>()(
           isAdmin: false,
         })
       },
-
       updateUser: (userData) => {
         set((state) => ({
           user: state.user ? { ...state.user, ...userData } : null,
         }))
       },
-
       hasActiveApiKeys: async () => {
         try {
           // 简化实现，实际应该调用API检查
           // 为了确保登录跳转正常工作，暂时返回true
-          console.log('检查用户API密钥状态')
           return true
         } catch (error) {
           console.error('检查API密钥状态失败:', error)

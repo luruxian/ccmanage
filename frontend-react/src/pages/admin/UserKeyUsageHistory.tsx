@@ -24,7 +24,6 @@ import {
 } from '@/components/ui/pagination'
 import { ArrowLeft, Home } from 'lucide-react'
 import request from '@/utils/request'
-
 interface KeyInfo {
   user_email?: string | null
   status: string
@@ -32,7 +31,6 @@ interface KeyInfo {
   expire_date?: string | null
   last_used_at?: string | null
 }
-
 interface UsageStats {
   total_requests: number
   total_tokens: number
@@ -44,7 +42,6 @@ interface UsageStats {
   first_request: string
   last_request: string
 }
-
 interface UsageRecord {
   id: number
   api_key_id: number
@@ -59,7 +56,6 @@ interface UsageRecord {
   response_status?: string
   error_message?: string
 }
-
 const UserKeyUsageHistory: React.FC = () => {
   const { apiKey } = useParams<{ apiKey: string }>()
   const navigate = useNavigate()
@@ -88,7 +84,6 @@ const UserKeyUsageHistory: React.FC = () => {
     size: 20,
     total: 0
   })
-
   const loadKeyInfo = async () => {
     if (!apiKey) return
     try {
@@ -97,12 +92,8 @@ const UserKeyUsageHistory: React.FC = () => {
       const response: any = await request.get('/admin/user-keys', {
         params: { api_key: apiKey }
       })
-
-      console.log('Key信息响应:', response)
-
       // 适配不同的响应结构
       const userKeys = response.user_keys || response.data?.user_keys || []
-
       if (userKeys.length > 0) {
         const keyData = userKeys[0]
         setKeyInfo({
@@ -135,20 +126,15 @@ const UserKeyUsageHistory: React.FC = () => {
       setLoading(prev => ({ ...prev, keyInfo: false }))
     }
   }
-
   const loadUsageStats = async () => {
     if (!apiKey) return
     try {
       setLoading(prev => ({ ...prev, stats: true }))
       setErrors(prev => ({ ...prev, stats: '' }))
       const params: any = { api_key: apiKey }
-
       if (filters.startDate) params.start_date = filters.startDate
       if (filters.endDate) params.end_date = filters.endDate
-
       const response: any = await request.get(`/usage/stats`, { params })
-      console.log('使用统计响应:', response)
-
       // 适配不同的响应结构
       const statsData = response.data || response
       setUsageStats(statsData)
@@ -160,7 +146,6 @@ const UserKeyUsageHistory: React.FC = () => {
       setLoading(prev => ({ ...prev, stats: false }))
     }
   }
-
   const loadUsageRecords = async () => {
     if (!apiKey) return
     try {
@@ -171,18 +156,13 @@ const UserKeyUsageHistory: React.FC = () => {
         page: pagination.page,
         page_size: pagination.size
       }
-
       if (filters.service && filters.service !== 'all') params.service = filters.service
       if (filters.startDate) params.start_date = filters.startDate
       if (filters.endDate) params.end_date = filters.endDate
-
       const response: any = await request.get('/usage/history', { params })
-      console.log('使用记录响应:', response)
-
       // 适配不同的响应结构
       const recordsData = response.records || response.data?.records || []
       const total = response.total || response.data?.total || 0
-
       setUsageRecords(recordsData)
       setPagination(prev => ({ ...prev, total }))
     } catch (err) {
@@ -194,7 +174,6 @@ const UserKeyUsageHistory: React.FC = () => {
       setLoading(prev => ({ ...prev, records: false }))
     }
   }
-
   const loadAvailableServices = async () => {
     if (!apiKey) return
     try {
@@ -202,8 +181,6 @@ const UserKeyUsageHistory: React.FC = () => {
       const response: any = await request.get('/usage/services', {
         params: { api_key: apiKey }
       })
-      console.log('服务类型响应:', response)
-
       // 适配不同的响应结构
       const services = response.data || response || []
       setAvailableServices(services)
@@ -213,7 +190,6 @@ const UserKeyUsageHistory: React.FC = () => {
       setAvailableServices([])
     }
   }
-
   const loadAllData = async () => {
     if (!apiKey) return
     await Promise.all([
@@ -223,49 +199,39 @@ const UserKeyUsageHistory: React.FC = () => {
       loadAvailableServices()
     ])
   }
-
   const applyFilters = () => {
     setPagination(prev => ({ ...prev, page: 1 }))
     loadUsageRecords()
     loadUsageStats()
   }
-
   const refreshStats = () => {
     loadUsageStats()
   }
-
   const refreshRecords = () => {
     loadUsageRecords()
   }
-
   const handlePageChange = (page: number) => {
     setPagination(prev => ({ ...prev, page }))
   }
-
   const handleSizeChange = (size: number) => {
     setPagination(prev => ({ page: 1, size, total: prev.total }))
   }
-
   useEffect(() => {
     loadAllData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiKey])
-
   useEffect(() => {
     loadUsageRecords()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.page, pagination.size])
-
   const formatDate = (dateString: string) => {
     if (!dateString) return '-'
     return new Date(dateString).toLocaleString('zh-CN')
   }
-
   const formatNumber = (num: number) => {
     if (num == null) return '0'
     return num.toLocaleString()
   }
-
   const getStatusText = (status: string) => {
     switch (status) {
       case 'active': return '激活'
@@ -274,7 +240,6 @@ const UserKeyUsageHistory: React.FC = () => {
       default: return '未知'
     }
   }
-
   const getStatusVariant = (status: string) => {
     switch (status) {
       case 'active': return 'default'
@@ -283,7 +248,6 @@ const UserKeyUsageHistory: React.FC = () => {
       default: return 'outline'
     }
   }
-
   return (
     <div className="min-h-screen bg-background p-6">
       {/* 面包屑导航 */}
@@ -319,7 +283,6 @@ const UserKeyUsageHistory: React.FC = () => {
           <h1 className="text-2xl font-bold text-foreground">User Key使用履历</h1>
         </div>
       </div>
-
       {/* User Key基本信息 */}
       <Card className="mb-6">
         <CardHeader>
@@ -380,7 +343,6 @@ const UserKeyUsageHistory: React.FC = () => {
           )}
         </CardContent>
       </Card>
-
       {/* 使用统计 */}
       <Card className="mb-6">
         <CardHeader>
@@ -445,7 +407,6 @@ const UserKeyUsageHistory: React.FC = () => {
           )}
         </CardContent>
       </Card>
-
       {/* 使用记录列表 */}
       <Card>
         <CardHeader>
@@ -473,7 +434,6 @@ const UserKeyUsageHistory: React.FC = () => {
               </AlertDescription>
             </Alert>
           )}
-
           {/* 筛选器 */}
           <div className="mb-6 p-4 border-b">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -521,7 +481,6 @@ const UserKeyUsageHistory: React.FC = () => {
               </div>
             </div>
           </div>
-
           {loading.records && <div className="text-center py-8 text-muted-foreground">加载中...</div>}
           {!loading.records && usageRecords.length === 0 && (
             <div className="text-center py-8 text-muted-foreground">暂无记录</div>
@@ -579,7 +538,6 @@ const UserKeyUsageHistory: React.FC = () => {
                   ))}
                 </TableBody>
               </Table>
-
               {/* 分页 */}
               <div className="mt-6 flex items-center justify-between">
                 <div className="text-sm text-muted-foreground">
@@ -633,5 +591,4 @@ const UserKeyUsageHistory: React.FC = () => {
     </div>
   )
 }
-
 export default UserKeyUsageHistory

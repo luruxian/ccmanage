@@ -6,12 +6,10 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useUserStore } from '@/store/user'
 import request from '@/utils/request'
-
 interface AdminLoginForm {
   username: string
   password: string
 }
-
 interface AdminLoginResponse {
   admin: {
     id: number
@@ -30,25 +28,21 @@ interface AdminLoginResponse {
     expires_in: number
   }
 }
-
 const AdminLogin: React.FC = () => {
   const navigate = useNavigate()
   const { login } = useUserStore()
-
   const [formData, setFormData] = useState<AdminLoginForm>({
     username: '',
     password: '',
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-
   // 回车键登录处理
   const handleKeyPress = (event: KeyboardEvent) => {
     if (event.key === 'Enter' && !loading) {
       handleSubmit()
     }
   }
-
   // 添加和移除键盘事件监听器
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress)
@@ -56,7 +50,6 @@ const AdminLogin: React.FC = () => {
       document.removeEventListener('keydown', handleKeyPress)
     }
   }, [loading])
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
@@ -65,61 +58,47 @@ const AdminLogin: React.FC = () => {
       setError('')
     }
   }
-
   const validateForm = (): boolean => {
     // 用户名验证
     if (!formData.username.trim()) {
       setError('请输入管理员用户名')
       return false
     }
-
     if (formData.username.length < 3 || formData.username.length > 50) {
       setError('用户名长度为3-50位')
       return false
     }
-
     if (!/^[a-zA-Z0-9_-]+$/.test(formData.username)) {
       setError('用户名只能包含字母、数字、下划线和连字符')
       return false
     }
-
     // 密码验证
     if (!formData.password) {
       setError('请输入管理员密码')
       return false
     }
-
     if (formData.password.length < 6) {
       setError('密码长度不能少于6位')
       return false
     }
-
     return true
   }
-
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) {
       e.preventDefault()
     }
-
-    console.log('开始管理员登录流程...')
-
     // 表单验证
     if (!validateForm()) {
       return
     }
-
     setLoading(true)
     setError('')
-
     try {
       const response: AdminLoginResponse = await request.post('/admin/login', {
         username: formData.username,
         password: formData.password
       })
-
       // 保存管理员信息
-      console.log('管理员登录成功，保存管理员信息到状态管理')
       login({
         id: response.admin.id.toString(),
         name: response.admin.display_name || response.admin.username,
@@ -128,14 +107,10 @@ const AdminLogin: React.FC = () => {
         token: response.tokens.access_token,
         refreshToken: response.tokens.refresh_token
       })
-
       // 跳转到管理员控制台
-      console.log('管理员登录成功，立即跳转到管理员控制台')
       navigate('/admin/dashboard', { replace: true })
-
     } catch (error: any) {
       console.error('管理员登录失败:', error)
-
       // 服务器端登录错误处理
       if (error.response?.status === 401) {
         setError('用户名或密码错误')
@@ -150,7 +125,6 @@ const AdminLogin: React.FC = () => {
       setLoading(false)
     }
   }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -176,7 +150,6 @@ const AdminLogin: React.FC = () => {
                   className="h-12 text-base border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
-
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-gray-700">
                   管理员密码
@@ -191,7 +164,6 @@ const AdminLogin: React.FC = () => {
                   className="h-12 text-base border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
-
               {/* 登录错误提示 */}
               {error && (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm flex items-center gap-2">
@@ -201,7 +173,6 @@ const AdminLogin: React.FC = () => {
                   {error}
                 </div>
               )}
-
               <Button
                 type="submit"
                 className="w-full h-12 text-base font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 shadow-lg hover:shadow-xl transition-all duration-300"
@@ -210,7 +181,6 @@ const AdminLogin: React.FC = () => {
                 {loading ? '登录中...' : '登录管理中心'}
               </Button>
             </form>
-
             <div className="mt-6 pt-6 border-t border-gray-200 text-center space-y-3">
               <div className="flex items-center justify-center gap-2 text-red-600 text-sm">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -231,5 +201,4 @@ const AdminLogin: React.FC = () => {
     </div>
   )
 }
-
 export default AdminLogin

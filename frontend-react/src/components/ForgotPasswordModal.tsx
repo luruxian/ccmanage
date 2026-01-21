@@ -20,17 +20,14 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import request from '@/utils/request'
-
 interface ForgotPasswordModalProps {
   isOpen: boolean
   onClose: () => void
   onSwitchToLogin?: () => void
 }
-
 interface ForgotPasswordForm {
   email: string
 }
-
 const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClose, onSwitchToLogin }) => {
   // 使用react-hook-form管理表单状态
   const form = useForm<ForgotPasswordForm>({
@@ -38,29 +35,21 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
       email: '',
     },
   })
-
   const [loading, setLoading] = React.useState(false)
   const [serverError, setServerError] = React.useState('')
   const [success, setSuccess] = React.useState(false)
-
   // 表单提交处理
   const onSubmit = async (data: ForgotPasswordForm) => {
-    console.log('开始密码重置流程...')
-
     setLoading(true)
     setServerError('')
-
     try {
       await request.post('/auth/password-reset', {
         email: data.email
       })
-
       // 请求成功
       setSuccess(true)
-
     } catch (error: any) {
       console.error('密码重置请求失败:', error)
-
       // 错误处理
       if (error.response?.status === 404) {
         setServerError('该邮箱未注册')
@@ -73,14 +62,12 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
       setLoading(false)
     }
   }
-
   const handleBackToLogin = () => {
     onClose()
     if (onSwitchToLogin) {
       onSwitchToLogin()
     }
   }
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -94,7 +81,6 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
               : '输入您的邮箱地址以重置密码'}
           </DialogDescription>
         </DialogHeader>
-
         <Card className="border-0 shadow-none">
           <CardContent className="pt-6">
             {success ? (
@@ -147,7 +133,6 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
                         </FormItem>
                       )}
                     />
-
                     {/* 服务器错误提示 */}
                     {serverError && (
                       <Alert variant="destructive">
@@ -156,7 +141,6 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
                         </AlertDescription>
                       </Alert>
                     )}
-
                     <Button
                       type="submit"
                       className="w-full h-12 text-base font-semibold"
@@ -166,7 +150,6 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
                     </Button>
                   </form>
                 </Form>
-
                 <div className="mt-6 text-center">
                   <button
                     type="button"
@@ -184,5 +167,4 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
     </Dialog>
   )
 }
-
 export default ForgotPasswordModal

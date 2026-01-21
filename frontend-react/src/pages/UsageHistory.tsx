@@ -27,6 +27,7 @@ interface ApiKey {
   key_name: string
   api_key: string
   package_name?: string
+  package_type?: string  // 套餐类型：01-标准订阅，02-Max系列订阅，20-体验积分包，21-临时积分包，91-加油包
   activation_date?: string
   expire_date?: string
   status?: string

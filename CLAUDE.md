@@ -18,10 +18,9 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 <!-- OPENSPEC:END -->
 
 # 项目整体规则
-## 1.如果需要启动前后端服务，先确定服务是否已经启动，如果已经启动请先关闭。
-## 2.代码参照最佳工程实践。
+## 1.生成代码时要参照最佳工程实践。
 ## 3.严禁调用不存在的方法，属性，变量。
-## 4.前后端分离，后端在backend文件夹下面，前端在frontend文件夹下面。
+## 4.前后端分离，后端在backend文件夹下面，前端在frontend-react文件夹下面。
 ## 5.代码职责分离，符合Clean Architecture原则
 
 # 后端规则
@@ -37,12 +36,7 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 ## 10.数据库连接采用数据库连接池，提高效率。
 
 # 前端规则
-## 1.用bootstrap5框架构建响应式前端页面
-## 2.组件库用element-plus
-## 3.状态管理用pinia
-## 4.请求用axios
-## 5.样式用css
-## 6.前端依赖的管理用npm，依赖列表在package.json里面。
+## 1.前端依赖的管理用npm，依赖列表在package.json里面。
 
 # 数据库相关
 ## 1.设计数据库和表结构、主键。不要设计外键制约。

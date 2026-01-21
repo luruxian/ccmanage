@@ -26,6 +26,7 @@ class UserKeyResponse(BaseModel):
     api_key: str
     key_name: Optional[str]
     package_name: Optional[str]
+    package_type: Optional[str] = None  # 套餐类型：01-标准订阅，02-Max系列订阅，20-体验积分包，21-临时积分包，91-加油包
     description: Optional[str]
     is_active: bool
     last_used_at: Optional[datetime]

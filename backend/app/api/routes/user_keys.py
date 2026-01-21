@@ -165,6 +165,7 @@ async def get_user_keys(
                 api_key=key["api_key"],
                 key_name=key["key_name"],
                 package_name=key["package_name"],
+                package_type=key["package_type"],  # 添加package_type字段
                 description=key["description"],
                 is_active=key["is_active"],
                 last_used_at=key["last_used_at"],

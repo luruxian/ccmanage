@@ -162,9 +162,7 @@ const NewDashboard: React.FC = () => {
         return
       }
 
-      console.log('重置积分请求 - 密钥ID:', keyId)
       const response = await request.put(`/keys/${keyId}/reset-credits`)
-      console.log('重置积分响应:', response)
 
       // 重新加载密钥列表以更新显示
       await loadUserKeys()
@@ -212,9 +210,7 @@ const NewDashboard: React.FC = () => {
         return
       }
 
-      console.log('下载配置请求 - 密钥ID:', keyId)
       const response: any = await request.get(`/keys/${keyId}/download-config`)
-      console.log('下载配置响应:', response)
 
       if (response.config && response.filename) {
         // 创建 settings.json

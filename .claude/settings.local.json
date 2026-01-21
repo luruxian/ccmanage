@@ -15,12 +15,16 @@
       "Bash(npx shadcn@latest add:*)",
       "mcp__chrome-devtools__list_console_messages",
       "Bash(dir:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(git --version)",
+      "Bash(openspec list:*)",
+      "Bash(openspec validate:*)",
+      "Bash(find:*)"
     ]
   },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "shadcn",
     "chrome-devtools"
-  ],
-  "enableAllProjectMcpServers": true
+  ]
 }

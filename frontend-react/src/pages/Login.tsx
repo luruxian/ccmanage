@@ -15,12 +15,10 @@ import {
 } from '@/components/ui/form'
 import { useUserStore } from '@/store/user'
 import request from '@/utils/request'
-
 interface LoginForm {
   email: string
   password: string
 }
-
 interface LoginResponse {
   user: {
     user_id: string
@@ -38,12 +36,10 @@ interface LoginResponse {
     expires_in: number
   }
 }
-
 const Login: React.FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { login } = useUserStore()
-
   // 使用react-hook-form管理表单状态
   const form = useForm<LoginForm>({
     defaultValues: {
@@ -51,40 +47,30 @@ const Login: React.FC = () => {
       password: '',
     },
   })
-
   const [loading, setLoading] = React.useState(false)
   const [serverError, setServerError] = React.useState('')
-
   // 从URL参数获取邮箱（验证成功后传递）
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search)
     const email = searchParams.get('email')
     const verified = searchParams.get('verified')
-
     if (email) {
       form.setValue('email', email)
       if (verified === 'true') {
         // 可以在这里添加成功消息显示
-        console.log('邮箱验证成功！请输入密码登录')
       }
     }
   }, [location.search, form])
-
   // 表单提交处理
   const onSubmit = async (data: LoginForm) => {
-    console.log('开始登录流程...')
-
     setLoading(true)
     setServerError('')
-
     try {
       const response: LoginResponse = await request.post('/auth/login', {
         email: data.email,
         password: data.password
       })
-
       // 保存用户信息和token
-      console.log('登录成功，保存用户信息到状态管理')
       login({
         id: response.user.user_id,
         name: response.user.email,
@@ -92,14 +78,10 @@ const Login: React.FC = () => {
         token: response.tokens.access_token,
         refreshToken: response.tokens.refresh_token
       })
-
       // 立即跳转到仪表板
-      console.log('用户登录成功，立即跳转到仪表板')
       navigate('/app/dashboard', { replace: true })
-
     } catch (error: any) {
       console.error('登录失败:', error)
-
       // 服务器端登录错误处理
       if (error.response?.status === 401) {
         setServerError('邮箱或密码错误，请重新输入')
@@ -112,7 +94,6 @@ const Login: React.FC = () => {
       setLoading(false)
     }
   }
-
   return (
     <div className="min-h-screen bg-muted flex">
       {/* 左侧品牌展示区 (桌面端70%) */}
@@ -126,14 +107,12 @@ const Login: React.FC = () => {
             </div>
             <h1 className="text-4xl font-bold">agnets.app</h1>
           </div>
-
           <div>
             <h2 className="text-2xl font-semibold mb-4">欢迎回来</h2>
             <p className="text-muted-foreground text-lg">安全、高效的AI工具</p>
           </div>
         </div>
       </div>
-
       {/* 右侧登录表单区 (桌面端30%) */}
       <div className="flex-1 flex flex-col justify-center items-center p-8 bg-background">
         <div className="w-full max-w-sm">
@@ -173,7 +152,6 @@ const Login: React.FC = () => {
                       </FormItem>
                     )}
                   />
-
                   {/* 密码字段 */}
                   <FormField
                     control={form.control}
@@ -200,7 +178,6 @@ const Login: React.FC = () => {
                       </FormItem>
                     )}
                   />
-
                   {/* 服务器错误提示 */}
                   {serverError && (
                     <Alert variant="destructive">
@@ -209,7 +186,6 @@ const Login: React.FC = () => {
                       </AlertDescription>
                     </Alert>
                   )}
-
                   <Button
                     type="submit"
                     className="w-full h-12 text-base font-semibold"
@@ -219,7 +195,6 @@ const Login: React.FC = () => {
                   </Button>
                 </form>
               </Form>
-
               <div className="mt-6 text-center space-y-3">
                 <p className="text-sm text-muted-foreground">
                   还没有账户？
@@ -241,5 +216,4 @@ const Login: React.FC = () => {
     </div>
   )
 }
-
 export default Login

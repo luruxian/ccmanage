@@ -14,12 +14,9 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import request from '@/utils/request'
-
 interface ForgotPasswordForm {
   email: string
 }
-
-
 const ForgotPassword: React.FC = () => {
   // 使用react-hook-form管理表单状态
   const form = useForm<ForgotPasswordForm>({
@@ -27,29 +24,21 @@ const ForgotPassword: React.FC = () => {
       email: '',
     },
   })
-
   const [loading, setLoading] = React.useState(false)
   const [serverError, setServerError] = React.useState('')
   const [success, setSuccess] = React.useState(false)
-
   // 表单提交处理
   const onSubmit = async (data: ForgotPasswordForm) => {
-    console.log('开始密码重置流程...')
-
     setLoading(true)
     setServerError('')
-
     try {
       await request.post('/auth/password-reset', {
         email: data.email
       })
-
       // 请求成功
       setSuccess(true)
-
     } catch (error: any) {
       console.error('密码重置请求失败:', error)
-
       // 错误处理
       if (error.response?.data?.detail) {
         setServerError(error.response.data.detail)
@@ -60,7 +49,6 @@ const ForgotPassword: React.FC = () => {
       setLoading(false)
     }
   }
-
   return (
     <div className="min-h-screen bg-muted flex">
       {/* 左侧品牌展示区 (桌面端70%) */}
@@ -74,14 +62,12 @@ const ForgotPassword: React.FC = () => {
             </div>
             <h1 className="text-4xl font-bold">agnets.app</h1>
           </div>
-
           <div>
             <h2 className="text-2xl font-semibold mb-4">重置密码</h2>
             <p className="text-muted-foreground text-lg">安全、高效的AI工具</p>
           </div>
         </div>
       </div>
-
       {/* 右侧表单区 (桌面端30%) */}
       <div className="flex-1 flex flex-col justify-center items-center p-8 bg-background">
         <div className="w-full max-w-sm">
@@ -141,7 +127,6 @@ const ForgotPassword: React.FC = () => {
                         </FormItem>
                       )}
                     />
-
                     {/* 服务器错误提示 */}
                     {serverError && (
                       <Alert variant="destructive">
@@ -150,7 +135,6 @@ const ForgotPassword: React.FC = () => {
                         </AlertDescription>
                       </Alert>
                     )}
-
                     <Button
                       type="submit"
                       className="w-full h-12 text-base font-semibold"
@@ -161,7 +145,6 @@ const ForgotPassword: React.FC = () => {
                   </form>
                 </Form>
               )}
-
               {!success && (
                 <div className="mt-6 text-center">
                   <Link
@@ -179,5 +162,4 @@ const ForgotPassword: React.FC = () => {
     </div>
   )
 }
-
 export default ForgotPassword

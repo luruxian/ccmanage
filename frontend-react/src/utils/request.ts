@@ -30,14 +30,6 @@ const getBaseURL = () => {
     baseURL = `${protocol}//${hostname}${port}`
   }
 
-  // 在开发环境打印配置信息
-  if (import.meta.env.DEV) {
-    console.log('🔗 API BaseURL:', baseURL)
-    console.log('🌍 Environment:', import.meta.env.MODE)
-    console.log('🌐 Protocol:', protocol)
-    console.log('🏠 Hostname:', hostname)
-  }
-
   return baseURL
 }
 
@@ -126,11 +118,6 @@ request.interceptors.request.use(
 request.interceptors.response.use(
   (response) => {
     const res = response.data
-
-    // 记录成功的响应（开发环境）
-    if (import.meta.env.DEV) {
-      console.log(`✅ ${response.config.method?.toUpperCase()} ${response.config.url}:`, res)
-    }
 
     return res
   },
