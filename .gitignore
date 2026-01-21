@@ -183,3 +183,4 @@ cython_debug/
 DEPLOY_GUIDE.md
 nul
 .claude
+frontend-react/package-lock.json
