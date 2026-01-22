@@ -32,6 +32,7 @@ class APIKeyValidationSuccessData(BaseModel):
         activation_date (Optional[datetime]): 激活时间
         expire_date (Optional[datetime]): 过期时间
         remaining_credits (Optional[int]): 剩余积分
+        package_type (Optional[str]): 订阅种类
     """
     valid: bool = Field(True, description="验证结果，始终为True")
     real_api_key: str = Field(..., description="真实的API密钥")
@@ -40,6 +41,7 @@ class APIKeyValidationSuccessData(BaseModel):
     activation_date: Optional[datetime] = Field(None, description="激活时间")
     expire_date: Optional[datetime] = Field(None, description="过期时间")
     remaining_credits: Optional[int] = Field(None, description="剩余积分")
+    package_type: Optional[str] = Field(None, description="订阅种类")
 
     class Config:
         from_attributes = True

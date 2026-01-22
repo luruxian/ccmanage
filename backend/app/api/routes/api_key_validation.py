@@ -11,8 +11,10 @@ from ...schemas.api_key import (
     APIKeyValidationErrorData
 )
 from ...schemas.common import ErrorCodes
+from ...schemas.enums import PackageType
 from ...db.database import get_db
 from ...db.crud.api_key import APIKeyCRUD
+from ...db.models import Package
 import logging
 
 logger = logging.getLogger(__name__)
@@ -29,17 +31,18 @@ class APIKeyValidationService:
     def validate_api_key(self, api_key: str):
         """验证API密钥"""
         try:
-            # 1. 一次性获取API密钥所有信息
-            db_api_key = self.api_key_crud.get_api_key_by_key(api_key)
-
-            # 2. 基础验证
-            if not db_api_key:
+            # 1. 一次性获取API密钥所有信息（包含package_type）
+            result = self.api_key_crud.get_api_key_with_package_type(api_key)
+            if not result:
                 return self._create_error_response(
                     ErrorCodes.INVALID_API_KEY,
                     "Invalid API key",
                     "INVALID_KEY"
                 )
 
+            db_api_key, package_type = result
+
+            # 2. 基础验证
             if not db_api_key.is_active:
                 return self._create_error_response(
                     ErrorCodes.INVALID_API_KEY,
@@ -47,23 +50,71 @@ class APIKeyValidationService:
                     "INACTIVE_KEY"
                 )
 
-            # 3. 有效期验证
-            if db_api_key.expire_date and db_api_key.expire_date < datetime.now():
-                return self._create_error_response(
-                    ErrorCodes.PLAN_EXPIRED,
-                    "API key has expired",
-                    "EXPIRED_KEY"
-                )
+            # 4. 根据package_type进行分类校验
+            if package_type:
+                # 4.1 加油包类型("91")：一律返回无效
+                if package_type == PackageType.FUEL_PACK:
+                    return self._create_error_response(
+                        ErrorCodes.INVALID_API_KEY,
+                        "Invalid API key (fuel pack)",
+                        "INVALID_KEY"
+                    )
 
-            # 4. 积分验证
-            if db_api_key.remaining_credits is not None and db_api_key.remaining_credits <= 0:
-                return self._create_error_response(
-                    ErrorCodes.CREDITS_EXHAUSTED,
-                    "Insufficient credits",
-                    "INSUFFICIENT_CREDITS"
-                )
+                # 4.2 标准订阅类型("01", "02")：需要校验有效期和剩余积分
+                elif package_type in [PackageType.STANDARD, PackageType.MAX_SERIES]:
+                    # 有效期验证
+                    if db_api_key.expire_date and db_api_key.expire_date < datetime.now():
+                        return self._create_error_response(
+                            ErrorCodes.PLAN_EXPIRED,
+                            "API key has expired",
+                            "EXPIRED_KEY"
+                        )
 
-            # 5. 返回成功响应
+                    # 积分验证
+                    if db_api_key.remaining_credits is not None and db_api_key.remaining_credits <= 0:
+                        return self._create_error_response(
+                            ErrorCodes.CREDITS_EXHAUSTED,
+                            "Insufficient credits",
+                            "INSUFFICIENT_CREDITS"
+                        )
+
+                # 4.3 体验积分包和临时积分包类型("20", "21")：只需要校验剩余积分，不需要校验有效期
+                elif package_type in [PackageType.EXPERIENCE_PACKAGE, PackageType.TEMPORARY_PACKAGE]:
+                    # 积分验证（必须大于0）
+                    if db_api_key.remaining_credits is None or db_api_key.remaining_credits <= 0:
+                        return self._create_error_response(
+                            ErrorCodes.CREDITS_EXHAUSTED,
+                            "Insufficient credits",
+                            "INSUFFICIENT_CREDITS"
+                        )
+                    # 注意：这里不检查有效期，因为体验积分包和临时积分包没有有效期限制
+
+                # 4.4 未知package_type：返回无效
+                else:
+                    return self._create_error_response(
+                        ErrorCodes.INVALID_API_KEY,
+                        "Invalid API key (unknown package type)",
+                        "INVALID_KEY"
+                    )
+            else:
+                # 没有关联套餐，使用默认验证逻辑
+                # 有效期验证
+                if db_api_key.expire_date and db_api_key.expire_date < datetime.now():
+                    return self._create_error_response(
+                        ErrorCodes.PLAN_EXPIRED,
+                        "API key has expired",
+                        "EXPIRED_KEY"
+                    )
+
+                # 积分验证
+                if db_api_key.remaining_credits is not None and db_api_key.remaining_credits <= 0:
+                    return self._create_error_response(
+                        ErrorCodes.CREDITS_EXHAUSTED,
+                        "Insufficient credits",
+                        "INSUFFICIENT_CREDITS"
+                    )
+
+            # 5. 返回成功响应（包含package_type）
             return APIKeyValidationSuccessResponse(
                 data=APIKeyValidationSuccessData(
                     valid=True,
@@ -72,7 +123,8 @@ class APIKeyValidationService:
                     last_reset_credits_at=db_api_key.last_reset_credits_at,
                     activation_date=db_api_key.activation_date,
                     expire_date=db_api_key.expire_date,
-                    remaining_credits=db_api_key.remaining_credits
+                    remaining_credits=db_api_key.remaining_credits,
+                    package_type=package_type  # 添加订阅种类字段
                 )
             )
 

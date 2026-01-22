@@ -29,6 +29,22 @@ class APIKeyCRUD:
         """根据API密钥获取记录"""
         return self.db.query(APIKey).filter(APIKey.api_key == api_key).first()
 
+    def get_api_key_with_package_type(self, api_key: str) -> Optional[tuple[APIKey, Optional[str]]]:
+        """根据API密钥获取记录和package_type（用于验证）"""
+        # 使用JOIN一次性获取API密钥和package信息，避免N+1查询
+        result = (
+            self.db.query(APIKey, Package)
+            .outerjoin(Package, APIKey.package_id == Package.id)
+            .filter(APIKey.api_key == api_key)
+            .first()
+        )
+
+        if result:
+            api_key_obj, package_obj = result
+            package_type = package_obj.package_type if package_obj else None
+            return api_key_obj, package_type
+        return None
+
     def get_api_key_by_id(self, api_key_id: int) -> Optional[APIKey]:
         """根据ID获取API密钥记录"""
         return self.db.query(APIKey).filter(APIKey.id == api_key_id).first()
