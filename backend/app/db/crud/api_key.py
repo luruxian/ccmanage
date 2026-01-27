@@ -78,6 +78,13 @@ class APIKeyCRUD:
             # 过滤掉package_type为加油包的记录（不显示给普通用户）
             if package and package.package_type == PackageType.FUEL_PACK:
                 continue
+
+            # 对于package_type为"20"（体验积分包）或"21"（临时积分包）的订阅
+            # 只返回剩余积分大于0的记录
+            if package and package.package_type in [PackageType.EXPERIENCE_PACKAGE, PackageType.TEMPORARY_PACKAGE]:
+                if api_key.remaining_credits is None or api_key.remaining_credits <= 0:
+                    continue
+
             # 计算剩余天数
             remaining_days = None
             current_status = api_key.status or "inactive"
